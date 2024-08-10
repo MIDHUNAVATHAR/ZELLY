@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    /* Ensure the sidebar takes 20% of the screen width */
+    .sidebar {
+      width: 20%;
+    }
+    .main-content {
+      width: 80%;
+    }
+  
+  </style>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+</head>
+<body class="flex h-screen">
+  <!-- Sidebar -->
+  <div class="sidebar bg-gray-800 text-white h-full flex flex-col">
+    <div class="p-4 text-2xl font-bold">
+      ZELLY
+    </div>
+    <nav class="flex-1 p-4" id="sidebar-menu">
+      <ul>
+        <li class="mb-2">
+          <a href="/admin/Dashboard"  class="block p-2 hover:bg-white hover:text-black rounded">Dashboard</a> 
+        </li>
+        <li class="mb-2">
+          <a href="/admin/frontPage" class="block p-2 hover:bg-white hover:text-black  rounded">FrontPage</a>
+        </li>
+        <li class="mb-2">
+          <a href="/admin/customers" class="block p-2 hover:bg-white hover:text-black  rounded">customers</a>
+        </li>
+        <li class="mb-2">
+          <a href="/admin/addCategory" class="block p-2 hover:bg-white hover:text-black rounded"> Add Category </a> 
+        </li>
+        <li class="mb-2">
+          <a href="/admin/addProduct" class="block p-2 hover:bg-white hover:text-black  rounded">Add Products</a>
+        </li>
+        <li class="mb-2">
+          <a href="#" class="block p-2 hover:bg-white hover:text-black rounded">Orders</a>
+        </li>
+        <li class="mb-2">
+          <a href="#" class="block p-2 hover:bg-white hover:text-black rounded">Sales Report</a>
+        </li>
+        <li class="mb-2">
+          <a href="#" class="block p-2 hover:bg-white hover:text-black rounded">Discount</a>
+        </li>
+        <li class="mb-2">
+          <a href="#" class="block p-2  hover:bg-white hover:text-black rounded">Coupon</a>
+        </li>
+        
+        <!-- Add more sidebar items as needed -->
+      </ul>
+    </nav>
+     <a href="/admin/adminLogout"><button  class="fixed bottom-0 left-0 m-4 p-2  text-white font-bold rounded-lg">Logout</button></a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content flex flex-col h-full">
+    <!-- Header -->
+    <header class="bg-gray-900 text-white p-4 flex items-center justify-between">
+      <div class="text-xl">Admin Dashboard</div>
+      <div class="text-sm">Welcome, <%= admin %></div>
+    </header>
+
+    <!-- Dynamic Content Area -->
+    <main id="content" class="flex-1 p-4 overflow-y-auto bg-gray-100">
+      <!-- Dynamic content will be loaded here -->
+      <%- include(partial) %>
+    </main>
+  </div>
+
+  <script>
+    
+    
+  </script>
+
+</body>
+</html>

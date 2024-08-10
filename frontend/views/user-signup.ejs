@@ -1,0 +1,178 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Signup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+   <div class="flex justify-center items-center h-screen bg-cyan-900" >
+
+        <!-- Back Button -->
+  <a href="/userLogin" class="absolute top-4 left-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
+    Back
+  </a>
+
+    <div class="w-3/5 p-6 shadow-lg bg-white rounded-md">   
+        <% if (message) { %>
+            <h1 class="text-red-500"><%= message %></h1>
+          <% } %>
+          
+        <form action="/userSignupPost" method="post" id="loginForm">
+        <h1 class="text-3xl text-center font-semibold"><i class="fa-solid fa-user"></i>Sign Up</h1>
+        <div class="flex mt-5">
+          <div class="mt-3 w-2/4">
+              <label for="firstName" class="block text-base mb-2">First Name</label>
+              <input type="text" name="firstName" id="firstName" required class="border w-full text-base px-2 py-1 focus:outline-none  focus:border-gray-600" placeholder="Enter First Name...">
+              <div><span id="fistNameError"></span></div>
+          </div>
+          <div class="mt-3 w-2/4 ">
+              <label for="lastName" class="block text-base mb-2">Last Name</label>
+              <input type="text" name="lastName" id="lastName" required class="border w-full text-base px-2 py-1 focus:outline-none  focus:border-gray-600" placeholder="Enter Last Name...">
+              <div><span id="lastNameError"></span></div>
+          </div>
+        </div>
+        
+
+        <div class="mt-3">
+            <label for="email" class="block text-base mb-2">Email</label>
+            <input type="text" name="email" id="email" required class="border w-full text-base px-2 py-1 focus:outline-none  focus:border-gray-600" placeholder="Enter Email...">
+            <div><span id="emailError"></span></div>
+        </div>
+        <div>
+            <label for="password" class="block text-base mb-2">Password</label>
+            <input type="password" name="password" id="password" required class="border w-full text-base px-2 py-1 focus:outline-none  focus:border-gray-600" placeholder="Enter Password...">
+             <div><span id="passwordError"></span></div>
+        </div>
+        <div>
+            <label for="confirmPassword" class="block text-base mb-2">Password</label>
+            <input type="password" name="confirmPassword" id="confirmPassword" required class="border w-full text-base px-2 py-1 focus:outline-none  focus:border-gray-600" placeholder="Confirm Password...">
+            <div><span id="confirmPasswordError"></span></div>  
+        </div>
+
+        <div class="flex justify-center mt-5">
+            <span>If you have already Account? <a class="text-indigo-700" onclick="navigateToUserLogin()">Login</a></span>
+        </div>
+        
+        <div class="mt-5">
+            <button type="submit"  class="border-2 border-indigo-700 bg-indigo-700 text-white py-1 w-full rounded-md hover:bg-transparent hover:text-indigo-700 font-semibold">Submit</button>
+        </div>
+
+        <hr class="mt-5 mb-5 border-t-1 border-gray-900">
+        
+       
+    </form>
+
+    <div class="flex justify-center mt-5">
+        <a href="/auth/google/login" class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50 focus:outline-none">
+            <img class="w-5 h-5 mr-2" src="https://www.google.com/favicon.ico" alt="Google logo"> 
+            <span class="text-sm font-medium text-gray-700">Continue with Google</span>
+        </a>
+        </div>
+    </div>
+    
+   </div>
+   <script>
+    function navigateToUserLogin(){
+        window.location.href="/userLogin" ; 
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+       
+          
+           const firstNameInput = document.getElementById("firstName");
+           const lastNameInput  = document.getElementById("lastName");
+           const emailInput = document.getElementById('email'); 
+           const passwordInput = document.getElementById('password');
+           const confirmPasswordInput = document.getElementById("confirmPassword");
+           const firstNameError = document.getElementById("fistNameError");
+           const lastNameError = document.getElementById("lastNameError");
+           const emailError = document.getElementById('emailError');
+           const passwordError = document.getElementById('passwordError');
+           const confirmPasswordError = document.getElementById("confirmPasswordError"); 
+           
+           function showMessage(element, message, isValid) {
+               element.textContent = message;
+               element.style.color = isValid ? 'green' : 'red';
+           }
+
+           function validateFirstName(){
+               const firstName = firstNameInput.value.trim(); 
+               const nameRegex = /^[A-Za-z]+$/;
+               if(nameRegex.test(firstName)){
+                showMessage( firstNameError ,  "Valid" , true) ; 
+               }else{  
+                showMessage( firstNameError , "First Name must be a text" , false);
+               }
+           }
+
+           function validateLastName(){
+               const lastName = lastNameInput.value.trim();
+               const nameRegex = /^[A-Za-z]+$/;
+               if(nameRegex.test(lastName)){
+                showMessage(lastNameError ,  "Valid" , true)
+               }else{  
+                showMessage(lastNameError , "Last Name must be a text" , false);  
+               } 
+           }
+          
+           function validateEmail() {
+               const email = emailInput.value.trim();
+               const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+               if (emailRegex.test(email)) { 
+                   showMessage(emailError, 'Valid email', true);
+               } else {
+                   showMessage(emailError, 'Enter a valid email', false); 
+               }
+           }
+    
+
+           function validatePassword() {
+               const password = passwordInput.value.trim();
+               if (password.length >= 6) {
+                   showMessage(passwordError, 'Valid password', true);
+               } else {
+                   showMessage(passwordError, 'Password must be at least 6 characters', false);
+               }
+           }
+
+           function validateConfirmPassword(){
+              const confirmPassword = confirmPasswordInput.value.trim();
+              if(confirmPassword === passwordInput.value){
+                showMessage(confirmPasswordError , "Valid confirm password" , true);
+              }else{
+                showMessage(confirmPasswordError , "Password and Confirm Password must be equal" , false)
+              }
+           }
+           
+           firstNameInput.addEventListener("keyup" , validateFirstName );
+           lastNameInput.addEventListener("keyup" , validateLastName)
+           emailInput.addEventListener('keyup', validateEmail);
+           passwordInput.addEventListener('keyup', validatePassword);
+           confirmPasswordInput.addEventListener("keyup" , validateConfirmPassword );
+          
+           
+
+           document.getElementById('loginForm').addEventListener('submit', (e) => {
+               validateEmail();
+               validatePassword();
+               validateFirstName();
+               validateLastName();
+               validatePassword();
+               validateConfirmPassword();
+
+               if ( firstNameError.style.color === 'red' || lastNameError.style.color === 'red' || emailError.style.color === "red" || passwordError.style.color === "red" || confirmPasswordError.style.color === "red" ) { 
+                   e.preventDefault();
+               }
+           });
+           });
+   </script>
+   
+</body>
+</html>

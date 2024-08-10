@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wishlist</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+  <!-- Header --> 
+  <%- include("partials/header") %> 
+
+  
+
+<div class="p-5 bg-white" style="min-height: 75vh;">
+
+<!-- Breadcrumbs -->
+<nav class="text-sm" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center">
+      <% breadcrumbs.forEach((crumb, index) => { %>
+        <li class="inline-flex items-center">
+          <% if (index !== 0) { %>
+            <span class="mx-2 text-gray-500">\</span>
+          <% } %>
+          <% if (index === breadcrumbs.length - 1) { %>
+            <span class="text-gray-500"><%= crumb.label %></span>
+          <% } else { %>
+            <a href="<%= crumb.url %>" class="text-gray-700 hover:text-blue-600">
+              <%= crumb.label %>
+            </a>
+          <% } %>
+        </li>
+      <% }); %>
+    </ol>
+  </nav>
+
+    <% if (wishlist.length > 0) { %>
+      <% wishlist.forEach(item => { %>
+        <div class="bg-white shadow-md rounded p-4 mb-4 flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <img class="w-20 h-20 object-cover rounded" src="<%= item.productId.image %>" alt="<%= item.productId.name %>">
+            <div>
+              <div class="text-lg font-semibold"><%= item.productId.name %></div>
+              <div class="text-gray-600"><%= item.productId.price %></div>
+            </div>
+          </div>
+          <div class="flex space-x-2">
+            <button class="bg-green-500 text-white px-4 py-2 rounded" onclick="buyNow('<%= item.productId._id %>')">Buy Now</button>
+            <button class="bg-red-500 text-white px-4 py-2 rounded" onclick="removeFromWishlist('<%= item._id %>')">Remove</button>
+          </div>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <div class="text-center text-gray-500">Your wishlist is empty.</div>
+    <% } %>
+  </div>
+
+  <!-- Footer -->
+  <%- include("partials/footer") %>
+
+  <script>
+    async function buyNow(productId) {
+      // Handle the buy now action
+      alert('Buy Now functionality is not implemented yet.');
+    }
+
+    async function removeFromWishlist(wishlistItemId) {
+      await fetch(`/wishlist/${wishlistItemId}`, { method: 'DELETE' });
+      location.reload();
+    }
+  </script>
+</body>
+</html>

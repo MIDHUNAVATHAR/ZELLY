@@ -1,0 +1,75 @@
+
+      <h1>ADD PRODUCT...</h1>
+      <hr>
+
+      <!-- Add Product Form -->
+      <form action="/admin/addProductPost" method="POST"  enctype="multipart/form-data">    
+        <div class="mb-4">
+          <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+          <input type="text" name="title" id="title" class="mt-1 p-2 border border-gray-300 rounded w-full" required>
+        </div>
+        <div class="mb-4">
+          <label for="titleDescription" class="block text-sm font-medium text-gray-700">Title Description</label>
+          <input type="text" name="titleDescription" id="titleDescription" class="mt-1 p-2 border border-gray-300 rounded w-full" required>
+        </div>
+        <div class="mb-4">
+          <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+          <input type="number" name="price" id="price" class="mt-1 p-2 border border-gray-300 rounded w-full" required>
+        </div>
+        <div class="mb-4">
+          <label for="discountedPrice" class="block text-sm font-medium text-gray-700">Discounted Price</label>
+          <input type="number" name="discountedPrice" id="discountedPrice" class="mt-1 p-2 border border-gray-300 rounded w-full" required>
+        </div>
+        <div class="mb-4">
+          <label for="discountPercentage" class="block text-sm font-medium text-gray-700">Discount Percentage</label>
+          <input type="number" name="discountPercentage" id="discountPercentage" class="mt-1 p-2 border border-gray-300 rounded w-full" required>
+        </div>
+        <div class="mb-4">
+          <label for="sizes" class="block text-sm font-medium text-gray-700">Sizes</label>
+          <input type="text" name="sizes" id="sizes" class="mt-1 p-2 border border-gray-300 rounded w-full" required>
+        </div>
+        <div class="mb-4">
+          <label for="productDescription" class="block text-sm font-medium text-gray-700">Product Description</label>
+          <textarea name="productDescription" id="productDescription" class="mt-1 p-2 border border-gray-300 rounded w-full" required></textarea>
+        </div>
+        <div class="mb-4">
+          <label for="highlights" class="block text-sm font-medium text-gray-700">Highlights</label>
+          <textarea name="highlights" id="highlights" class="mt-1 p-2 border border-gray-300 rounded w-full" required></textarea>
+        </div>
+        <div class="mb-4">
+          <label for="details" class="block text-sm font-medium text-gray-700">Details</label>
+          <textarea name="details" id="details" class="mt-1 p-2 border border-gray-300 rounded w-full" required></textarea>
+        </div>
+        <div class="mb-4"> 
+          <label for="genderCategory" class="block text-sm font-medium text-gray-700">Gender Category</label>
+          <select name="genderCategory" id="genderCategory" class="mt-1 p-2 border border-gray-300 rounded w-full">
+            <% genderCategories.forEach(gender => { %>
+              <option value="<%= gender._id %>"><%= gender.name %></option> 
+            <% }) %>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label for="productCategory" class="block text-sm font-medium text-gray-700">Product Category</label>
+          <select name="productCategory" id="productCategory" class="mt-1 p-2 border border-gray-300 rounded w-full">
+            <% productCategories.forEach(category => { %>
+              <option value="<%= category._id %>"><%= category.name %> - <%= category.genderCategory.name %></option>
+            <% }) %>
+          </select>
+        </div> 
+        <div class="mb-4">
+          <label for="productSubCategory" class="block text-sm font-medium text-gray-700">Product Sub Category</label>
+          <select name="productSubCategory" id="productSubCategory" class="mt-1 p-2 border border-gray-300 rounded w-full">
+            <% productSubCategories.forEach(subCategory => { %>
+              <option value="<%= subCategory._id %>"><%= subCategory.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="mb-4"> 
+          <label for="images" class="block text-sm font-medium text-gray-700">Product Images</label>
+          <input type="file" name="productImages" id="images" class="mt-1 p-2 border border-gray-300 rounded w-full" multiple required>
+          <label class="text-red"> <%= message %></label>
+        </div>
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Add Product</button>
+      </form>
+    </div> 
+  </div>

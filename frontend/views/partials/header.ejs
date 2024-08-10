@@ -1,0 +1,160 @@
+<header class="bg-gray-100">
+    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center">
+
+          <a href="/" class="flex items-center">
+            <div>
+              <% if (logo) { %>
+                <img src="<%= logo.image.data %>" alt="Logo" style="width: 50px; height: 50px; object-fit: cover;">
+              <% } else { %>
+                <p>No logo available</p>
+              <% } %>
+            </div>
+          </a>
+          
+          <nav class="hidden md:flex ml-10 space-x-4">
+            <% if (genderCategory && genderCategory.length > 0) { %>
+              <% genderCategory.forEach(category => { %>
+                <a href="#" class="category-button text-black hover:text-gray-500" data-category="<%= category._id %>"><%= category.name %></a>
+              <% }); %>
+            <% } else { %>
+              <p class="text-gray-500">No categories available</p> 
+            <% } %>
+          </nav>
+        </div>
+  
+        <div class="flex items-center space-x-4">
+          <!-- Search Input -->
+          <div class="hidden md:block relative mr-10">
+            <input id="search-input" type="text" placeholder="Search..." class="w-64 pl-4 pr-10 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button id="search-button" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </button>
+          </div>
+  
+          <!-- Icons visible in both mobile and desktop views -->
+          <div class="flex items-center space-x-4">
+            <!-- Profile Dropdown for Desktop -->
+            <div class="relative hidden md:flex items-center">
+                <button id="profile-menu-button" class="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
+                    <% if (user) { %>
+                      <img src="<%= user.profileImageUrl %>" class="w-8 h-8 rounded-full" alt="Profile"> 
+                    <% } else { %>
+                        <svg class="w-8 h-8 text-gray-600 hover:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 0c-4.97 0-9 4.03-9 9v1h18v-1c0-4.97-4.03-9-9-9z"></path>
+                          </svg>
+                    <% } %>
+                  </button>
+              <div id="profile-menu" class="absolute right-0 top-full mt-2 w-48 bg-white shadow-lg rounded-lg hidden z-20">
+                <a href="/userProfile" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">View Profile</a>
+                <a href="/userLogin" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Login</a>
+                <a href="/userLogout" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>
+              </div>
+            </div>
+  
+            <!-- Mobile View Profile Dropdown --> 
+            <div class="relative md:hidden">
+              <button id="mobile-profile-menu-button" class="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
+                <img src="images/logos/profile-icon.png" class="w-8 h-8 rounded-full" alt="Profile">
+              </button>
+              <div id="mobile-profile-menu" class="absolute right-0 top-full mt-2 w-48 bg-white shadow-lg rounded-lg hidden">
+                <a href="/profile" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">View Profile</a> 
+                <a href="/userLogin" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Login</a>
+                <a href="/userLogout" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>  
+              </div>
+            </div>
+  
+            <a href="/wishlist" class="text-gray-600 hover:text-gray-900">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#FF0000"/>
+              </svg>
+            </a>
+            <a href="/cart" class="text-gray-600 hover:text-gray-900">  
+              <img src="images/logos/—Pngtree—shopping cart icon_4460491.png" class="w-10" alt="Cart">
+            </a> 
+            <button id="mobile-menu-button" class="md:hidden flex items-center"> 
+              <svg class="h-6 w-6 text-gray-500 hover:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Mobile Dropdown -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg">
+      <div class="p-4">
+        <input type="text" placeholder="Search..." class="w-full px-4 py-2 border rounded-lg">
+      </div>
+      <nav class="p-4">
+        <% if (genderCategory && genderCategory.length > 0) { %>
+          <% genderCategory.forEach(category => { %>
+            <a href="#" class="block py-2 text-gray-500 hover:text-gray-900" data-category="<%= category._id %>"><%= category.name %></a>
+          <% }); %>
+        <% } else { %>
+          <p class="text-gray-500">No categories available</p>
+        <% } %>
+      </nav>
+    </div>
+  </header>
+  <div id="category-content">
+    <!-- Dynamic content will be loaded here -->
+  </div>
+
+  
+  <!-- JavaScript to toggle the profile menu and mobile menu -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const profileButton = document.getElementById('profile-menu-button');
+      const profileMenu = document.getElementById('profile-menu');
+      const mobileProfileButton = document.getElementById('mobile-profile-menu-button');
+      const mobileProfileMenu = document.getElementById('mobile-profile-menu');
+    
+      profileButton.addEventListener('click', () => {
+        profileMenu.classList.toggle('hidden');
+      });
+  
+      mobileProfileButton.addEventListener('click', () => {
+        mobileProfileMenu.classList.toggle('hidden');
+      });
+  
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+    
+      mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+    });
+
+        
+ document.addEventListener('DOMContentLoaded', function() {
+    const categoryButtons = document.querySelectorAll('.category-button');
+    const categoryContent = document.getElementById('category-content'); 
+  
+
+    categoryButtons.forEach(button => {
+     
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const categoryId = event.target.dataset.category; 
+          
+           
+            fetch(`/categories/${categoryId}`)        //sends a GET request to the specified URL.
+                .then(response => response.text())    //converts the response to text. Use response.json() if the response is JSON.
+                .then(html => {
+                    categoryContent.innerHTML = html; // updates the inner HTML of the categoryContent element with the fetched content. 
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    });
+    
+});
+
+  </script>
+  
+  
+  
