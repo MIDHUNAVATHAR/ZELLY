@@ -76,7 +76,7 @@ router.get('/categories/:id', productPage.categorySection);
 
 
 //get product page
-router.get("/product" ,productPage.product);
+router.get("/product/:id" ,productPage.product);
 
 
 

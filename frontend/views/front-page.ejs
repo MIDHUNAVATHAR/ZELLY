@@ -12,10 +12,10 @@
     
   </style>
  
-  <script defer  src="scripts/bannerImgChange.js"> </script> 
+  <script defer  src="scripts/bannerImgChange.js"> </script>  
 
 </head>
-<body class="bg-white">
+<body class="bg-yellow-100">
 
   <!-- Header --> 
   <%- include("partials/header") %> 
@@ -30,7 +30,12 @@
     <div class="relative bg-red-200 banner h-96"> 
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div class="absolute inset-0">
-          <img id="banner-image" src="<%= banners[0].image.data %>" alt="Banner Image" class="w-full h-full object-cover">
+          <% if (banners && banners.length > 0 && banners[0].image && banners[0].image.data) { %>
+            <img id="banner-image" src="<%= banners[0].image.data %>" alt="Banner Image" class="w-full h-full object-cover">
+        <% } else { %>
+            <p>No banner images available</p>
+        <% } %>
+         
       </div>
         <div class="absolute inset-0 bg-black opacity-50"></div>
         <div class="relative z-10 flex items-center justify-center h-full text-center">
@@ -48,389 +53,31 @@
       </div>
     </div>
     
+   
 
-  
-    <!-- Products Section -->
-    <section class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-
-      <h2 class="text-2xl font-extrabold text-gray-900">Men's Kurta</h2>
-      <div class="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Product Card -->
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Majestic Man</h3>
-            <p class="text-gray-600">Men Printed Pure Cotton Straight Kurta</p>
+    <section class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8"> 
+      <% subCategoryProducts.forEach(({ subCategory, products }) => { %>
+        <% if (products.length > 0  ) { %>
+          <div class="mb-12 mt-5" >
+            <h2 class="text-2xl font-extrabold text-gray-900 mt-5"> <%= subCategory.name %></h2>
+           
+            <div class="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-6">
+              <% products.forEach(product => { %>
+                <a href="/product/<%= product._id %>">
+                <div class="bg-white rounded-lg shadow-md p-4  max-h-96 flex flex-col" > 
+                  <img src="<%= product.images[0] %>" alt="<%= product.title %>" class="w-full h-44 object-cover">
+                  <h3 class="text-lg font-semibold mt-4"><%= product.title %></h3>
+                  <p class="text-gray-600"><%= product.titleDescription %></p>
+                  <p class="text-lg font-bold">$<%= product.price %></p>
+                </div>
+                </a>
+              <% }) %>  
+            </div>
           </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Majestic Man</h3>
-            <p class="text-gray-600">Men Printed Pure Cotton Straight Kurta</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Majestic Man</h3>
-            <p class="text-gray-600">Men Printed Pure Cotton Straight Kurta</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Majestic Man</h3>
-            <p class="text-gray-600">Men Printed Pure Cotton Straight Kurta</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Majestic Man</h3>
-            <p class="text-gray-600">Men Printed Pure Cotton Straight Kurta</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Majestic Man</h3>
-            <p class="text-gray-600">Men Printed Pure Cotton Straight Kurta</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Majestic Man</h3>
-            <p class="text-gray-600">Men Printed Pure Cotton Straight Kurta</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Majestic Man</h3>
-            <p class="text-gray-600">Men Printed Pure Cotton Straight Kurta</p>
-          </div>
-        </div>
-        <!-- Repeat for other products... -->
-      </div>
-      
-      <!-- Add other sections like Men's Shoes, Lehenga Cholis similarly... -->
-      <h2 class="text-2xl font-extrabold text-gray-900 mt-8">Men's Shoes</h2>
-      <div class="mt-6 grid grid-cols-2  lg:grid-cols-4 gap-6">
-        <!-- Product Card -->
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <!-- Repeat for other products... -->
-      </div>
-
-      <!-- Add other sections like Men's Shoes, Lehenga Cholis similarly... -->
-      <h2 class="text-2xl font-extrabold text-gray-900 mt-8">Lahenga Cholis</h2>
-      <div class="mt-6 grid grid-cols-2  lg:grid-cols-4 gap-6">
-        <!-- Product Card -->
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <!-- Repeat for other products... -->
-      </div>
-
-      <!-- Add other sections like Men's Shoes, Lehenga Cholis similarly... -->
-      <h2 class="text-2xl font-extrabold text-gray-900 mt-8">Saree</h2>
-      <div class="mt-6 grid grid-cols-2  lg:grid-cols-4 gap-6">
-        <!-- Product Card -->
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <!-- Repeat for other products... -->
-      </div>
-
-      <!-- Add other sections like Men's Shoes, Lehenga Cholis similarly... -->
-      <h2 class="text-2xl font-extrabold text-gray-900 mt-8">Women's Gowns</h2>
-      <div class="mt-6 grid grid-cols-2  lg:grid-cols-4 gap-6">
-        <!-- Product Card -->
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <!-- Repeat for other products... -->
-      </div>
-
-      <!-- Add other sections like Men's Shoes, Lehenga Cholis similarly... -->
-      <h2 class="text-2xl font-extrabold text-gray-900 mt-8">Women's Kurtas</h2>
-      <div class="mt-6 grid grid-cols-2  lg:grid-cols-4 gap-6">
-        <!-- Product Card -->
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img src="/path/to/image.jpg" alt="Product Image" class="w-full h-56 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-900">Abros</h3>
-            <p class="text-gray-600">ASG1516N Running Shoes For Men</p>
-          </div>
-        </div>
-        <!-- Repeat for other products... -->
-      </div>
-
+        <% } %>
+      <% }) %>
     </section>
+ 
   </main>
 
   <!-- Footer -->

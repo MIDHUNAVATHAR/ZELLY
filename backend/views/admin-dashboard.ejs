@@ -17,11 +17,11 @@
   </style>
 
     
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>  
 
 </head>
 <body class="flex h-screen">
-  <!-- Sidebar -->
+  <!-- Sidebar --> 
   <div class="sidebar bg-gray-800 text-white h-full flex flex-col">
     <div class="p-4 text-2xl font-bold">
       ZELLY
@@ -42,6 +42,9 @@
         </li>
         <li class="mb-2">
           <a href="/admin/addProduct" class="block p-2 hover:bg-white hover:text-black  rounded">Add Products</a>
+        </li>
+        <li class="mb-2">
+          <a href="/admin/listProduct" class="block p-2 hover:bg-white hover:text-black  rounded">List Products</a>
         </li>
         <li class="mb-2">
           <a href="#" class="block p-2 hover:bg-white hover:text-black rounded">Orders</a>
@@ -71,7 +74,7 @@
     </header>
 
     <!-- Dynamic Content Area -->
-    <main id="content" class="flex-1 p-4 overflow-y-auto bg-gray-100">
+    <main id="content" class="flex-1 p-4 overflow-y-auto bg-green-300">
       <!-- Dynamic content will be loaded here -->
       <%- include(partial) %>
     </main>

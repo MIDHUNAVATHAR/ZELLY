@@ -1,0 +1,206 @@
+
+<h1>  Edit PRODUCT...</h1>
+<hr>
+
+<!-- Edit Product Form -->
+<form action="/admin/editProductPost/<%= product._id %>" method="POST"  enctype="multipart/form-data" id="form">    
+  <div class="mb-4">
+    <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+    <input type="text" name="title" value="<%=product.title %>" id="title" class="mt-1 p-2 border border-gray-300 rounded w-full" >
+  </div>
+  <div class="mb-4">
+    <label for="titleDescription" class="block text-sm font-medium text-gray-700">Title Description</label>
+    <input type="text" name="titleDescription" value="<%=product.titleDescription %>" id="titleDescription" class="mt-1 p-2 border border-gray-300 rounded w-full" >
+  </div>
+  <div class="mb-4">
+    <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+    <input type="number" name="price" id="price" value="<%=product.price %>" class="mt-1 p-2 border border-gray-300 rounded w-full" >
+  </div>
+  <div class="mb-4">
+    <label for="discountedPrice" class="block text-sm font-medium text-gray-700">Discounted Price</label> 
+    <input type="number" name="discountedPrice" id="discountedPrice" value="<%=product.discountedPrice%>" class="mt-1 p-2 border border-gray-300 rounded w-full" >
+  </div>
+  <div class="mb-4">
+    <label for="discountPercentage" class="block text-sm font-medium text-gray-700">Discount Percentage</label>
+    <input type="number" name="discountPercentage" id="discountPercentage" value="<%=product.discountedPercentage %>" class="mt-1 p-2 border border-gray-300 rounded w-full" >
+  </div>
+  <div class="mb-4">
+    <label for="sizes" class="block text-sm font-medium text-gray-700">Sizes</label>
+    <input type="text" name="sizes" id="sizes" value="<%=product.sizes %>" class="mt-1 p-2 border border-gray-300 rounded w-full">
+  </div>
+  <div class="mb-4">
+    <label for="sizes" class="block text-sm font-medium text-gray-700">Total Stocks</label>
+    <input type="text" name="totalStocks" id="totalStocks" value="<%=product.totalStocks %>" class="mt-1 p-2 border border-gray-300 rounded w-full">
+  </div>
+  <div class="mb-4">
+    <label for="productDescription" class="block text-sm font-medium text-gray-700">Product Description</label>
+    <textarea name="productDescription" id="productDescription"  class="mt-1 p-2 border border-gray-300 rounded w-full"> <%=product.productDescription %> </textarea>
+  </div>
+  <div class="mb-4">
+    <label for="highlights" class="block text-sm font-medium text-gray-700">Highlights</label>
+    <textarea name="highlights" id="highlights"  class="mt-1 p-2 border border-gray-300 rounded w-full" > <%=product.highlights %> </textarea>
+  </div>
+  <div class="mb-4">
+    <label for="details" class="block text-sm font-medium text-gray-700">Details</label>
+    <textarea name="details" id="details"  class="mt-1 p-2 border border-gray-300 rounded w-full" > <%=product.details%> </textarea>
+  </div>
+  <div class="mb-4"> 
+    <label for="genderCategory" class="block text-sm font-medium text-gray-700">Gender Category</label>
+    <select name="genderCategory" id="genderCategory"  class="mt-1 p-2 border border-gray-300 rounded w-full">
+      <% genderCategories.forEach(gender => { %>
+        <option  value="<%= gender._id  %>" <%= gender._id.toString() === product.genderCategory._id.toString() ? 'selected' : '' %> ><%= gender.name %> </option>  
+      <% }) %>
+    </select>
+  </div>
+  <div class="mb-4">
+    <label for="productCategory" class="block text-sm font-medium text-gray-700">Product Category</label>
+    <select name="productCategory" id="productCategory" class="mt-1 p-2 border border-gray-300 rounded w-full">
+      <% productCategories.forEach(category => { %>
+        <option value="<%= category._id %>" <%= category._id.toString() === product.productCategory._id.toString() ? 'selected' : '' %> ><%= category.name %> - <%= category.genderCategory.name %></option>
+      <% }) %>
+    </select>
+  </div> 
+  <div class="mb-4">
+    <label for="productSubCategory" class="block text-sm font-medium text-gray-700">Product Sub Category</label>
+    <select name="productSubCategory" id="productSubCategory" class="mt-1 p-2 border border-gray-300 rounded w-full">
+      <% productSubCategories.forEach(subCategory => { %>
+        <option value="<%= subCategory._id %>"  <%= product.productSubCategory.some(ps => ps._id.toString() === subCategory._id.toString()) ? 'selected' : ''%>  > <%= subCategory.name %></option>
+      <% }) %>
+    </select>
+  </div>
+
+  <h2 class="text-xl font-bold mb-4">Uploaded Images</h2>
+  <div class="grid grid-cols-10 gap-4"> 
+    <% if (product.images.length > 0) { %>  
+       
+      <% product.images.forEach(l => { %>
+      
+        <div class="relative">
+          <img src="<%= l %>" alt="image" >     
+          <button class="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600" onclick="deleteImage('<%= l %>')">X</button>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <p>No images available</p>
+    <% } %> 
+  </div>
+
+  <div class="mb-4">  
+    <label for="images" class="block text-sm font-medium text-gray-700">Product Images</label>
+    <input type="file" name="productImages" id="productImages" class="mt-1 p-2 border border-gray-300 rounded w-full">
+    <label class="productImgErr text-red-500"></label>
+  </div> 
+  <!-- cropping contiainer -->
+<div id="cropperContainer" style="display: none; max-width: 500px; margin-bottom: 20px;"> 
+  <img id="image" src="" alt="Image for cropping" style="max-width: 100%;">  
+</div>
+<!--cropping container--> 
+
+ <!-- Cropped images preview container -->
+ <div id="croppedImagesContainer" class="mb-4">
+ <h3 class="text-sm font-medium text-gray-700">Cropped Images</h3>
+ <div id="croppedImages" class="flex flex-wrap"></div>
+ </div>
+
+<button type="button" id="cropButton" style="display: none;" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Crop & Upload</button>
+  <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save Changes</button> 
+</form>
+</div> 
+</div> 
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+<script>
+
+let cropper;
+  const inputImage = document.getElementById('productImages');
+  const image = document.getElementById('image');  
+  const cropButton = document.getElementById('cropButton');
+  const cropperContainer = document.getElementById('cropperContainer');
+  const croppedImagesContainer = document.getElementById('croppedImages');
+  let croppedImagesData = [];
+
+  inputImage.addEventListener('change', (event) => {
+      const files = event.target.files;
+      if (files && files.length > 0) {
+          const file = files[0];
+          const reader = new FileReader();
+          reader.onload = (e) => {
+              image.src = e.target.result;
+              cropperContainer.style.display = 'block';
+              cropButton.style.display = 'inline-block';
+              if (cropper) {
+                  cropper.destroy();
+              }
+              cropper = new Cropper(image, {
+                  aspectRatio: NaN,
+                  viewMode: 1,
+                  dragMode: 'move',
+                  cropBoxMovable: true,
+                  cropBoxResizable: true,
+                  minCropBoxWidth: 50,
+                  minCropBoxHeight: 50,
+              });
+          };
+          reader.readAsDataURL(file);
+      }
+  });
+
+  cropButton.addEventListener('click', () => {
+      if (!cropper) {
+          alert('Please select an image first.');
+          return;
+      }
+
+      cropper.getCroppedCanvas().toBlob((blob) => {
+          croppedImagesData.push(blob);
+
+          const url = URL.createObjectURL(blob);
+          const imgElement = document.createElement('img');
+          imgElement.src = url;
+          imgElement.style.maxWidth = '100px';
+          imgElement.style.margin = '10px';
+          croppedImagesContainer.appendChild(imgElement) ;
+
+          cropperContainer.style.display = 'none';
+          cropButton.style.display = 'none'; 
+          inputImage.value = '';
+          inputImage.disabled = false;
+      }, 'image/png');
+  });
+
+  
+
+  document.getElementById('form').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the default form submission behavior 
+
+    const formData = new FormData(this);
+    formData.delete('productImages'); // Remove the default file input field data
+
+    // Append the cropped images to the form data
+    croppedImagesData.forEach((blob, index) => {
+        formData.append(`productImages`, blob, `cropped_${index}.png`); 
+    });
+
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+    }).then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            alert('Product updated successfully!');
+            // Optionally, you can redirect or refresh the page here
+        } else if (data.error) {
+            alert(`Error: ${data.error}`);
+        }
+    }).catch(error => {
+        console.error('Error:', error);
+        alert('Failed to update product. Please try again later.');
+    });
+});
+
+
+  
+
+</script> 

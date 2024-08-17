@@ -1,0 +1,74 @@
+<div class="container mx-auto p-6 bg-white rounded-lg shadow-lg">
+    <h1 class="text-2xl font-bold mb-6">Product List</h1>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-gray-100 rounded-lg">
+            <thead>
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Product Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Images</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Total Stocks</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Edit</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Block</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">  
+                <% products.forEach(product => { %> 
+                <tr>
+                    <!-- Product Name -->
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900"><%= product.title %></div>
+                    </td>
+
+                    <!-- Product Images -->
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex space-x-2">
+                            <% product.images.forEach((image, index) => { %> 
+                            <img src="<%= image %>" alt="Image <%= index + 1 %>" class="w-10 h-10 rounded-full">
+                            <% }) %>
+                        </div>
+                    </td>
+
+                    <!-- Total Stocks -->
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900"><%= product.totalStocks %></div>
+                    </td>
+
+                    <!-- Edit Button -->
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="/admin/editProduct/<%= product._id %>" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                            Edit
+                        </a>
+                    </td>
+
+                    <!-- Block Button -->
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <button onclick="blockProduct('<%= product._id %>')" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+                            Block
+                        </button>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+    <!-- Pagination -->
+    <div class="mt-4">
+        <nav class="flex justify-center">
+            <ul class="inline-flex items-center -space-x-px">
+                <li>
+                    <a href="#" class="py-2 px-3 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700">1</a>
+                </li>
+                <!-- Add more pagination buttons as needed -->
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<script>
+    function blockProduct(productId) {
+        if (confirm('Are you sure you want to block this product?')) {
+            // Implement block functionality
+            console.log('Product blocked:', productId);
+        }
+    }
+</script>

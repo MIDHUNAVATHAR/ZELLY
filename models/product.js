@@ -6,15 +6,17 @@ const productSchema = new Schema({
   titleDescription: { type: String, required: true },
   price: { type: Number, required: true },
   discountedPrice: { type: Number },
-  discountedPercentage: { type: Number },
+  discountedPercentage: { type: Number },          
   sizes: { type: [String], required: true },
   productDescription: { type: String, required: true },
   highlights: { type: String },
   details: { type: String },
+  totalStocks : {type : Number},
   genderCategory: { type: Schema.Types.ObjectId, ref: 'GenderCategory', required: true },
-  productCategory: { type: Schema.Types.ObjectId, ref: 'ProductCategory', required: true },
+  productCategory: { type: Schema.Types.ObjectId, ref: 'ProductCategory', required: true } , 
   productSubCategory: [{ type: Schema.Types.ObjectId, ref: 'ProductSubCategory', required: true }] ,  
-  images: { type: [String] } , 
+  images: { type: [String] } ,  
+  softDelete : {type : Boolean , default : false } /
 });  
 
 module.exports = mongoose.model('Product', productSchema); 

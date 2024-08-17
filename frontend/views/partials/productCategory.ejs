@@ -1,6 +1,6 @@
 <div id="product-category" class="w-full bg-white">
     <div class="max-w-full ">
-      <div class="grid grid-cols-5  ">
+      <div class="grid grid-cols-5  ">  
         <% Object.keys(categories).forEach(categoryName => { %>
           <div class="bg-white px-5 overflow-hidden">
             <div class=" p-4">
@@ -8,9 +8,9 @@
             </div>
             <div class="p-4">
               <ul class="space-y-2">
-                <% categories[categoryName].forEach(subcategoryName => { %>
+                <% categories[categoryName].forEach(subcategoryName => { %>  
                   <li class="text-gray-500 hover:text-blue-500 cursor-pointer"> 
-                    <%= subcategoryName %>
+                    <%= subcategoryName %> 
                   </li>
                 <% }) %>
               </ul>
@@ -21,3 +21,4 @@
     </div>
   </div>
   
+ 

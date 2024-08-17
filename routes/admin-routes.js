@@ -55,10 +55,16 @@ router.get("/dashboard" , adminDash.dashboard) ;
 router.get("/frontPage",adminDash.frontPage);
 
 //post logo
-router.post("/uploadLogo" , adminDash.frontPageLogo);
+router.post("/uploadLogo" , adminDash.frontPageLogo)
 
 //post banner
 router.post("/uploadBanner", adminDash.frontPageBanner);
+
+//update logo date 
+router.post("/updateLogoDate", adminDash.updatelogoDate) ;  
+
+//update banner date - for selection
+router.post("/updateBannerDate" , adminDash.updateBannerDate);
 
 //get customers 
 router.get("/customers" , adminDash.customers) ; 
@@ -85,13 +91,57 @@ router.post("/addGenderCategory", adminDash.addGenderCategory);
 router.post("/addProductCategory" , adminDash.addProductCategory); 
 
 //post product sub category
-router.post("/addProductSubCategory" , adminDash.addProductSubCategory);
+router.post("/addProductSubCategory" , adminDash.addProductSubCategory); 
+
+//post gendercategroy softdelete true 
+router.post("/deleteGenderCategory" , adminDash.softDeleteGenderCat);   
+
+//post gendercategory softdelete false
+router.post("/softDeleteGenderCate" , adminDash.softDeleteGenderCate);
+
+//post product categroy softdelete true
+router.post("/deleteProductCategory" , adminDash.deleteProductCategory); 
+
+//post product categroy softdelete false
+router.post("/softDeleteProductCate" , adminDash.softDeleteProductCate);
+
+//post product subcategory softdelete true
+router.post("/deleteProductSubCategory" , adminDash.deleteProductSubCategory );
+
+//post productsubcategory soft delete false  
+router.post("/softDeleteProductSubCate" , adminDash.softDeleteProductSubCate) ;  
+
+//delete images - logo , banner
+router.delete("/deleteImage/:type/:id" ,adminDash.deleteImages) ; 
 
 //get add product page 
-router.get("/addProduct" , adminProduct.addProduct ); 
+router.get("/addProduct" , adminProduct.addProduct ) ; 
 
 //post add product
-router.post("/addProductPost" , adminProduct.addProductPost );  
+router.post("/addProductPost" , adminProduct.addProductPost);  
+
+//get product list  
+router.get("/listProduct" , adminProduct.listProducts);
+
+//post product image delete
+router.get("/") ; 
+
+//get edit product
+router.get("/editProduct/:id" ,adminProduct.editProduct);
+
+//post edit product
+router.post("/editProductPost/:id", adminProduct.editProductPost);
+
+
+
+
+
+
+
+
+
+
+
 
 
 

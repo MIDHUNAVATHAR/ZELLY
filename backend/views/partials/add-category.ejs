@@ -6,14 +6,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Category Management</title>
 </head>
-<body>
+<body >
       <form action="/admin/addGenderCategory" method="POST">
         <div class="mb-4">
           <label for="genderCategory" class="block text-lg font-lg text-gray-900">Add Gender Category</label>
-          <input type="text" name="name" id="genderCategory" class="mt-1 p-2 border border-gray-300 rounded w-full">
+          <input type="text" name="name" id="genderCategory" class="mt-1 p-2 border border-gray-300 rounded w-full"> 
           <button type="submit" class="bg-blue-500 text-white px-4 py-2 mt-2 rounded"> Add </button> 
         </div>
       </form> 
+      
+      <!-- added gender categories -->
+      <div class="w-full bg-white p-6 rounded-lg shadow-lg relative">
+        <h2 class="text-xl font-bold mb-4">Gender Categories</h2>
+        <select class="absolute top-0 right-0 mt-2 mr-2 p-2 border rounded" onchange="removeSoftdeleteGenderCat(this.value)">
+          <option value=""> Add deleted categories </option>
+          <% genderCategories.forEach(gender => { %>
+            <% if (gender.softDelete) { %>
+            <option value="<%= gender._id %>"><%= gender.name %></option>  
+            <% } %>
+          <% }) %>     
+      </select>
+        <ul>
+            <% genderCategories.forEach(category => { %> 
+                <!-- Check if softDelete is false -->
+                <% if (!category.softDelete) { %> 
+                    <li class="relative p-2 border-b border-gray-300">
+                        <span class="text-lg font-medium"><%= category.name %> </span> 
+                        <button class="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600" onclick="deleteGenderCategory('<%= category._id %>')">X</button>
+                    </li>
+                <% } %>
+            <% }) %>
+        </ul>
+    </div>
+
+    <hr class="mt-10 mb-5 ">
       
       <!-- Add Product Category Form -->
       <form action="/admin/addProductCategory" method="POST">  
@@ -23,12 +49,42 @@
           <label for="genderCategory" class="block text-sm font-medium text-gray-700">Select Gender Category</label>   
           <select name="genderCategory" class="mt-1 p-2 border border-gray-300 rounded w-full">
             <% genderCategories.forEach(gender => { %>
+              <% if (!gender.softDelete){ %>
               <option value="<%= gender._id %>"><%= gender.name %></option>
+              <% } %>
             <% }) %>
           </select>
-          <button type="submit" class="bg-blue-500 text-white px-4 py-2 mt-2 rounded">Add</button>
+          <button type="submit" class="bg-blue-500 text-white px-4 py-2 mt-2 rounded">Add</button> 
         </div>
       </form>
+
+      <!-- added product categories categories -->
+      <div class="w-full bg-white p-6 rounded-lg shadow-lg relative"> 
+        <h2 class="text-xl font-bold mb-4">Product Categories</h2> 
+        <select class="absolute top-0 right-0 mt-2 mr-2 p-2 border rounded" onchange="removeSoftdeleteProductCat(this.value)"> 
+          <option value=""> Add deleted categories </option>
+          <% productCategories.forEach(product => { %>
+            <% if (product.softDelete) { %>
+            <option value="<%= product._id %>"><%= product.name %>  - <%= product.genderCategory.name %></option>
+            <% } %>
+          <% }) %>
+      </select>
+        <ul>
+            <% productCategories.forEach(product => { %>
+                <!-- Check if softDelete is false -->
+                <% if (!product.softDelete ) { %>
+                    <li class="relative p-2 border-b border-gray-300">
+                        <span class="text-lg font-medium"><%= product.name %> - <%= product.genderCategory.name %></span>
+                        <button class="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600" onclick="deleteProductCategory('<%= product._id %>')">X</button>
+                    </li>
+                <% } %>
+            <% }) %>
+        </ul>
+      </div> 
+
+
+      <hr class="mt-10 mb-5">
+
       
       <!-- Add Product Sub Category Form -->
       <form action="/admin/addProductSubCategory" method="POST">
@@ -38,17 +94,156 @@
           <label for="genderCategory" class="block text-sm font-medium text-gray-700">Select Gender Category</label>
           <select name="genderCategory" class="mt-1 p-2 border border-gray-300 rounded w-full">
             <% genderCategories.forEach(gender => { %>
+              <% if (!gender.softDelete){ %>
               <option value="<%= gender._id %>"><%= gender.name %></option> 
+              <%} %>
             <% }) %>
           </select>
           <label for="productCategory" class="block text-sm font-medium text-gray-700">Select Product Category</label> 
           <select name="productCategory" class="mt-1 p-2 border border-gray-300 rounded w-full">
             <% productCategories.forEach(category => { %>
+              
+              <% if (!category.softDelete){ %>
               <option value="<%= category._id %>"><%= category.name %> - <%= category.genderCategory.name %></option>
-            <% }) %>
+              <% } %>
+
+          <% }) %>
           </select>
           <button type="submit" class="bg-blue-500 text-white px-4 py-2 mt-2 rounded">Add</button>
         </div>
       </form>
+
+      <!-- added product sub categories --> 
+      <div class="w-full bg-white p-6 rounded-lg shadow-lg relative">  
+        <h2 class="text-xl font-bold mb-4">Product Subcategories</h2> 
+        <select class="absolute top-0 right-0 mt-2 mr-2 p-2 border rounded" onchange="removeSoftdeleteSubCat(this.value)">
+          <option value=""> Add deleted categories </option>
+          <% productSubCategories.forEach(category => { %>
+            <% if (category.softDelete) { %>  
+            <option value="<%= category._id %>"><%= category.name %>  - <%= category.genderCategory.name %></option>
+            <% } %>
+          <% }) %>
+      </select> 
+        <ul>
+            <% productSubCategories.forEach(category => { %>
+                <!-- Check if softDelete is false -->
+                <% if (!category.softDelete ) { %>
+                    <li class="relative p-2 border-b border-gray-300">
+                        <span class="text-lg font-medium"><%= category.name %> - <%=category.productCategory.name %> - <%= category.genderCategory.name %></span>
+                        <button class="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600" onclick="deleteProductSubCategory('<%= category._id %>')">X</button>
+                    </li>
+                <% } %>
+            <% }) %>
+        </ul>
+      </div> 
+
+
+      <script>
+         
+        //softdelete gender category 
+        function deleteGenderCategory(genderId){
+          fetch("/admin/deleteGenderCategory" , {
+            method : "POST" ,
+            headers : { "Content-Type" : "application/json" }, 
+            body : JSON.stringify ({genderId})
+          } ).then(Response => Response.json())
+          .then(data => {
+            if(data.success){
+              alert("Gender category deleted");
+              location.reload();
+            }else{
+              alert("Failed to delete gender category");
+            }
+          }) 
+        }
+
+        //change softdelete gendercatery
+        function removeSoftdeleteGenderCat(genderId){
+          fetch("/admin/softDeleteGenderCate" , {
+            method : "POST" ,
+            headers : { "Content-Type" : "application/json" }, 
+            body : JSON.stringify ({genderId})
+          } ).then(Response => Response.json())
+          .then(data => {
+            if(data.success){
+              alert("Gender category softdelte removed");
+              location.reload();
+            }else{
+              alert("Failed to remove softdelete");
+            }
+          }) 
+        }
+         
+      
+      //soft delete product category
+      function deleteProductCategory(productId){ 
+        fetch("/admin/deleteProductCategory" , {
+            method : "POST" ,
+            headers : { "Content-Type" : "application/json" }, 
+            body : JSON.stringify ({productId})
+          } ).then(Response => Response.json())
+          .then(data => {
+            if(data.success){
+              alert("Product category deleted");
+              location.reload();
+            }else{
+              alert("Failed to delete product category");
+            }
+          }) 
+        }
+
+      //change softdelete product catery
+      function removeSoftdeleteProductCat(productId){
+          fetch("/admin/softDeleteProductCate" , {
+            method : "POST" ,
+            headers : { "Content-Type" : "application/json" }, 
+            body : JSON.stringify ({productId})
+          } ).then(Response => Response.json()) 
+          .then(data => {
+            if(data.success){
+              alert("Product category softdelete removed") ;  
+              location.reload();
+            }else{
+              alert("Failed to remove softdelete");
+            }
+          }) 
+        }
+      
+
+      //soft delete product category
+      function deleteProductSubCategory(prosubId){  
+        fetch("/admin/deleteProductSubCategory" , {
+            method : "POST" ,
+            headers : { "Content-Type" : "application/json" } , 
+            body : JSON.stringify ({prosubId}) 
+          } ).then(Response => Response.json())
+          .then(data => {
+            if(data.success){
+              alert("Product subcategory deleted");
+              location.reload();
+            }else{
+              alert("Failed to delete productsub category"); 
+            }
+          }) 
+      }
+
+      //change softdelete product catery
+      function removeSoftdeleteSubCat(prosubId){  
+          fetch("/admin/softDeleteProductSubCate" , {
+            method : "POST" ,
+            headers : { "Content-Type" : "application/json" }, 
+            body : JSON.stringify ({prosubId})
+          } ).then(Response => Response.json()) 
+          .then(data => {
+            if(data.success){
+              alert("Productsubcategory softdelete removed"); 
+              location.reload();
+            }else{
+              alert("Failed to remove softdelete");
+            }
+          }) 
+        }
+      
+      </script>
 </body>
 </html>

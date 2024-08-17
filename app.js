@@ -2,8 +2,9 @@ const express = require("express");
 const app = express();
 const session = require('express-session');
 const passport = require('passport');
-require("./configs/passport-config"); // Include passport configuration
+require("./configs/passport-config"); // Include passport configuration 
 const mongoose = require("mongoose");
+const nocache = require("nocache");
 const path = require("path"); 
 const dotenv = require("dotenv");
 
@@ -14,7 +15,7 @@ dotenv.config();
   
 const connectDB = async () =>{ 
    try{ 
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI); 
     console.log("MONGODB CONNECTED");    
    }catch(err){   
     console.log("MONGODB NOT CONNECTED ", err.message)  ;   
@@ -22,10 +23,12 @@ const connectDB = async () =>{
 } 
 connectDB();
 
+app.use(nocache());
 //serve uploads folder as static  
 app.use('/uploads', express.static('uploads')); 
  
 app.use(express.urlencoded({ extended: true })); 
+app.use(express.json());
 app.use(session({
     secret: process.env.secretKey,
     resave: false, 
@@ -71,3 +74,5 @@ app.use("/admin", adminRoute);
 const PORT = process.env.PORT || 3000 ;  
 
 app.listen( PORT , ( err )=> err ? console.log( err.message ) : console.log( "server started on port : ", PORT ) );    
+
+     

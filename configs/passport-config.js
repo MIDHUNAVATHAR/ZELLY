@@ -13,15 +13,15 @@ passport.use('google-user', new GoogleStrategy({
     let user = await User.findOne({ googleId: profile.id }); 
     if (!user) {
         user = await User.create({
-            googleId: profile.id, 
+            googleId: profile.id,    
             email: profile.emails[0].value,
-            firstName : profile.name.givenName,
-            lastName : profile.name.familyName,
+            firstName : profile.name.givenName, 
+            lastName : profile.name.familyName, 
             verified : true,
         });
     }
     done(null, user);
-}));
+})); 
 
 
 passport.serializeUser((user, done) => {

@@ -4,13 +4,16 @@ const Bcrypt = require("bcrypt");
 const Crypto = require("crypto");
 
 //import configs
-const transporter = require("../../configs/email-config")
+const transporter = require("../../configs/email-config"); 
 
 //import schemas
 const User = require("../../models/userSchema");
-const Logo = require("../../models/logoSchema");
+const Logo = require("../../models/logoSchema");  
 const Banner = require("../../models/bannerSchema");
-const GenderCategory = require("../../models/genderCategory"); 
+const GenderCategory = require("../../models/genderCategory");   
+const ProductCategory = require("../../models/productCategory"); 
+const ProductSubCategory = require("../../models/productSubCategory");
+const Product = require("../../models/product");
 
 //send email otp function
 const sendOTPEmail = async (email, otp) => {
@@ -40,16 +43,36 @@ const sendOTPEmail = async (email, otp) => {
  }
 
 
+
+
 //get front page
-const frontPage = async (req, res) =>{
-   //take the last added one logo
-   const logo = await Logo.findOne().sort({ createdAt: -1 });
-   //Get the last added 3 banner image 
-   const banners = await Banner.find().sort({createdAt :-1}).limit(3) ; 
-   const genderCategory = await GenderCategory.find();
-   const user = await User.findById(req.session.userId) || req.user 
-   res.render("../views/front-page.ejs",{logo, banners, genderCategory , user}) ; 
-}
+const frontPage = async (req, res) => {
+   try {
+     const logo = await Logo.findOne().sort({ updatedAt: -1 });
+     const banners = await Banner.find().sort({updatedAt :-1}).limit(3) ; 
+     const user = await User.findById(req.session.userId) || req.user
+     const genderCategory = await GenderCategory.find({softDelete : false});   
+     //const productCategory = await ProductCategory.find({softDelete : false}); 
+     const subCategories = await ProductSubCategory.find({softDelete : false}).populate('genderCategory productCategory');
+
+     const subCategoryProducts = await Promise.all(subCategories.map(async (subCategory) => {
+        const products = await Product.find({ productSubCategory: { $in: [subCategory._id] } , softDelete : false })  
+          .sort({ createdAt: -1 })  
+          .limit(8); 
+         return {
+           subCategory, 
+           products 
+         };
+     })) ; 
+
+     console.log(subCategoryProducts);
+     
+     res.render('front-page', { subCategoryProducts , logo , banners , user ,genderCategory});
+   } catch (error) {
+     console.error(error);
+     res.status(500).send('Error loading main page');
+   }
+ };
 
 //get login page
 const userLogin = (req , res) =>{ 
@@ -62,7 +85,7 @@ const userLoginPost = async ( req , res ) => {
 
    let {email , password , remember_me } = req.body;
    email  = email.trim();
-   password = password.trim();
+   password = password.trim(); 
    
    const user = await User.findOne({email });
 
@@ -71,7 +94,7 @@ const userLoginPost = async ( req , res ) => {
          return res.render("blocked-page");
       }
       const passwordCompare = await Bcrypt.compare(password , user.password);
-      if(user.googleId){
+      if(user.googleId){ 
          res.render( "../views/user-login.ejs" ,{message : "Please continue with gooogle"} );
          return;
       }else if(!passwordCompare){ 
@@ -80,7 +103,7 @@ const userLoginPost = async ( req , res ) => {
       }else{
          if(remember_me){
             req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days
-         }
+         } 
          req.session.userId = user._id ;
          res.redirect("/"); 
          return;
@@ -126,7 +149,7 @@ const userSignupPost = async (req,res) =>{
        return;
    }
 
-   password = await Bcrypt.hash(password,10);
+   password = await Bcrypt.hash(password,10)  ;
    const otp = Crypto.randomBytes(3).toString('hex');
    const otpExpiry = Date.now() + 30000; // OTP valid for 30 sec 
 
@@ -227,11 +250,11 @@ const forgotPasswordPost = async (req, res) =>{
 }
 
 
-//get reset password
+//get reset password  
 const resetPassword = async (req,res) =>{
    try {
       const user = await User.findOne({
-        resetPasswordToken : req.params.token
+        resetPasswordToken : req.params.token  
       });
       if (!user) {
         return res.render('user-reset-password', { message: 'Password reset token is invalid or has expired.',token:"" });
@@ -247,7 +270,7 @@ const resetPasswordPost =async (req , res) =>{
    try {
       const user = await User.findOne({
         resetPasswordToken: req.params.token,
-        resetPasswordExpires: { $gt: Date.now() }
+        resetPasswordExpires: { $gt: Date.now() } 
       });
       if (!user) {
         return res.render('user-reset-password', { message: 'Password reset token is invalid or has expired.' });
