@@ -42,37 +42,48 @@ const addProductPost = async (req, res) => {
         }
         
         try {
-            const {
-                title, titleDescription, price, discountedPrice, discountPercentage,
-                sizes, productDescription, highlights, details,
-                genderCategory, productCategory, productSubCategory,totalStocks
-            } = req.body;
+           
+             const {
+                 title, titleDescription, productDescription, highlights, details,
+                 genderCategory, productCategory, productSubCategory , size , quantity , price , discountedPrice , discountedPercentage 
+             } = req.body;
+              
 
-            const sizeArray = sizes.split(',').map(size => size.trim());
+            const sizes = [] ;
+            for(let i = 0 ; i < size.length ; i++){
+                const productObject = {
+                    size : size[i],
+                    price : parseFloat(price[i]),
+                    quantity : parseInt(quantity[i]),
+                    discountedPrice : parseFloat(discountedPrice[i]),
+                    discountedPercentage : parseFloat(discountedPercentage[i])
+                }
+                sizes.push( productObject );
+            }
 
             let imageUrls = [];
             if (req.files && req.files.length > 0) {
-                imageUrls = req.files.map(file => `/uploads/product/${file.filename}`); 
+                imageUrls = req.files.map(file => `/uploads/product/${file.filename}`) ; 
             }
-
-            const product = new Product({
-                title,
-                titleDescription,
-                price: Number(price),
-                discountedPrice: Number(discountedPrice),
-                discountedPercentage: Number(discountPercentage),
-                sizes: sizeArray,
-                productDescription,
-                highlights,
-                details,
-                genderCategory,
-                productCategory,
-                productSubCategory,
-                images: imageUrls,
-                totalStocks
-            });
-
-            await product.save();
+ 
+            
+             const product = new Product({
+                 title ,
+                 titleDescription ,
+                 sizes ,
+                 productDescription ,
+                 highlights ,
+                 details ,
+                 genderCategory ,
+                 productCategory ,
+                 productSubCategory ,
+                 images: imageUrls ,
+                 sizes ,
+             });
+             
+            
+            await product.save().then( savedproduct => console.log( savedproduct )).catch( error => console.log(error) );
+            
             res.status(200).json({ message: 'Product added successfully' });
         } catch (error) {
             console.error(error);
@@ -82,7 +93,7 @@ const addProductPost = async (req, res) => {
 };
 
 //get product list page
-const listProducts  = async (req,res) =>{ 
+const listProducts  = async ( req , res ) =>{ 
     const products = await Product.find({ }).populate( "genderCategory").populate("productCategory").populate("productSubCategory");  
     res.render("admin-dashboard.ejs" ,{message : '',admin : req.session.adminEmail , partial : "partials/product-list", products }) ;  
 }

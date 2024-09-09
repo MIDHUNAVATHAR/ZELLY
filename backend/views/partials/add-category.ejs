@@ -211,23 +211,24 @@
       
 
       //soft delete product category
-      function deleteProductSubCategory(prosubId){  
+      function deleteProductSubCategory( prosubId ){  
         fetch("/admin/deleteProductSubCategory" , {
             method : "POST" ,
-            headers : { "Content-Type" : "application/json" } , 
+            headers : { "Content-Type" : "application/json" } ,
             body : JSON.stringify ({prosubId}) 
           } ).then(Response => Response.json())
           .then(data => {
-            if(data.success){
+            if(data.success){ 
               alert("Product subcategory deleted");
-              location.reload();
+               window.location.reload(); 
             }else{
               alert("Failed to delete productsub category"); 
             }
           }) 
       }
 
-      //change softdelete product catery
+
+      //change softdelete product category
       function removeSoftdeleteSubCat(prosubId){  
           fetch("/admin/softDeleteProductSubCate" , {
             method : "POST" ,
@@ -244,6 +245,8 @@
           }) 
         }
       
+
+
       </script>
 </body>
 </html>

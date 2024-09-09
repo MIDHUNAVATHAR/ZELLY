@@ -4,20 +4,22 @@ const router = express.Router();
 
 //import controllers
 const frontPage = require("../frontend/controllers/front-page") ;
-const productPage = require("../frontend/controllers/product-page");
+const productPage = require("../frontend/controllers/product-page") ;
+const cartManagement = require("../frontend/controllers/cart-management");
 
 //import middlewares
-const checkAuthentication = require("../middlewares/check-authentication");
+const checkAuthentication = require("../middlewares/check-authentication") ; 
 
 
 // get main page
-router.get( "/" ,  frontPage.frontPage);
+router.get( "/"  ,  frontPage.frontPage ) ;
 
 // get login page 
-router.get("/userLogin" ,checkAuthentication , frontPage.userLogin);
+router.get("/userLogin" , checkAuthentication , frontPage.userLogin )  ;
 
 //post user login
-router.post("/userlogin" , frontPage.userLoginPost); 
+router.post("/userlogin" , frontPage.userLoginPost) ; 
+
 
 //google login
 router.get('/auth/google/login', passport.authenticate('google-user', { 
@@ -33,7 +35,7 @@ router.get('/auth/google/callback', passport.authenticate('google-user', {
 
 
 // get signup page
-router.get("/userSignup" , frontPage.userSignup);
+router.get("/userSignup" , frontPage.userSignup) ;
 
 //post signup 
 router.post("/userSignupPost" , frontPage.userSignupPost) ;  
@@ -65,18 +67,58 @@ router.post("/userResetPassword/:token" , frontPage.resetPasswordPost);
 //get blocked page
 router.get("/blocked" , productPage.blocked);
 
+//get user profile page
+router.get("/userProfile" , checkAuthentication , productPage.showProfile ) ; 
+
+//post user profile page edit
+router.post("/userProfile" , productPage.editProfilePost);
+
+//get user adress management
+router.get("/userAdressMang" ,checkAuthentication,productPage.userAdressMng );
+
+//add addresses
+router.post("/saveAddress" , productPage.saveAddress );
+
+//delete addresses
+router.get("/deleteAddress/:id" , productPage.deleteAddress); 
+
+//post edit address
+router.post("/saveEditAddress/:id" , productPage.editAddress);
+
 //get wishlist
-router.get( "/wishlist" ,productPage.wishlist);  
+router.get( "/wishlist" , checkAuthentication, productPage.wishlist); 
 
 //get cart
-router.get("/cart" ,productPage.cart);
+router.get("/cart" ,checkAuthentication, productPage.cart) ;
+
 
 //get categories
 router.get('/categories/:id', productPage.categorySection); 
 
-
 //get product page
-router.get("/product/:id" ,productPage.product);
+router.get("/product/:id" ,productPage.product) ;
+
+//get products page
+router.get("/products" , productPage.products)
+
+
+//post add to cart
+router.post( "/addToCart", cartManagement.addToCart); 
+
+//post update cart item quantity increment;
+router.post("/cartProductInc" , cartManagement.increQuantity); 
+
+//post update cart item quantity decrement ; 
+router.post("/cartProductDec" , cartManagement.decreQuantity);
+
+//post remove quantity
+router.post("/removeItem" , cartManagement.removeItem );
+
+//get my orders
+router.get("/myOrders" , cartManagement.myOrders);
+
+//get checkout delivery address
+router.get("/checkout" , cartManagement.checkout); 
 
 
 

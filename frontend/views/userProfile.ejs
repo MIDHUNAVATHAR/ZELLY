@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Information</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+    
+  <!-- Header --> 
+  <%- include("partials/header") %>  
+
+    <div class="container mx-auto p-4">
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <div class="flex items-center mb-6">
+                <img class="h-16 w-16 rounded-full" src="https://via.placeholder.com/150" alt="Profile"> 
+                <h2 class="text-2xl font-semibold ml-4">Hello</h2> 
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-4">
+                <!-- Sidebar -->
+                <aside class="w-full lg:w-1/4 bg-gray-200 rounded-lg p-4">
+                    <nav class="space-y-4">
+                        <a href="/myOrders" class="block text-blue-600 font-semibold">MY ORDERS</a>
+                        <div>
+                            <h3 class="font-semibold">ACCOUNT SETTINGS</h3>
+                            <ul class="mt-2 space-y-2">
+                                <li><a href="/userProfile" class="text-gray-700">Profile Information</a></li>
+                                <li><a href="/userAdressMang" class="text-gray-700">Manage Addresses</a></li>
+                                <li><a href="#" class="text-gray-700">PAN Card Information</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold">PAYMENTS</h3>
+                            <ul class="mt-2 space-y-2">
+                                <li><a href="#" class="text-gray-700">Gift Cards</a></li>
+                                <li><a href="#" class="text-gray-700">Saved UPI</a></li>
+                                <li><a href="#" class="text-gray-700">Saved Cards</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </aside>
+
+                <!-- Main Content -->
+                <main class="w-full lg:w-3/4 bg-white rounded-lg p-4">
+                    <h3 class="text-xl font-semibold mb-4">Personal Information</h3>
+
+                    <form id="profile-form" action="/userProfile" method="post">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="firstName" class="block font-medium text-gray-700">First Name</label>
+                                <input type="text" value="<%= user.firstName %>" id="firstName" name="firstName" disabled
+                                       class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label for="lastName" class="block font-medium text-gray-700">Last Name</label>
+                                <input type="text"  value="<%= user.lastName %>" id="lastName" name="lastName" disabled
+                                       class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block font-medium text-gray-700">Your Gender</label>
+                            <div class="mt-2">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="gender"  value="male"  <%= user.gender == 'male' ? 'checked' : "" %> disabled'
+                                           class="form-radio text-blue-600">
+                                    <span class="ml-2">Male</span>
+                                </label>  
+                                <label class="inline-flex items-center ml-6">
+                                    <input type="radio" name="gender" value="female" <%= user.gender == 'female' ? "checked" : "" %>  disabled
+                                           class="form-radio text-blue-600" >
+                                    <span class="ml-2">Female</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="email" class="block font-medium text-gray-700">Email Address</label>
+                            <input type="email" id="email" name="email" value="<%= user.email %>" readonly 
+                                   class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="mobile" class="block font-medium text-gray-700">Mobile Number</label>
+                            <input type="text" id="mobile" name="mobile" value=" <%= user.mobile %> " disabled
+                                  onkeyup="numberVal(this.value)" class="mt-1 p-2 w-full border border-gray-300 rounded-md"> 
+                        </div>
+
+                        <button type="button" id="edit-btn"
+                                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                            Edit
+                        </button>
+
+                        <div class="flex justify-end mt-6">
+                            <button type="submit" id="saveChng" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded">
+                                Save Changes
+                            </button>
+                        </div>
+                        
+                    </form>
+                </main>
+            </div>
+        </div>
+    </div>
+
+     <!-- Footer -->
+     <%- include("partials/footer") %>
+
+    <script>
+        //disable and enable input fields
+        const editBtn = document.getElementById('edit-btn');
+        const inputs = document.querySelectorAll('input');
+
+        editBtn.addEventListener('click', function () {
+            if (editBtn.innerText === 'Edit') {
+                inputs.forEach(input => input.disabled = false);
+                editBtn.innerText = 'Cancel';
+                editBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                editBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+            } else {
+                inputs.forEach(input => input.disabled = true);
+                editBtn.innerText = 'Edit';
+                editBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
+                editBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            }
+        });
+
+        //prevent save without edit
+        document.getElementById("saveChng").addEventListener( "click" , function(){
+             if(editBtn.innerText === 'Edit'){
+                event.preventDefault();
+             }
+        } )
+
+        //validate number input
+        function numberVal(val){
+            if(isNaN(val)){
+            document.getElementById("mobile").value = "" ;  
+            }
+        }
+    </script>
+
+</body>
+</html>

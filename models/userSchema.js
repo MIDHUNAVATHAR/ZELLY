@@ -28,14 +28,16 @@ const userSchema = new mongoose.Schema({
     otpExpiry : {
         type : Date
       },
-      resetPasswordToken:{ type : String},
-      resetPasswordExpires :{ type : Date } ,
-      googleId : { 
-        type: String, unique: true, sparse: true 
+    resetPasswordToken:{ type : String},
+    resetPasswordExpires :{ type : Date } ,
+    googleId : { 
+    type: String, unique: true, sparse: true 
       },
-    joinedDate : {type : Date , default : Date.now()},  
-    status : { type : String , default : "Unblock" } 
+    joinedDate : {type : Date , default : Date.now() } ,   
+    status : { type : String , default : "Unblock" } ,
+    gender : { type : String },
+    mobile : {type :Number }
 
-})
+} ,{ timestamps : true } )  ; 
 
 module.exports =  mongoose.model( "User" , userSchema ) ;

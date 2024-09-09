@@ -12,26 +12,8 @@
           <label for="titleDescription" class="block text-sm font-medium text-gray-700">Title Description</label>
           <input type="text" name="titleDescription" id="titleDescription" class="mt-1 p-2 border border-gray-300 rounded w-full" >
         </div>
-        <div class="mb-4">
-          <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
-          <input type="number" name="price" id="price" class="mt-1 p-2 border border-gray-300 rounded w-full" >
-        </div>
-        <div class="mb-4">
-          <label for="discountedPrice" class="block text-sm font-medium text-gray-700">Discounted Price</label>
-          <input type="number" name="discountedPrice" id="discountedPrice" class="mt-1 p-2 border border-gray-300 rounded w-full" >
-        </div>
-        <div class="mb-4">
-          <label for="discountPercentage" class="block text-sm font-medium text-gray-700">Discount Percentage</label>
-          <input type="number" name="discountPercentage" id="discountPercentage" class="mt-1 p-2 border border-gray-300 rounded w-full" >
-        </div>
-        <div class="mb-4">
-          <label for="sizes" class="block text-sm font-medium text-gray-700">Sizes</label>
-          <input type="text" name="sizes" id="sizes" class="mt-1 p-2 border border-gray-300 rounded w-full">
-        </div>
-        <div class="mb-4">
-          <label for="sizes" class="block text-sm font-medium text-gray-700">Total Stocks</label>
-          <input type="text" name="totalStocks" id="totalStocks" class="mt-1 p-2 border border-gray-300 rounded w-full">
-        </div>
+
+
         <div class="mb-4">
           <label for="productDescription" class="block text-sm font-medium text-gray-700">Product Description</label>
           <textarea name="productDescription" id="productDescription" class="mt-1 p-2 border border-gray-300 rounded w-full"></textarea>
@@ -44,7 +26,33 @@
           <label for="details" class="block text-sm font-medium text-gray-700">Details</label>
           <textarea name="details" id="details" class="mt-1 p-2 border border-gray-300 rounded w-full" ></textarea>
         </div>
-        <div class="mb-4"> 
+
+        <!---------------------- SIZE TABLE ----------------------->
+          <div class="overflow-x-auto">
+            <table id="productTable" class="min-w-full bg-white border border-gray-300">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="py-2 px-4 border-b">Size</th>
+                        <th class="py-2 px-4 border-b">Quantity</th>
+                        <th class="py-2 px-4 border-b">Price</th>
+                        <th class="py-2 px-4 border-b">Discounted Price</th>
+                        <th class="py-2 px-4 border-b">Discount Percentage</th>
+                        <th class="py-2 px-4 border-b">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   
+
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-4">
+            <button type="button" onclick="addRow()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Add Row</button>
+        </div>
+        <!----------------------------------------->
+
+        <div class="mb-4 mt-10"> 
           <label for="genderCategory" class="block text-sm font-medium text-gray-700">Gender Category</label>
           <select name="genderCategory" id="genderCategory" class="mt-1 p-2 border border-gray-300 rounded w-full">
             <% genderCategories.forEach(gender => { %>
@@ -73,12 +81,14 @@
           <input type="file" name="productImages" id="productImages" class="mt-1 p-2 border border-gray-300 rounded w-full">
           <label class="productImgErr text-red-500"></label>
         </div> 
+
         <!-- cropping contiainer -->
       <div id="cropperContainer" style="display: none; max-width: 500px; margin-bottom: 20px;"> 
         <img id="image" src="" alt="Image for cropping" style="max-width: 100%;">  
       </div>
       <!--cropping container--> 
 
+      
        <!-- Cropped images preview container -->
        <div id="croppedImagesContainer" class="mb-4">
        <h3 class="text-sm font-medium text-gray-700">Cropped Images</h3>
@@ -105,12 +115,12 @@ let cropper;
         let croppedImagesData = [];
 
         inputImage.addEventListener('change', (event) => {
-            const files = event.target.files;
+            const files = event.target.files; 
             if (files && files.length > 0) {
                 const file = files[0];
                 const reader = new FileReader(); 
                 reader.onload = (e) => {
-                    image.src = e.target.result;
+                    image.src = e.target.result; 
                     cropperContainer.style.display = 'block'; 
                     cropButton.style.display = 'inline-block';
                     if (cropper) {
@@ -149,7 +159,7 @@ let cropper;
                 cropperContainer.style.display = 'none';
                 cropButton.style.display = 'none'; 
                 inputImage.value = '';
-                inputImage.disabled = false;
+                inputImage.disabled = false; 
             }, 'image/png');
         });
 
@@ -159,8 +169,31 @@ let cropper;
             const formData = new FormData(this);
             formData.delete('productImages'); 
 
-            croppedImagesData.forEach((blob, index) => {
-                formData.append(`productImages`, blob, `cropped_${index}.png`) ; 
+      
+            
+     
+      // const sizes = [];
+
+      // const sizeNames = formData.getAll('size[]');
+      // const prices = formData.getAll('price[]');
+      // const quantities = formData.getAll('quantity[]');
+      // const discountedPrices = formData.getAll('discountedPrice[]');
+      // const discountPercentages = formData.getAll('discountPercentage[]'); 
+
+      // sizeNames.forEach((size, index) => {
+      //   sizes.push({
+      //     [size]: {
+      //       price: prices[index],
+      //       quantity: quantities[index],
+      //       discountedPrice: discountedPrices[index],
+      //       discountPercentage: discountPercentages[index],
+      //     }
+      //   });
+      // });
+        
+    
+            croppedImagesData.forEach((blob , index) => {
+                formData.append(`productImages`, blob, `cropped_${index}.png`)  ;
             });  
 
             fetch(this.action, {
@@ -172,12 +205,35 @@ let cropper;
                     alert(data.message);
                     location.reload();
                 } else {
-                    alert('Failed to add product: ' + data.error);
+                    alert('Failed to add product: ' + data.error); 
                 }
             }).catch(error => {
-                console.error('Error:', error);
-                alert('Failed to add product');
+                console.error( ' Error : ' , error );
+                alert( ' Failed to add product ' ) ; 
             });
         });
+
+
+        //add product size details
+        function addRow() {
+
+        const table = document.getElementById('productTable').getElementsByTagName('tbody')[0];
+        const rowCount = table.rows.length ;
+        const newRow = table.insertRow() ;
+    
+        newRow.innerHTML = `
+            <td><input type="text"  name="size[]" class="border border-gray-300 p-1"></td>
+            <td><input type="number" name="quantity[]" class="border border-gray-300 p-1" min="0"></td>
+            <td><input type="number" name="price[]" class="border border-gray-300 p-1" min="0"></td>
+            <td><input type="number" name="discountedPrice[]" class="border border-gray-300 p-1" min="0"></td>
+            <td><input type="number" name="discountedPercentage[]" class="border border-gray-300 p-1" min="0"></td>
+            <td><button type="button" class="text-red-500" onclick="deleteRow(this)">Delete</button></td>
+        `;
+        }
+
+        function deleteRow(button) {
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
   </script> 
  

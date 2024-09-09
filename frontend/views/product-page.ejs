@@ -60,7 +60,7 @@
    <!-- Product Images -->
    <div class="w-full md:w-1/2">
     <div id="imageZoom" style="--url:url(<%= product.images[0] %>)"> 
-      <img src="<%= product.images[0] %>" id="mainImage" alt="<%= product.title %>" class="rounded-lg shadow-md">
+      <img src="<%= product.images[0] %>" id="mainImage" alt="<%= product.title %>" class="rounded-lg shadow-md object-cover max-h-96">
     </div>
     <!-- Thumbnails -->
     <div class="flex mt-4 space-x-2">
@@ -79,9 +79,9 @@
 
     <!-- Price Section -->
     <div class="mt-4">
-      <span class="text-2xl font-semibold text-green-600">₹<%= product.discountedPrice %></span>
-      <span class="ml-2 line-through text-gray-500">₹<%= product.price %></span>
-      <span class="ml-2 text-green-500 font-semibold"><%= product.discountedPercentage %>% Off</span>
+      <span class="text-2xl font-semibold text-green-600">₹<%= selectedObject.discountedPrice %></span>
+      <span class="ml-2 line-through text-gray-500">₹<%= selectedObject.price %></span>
+      <span class="ml-2 text-green-500 font-semibold"><%= selectedObject.discountedPercentage %>% Off</span>
     </div>
 
     <!-- Ratings & Reviews -->
@@ -106,7 +106,7 @@
       <div class="flex mt-2 space-x-2">
         <% if (product.sizes && product.sizes.length > 0) { %>
           <% product.sizes.forEach(size => { %>
-            <span class="cursor-pointer px-3 py-2 border rounded text-gray-600 hover:bg-gray-100"><%= size %></span>
+            <a href="/product/<%= product._id %>?id=<%=size._id %>"><button class="cursor-pointer px-3 py-2 border rounded text-gray-600 hover:bg-gray-100"><%= size.size %></button></a>
           <% }) %>
         <% } %>
       </div>
@@ -114,7 +114,7 @@
 
     <!-- Add to Cart & Wishlist -->
     <div class="mt-6 flex space-x-4">
-      <button class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">ADD TO CART</button>
+      <button class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700" id="addToCart">ADD TO CART</button>
       <button class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700">ADD TO WISHLIST</button>
     </div>
 
@@ -183,8 +183,29 @@
     <!-- Footer -->
     <%- include("partials/footer") %>
 
+   <!-- modal for product add to cart : success -->
+    <div id="successModal" class="modal" style="display:none; position:fixed; z-index:1; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.4);">
+      <div class="modal-content" style="background-color:#fefefe; margin:15% auto; padding:20px; border:1px solid #888; width:80%; max-width:300px; text-align:center;">
+        <p id="modalMessage"></p>
+        <button id="closeModal" style="background-color:#4CAF50; color:white; padding:10px 20px; border:none; cursor:pointer;">Close</button>
+      </div>
+    </div>
+
+
     <script>
+
       document.addEventListener("DOMContentLoaded" , ()=>{
+//modals....
+        function showModal(message) {
+          document.getElementById('modalMessage').textContent = message;
+          document.getElementById('successModal').style.display = 'block';
+        }
+
+        document.getElementById('closeModal').addEventListener('click', function() {
+          document.getElementById('successModal').style.display = 'none';
+        });
+//modals....
+
         const mainImage = document.getElementById('mainImage');
   const thumbnails = document.querySelectorAll('.thumbnail');
 
@@ -210,7 +231,65 @@
             this.style.setProperty("--zoom-x", `${pointerX}%`);
             this.style.setProperty("--zoom-y", `${pointerY}%`);
         });
-      })
+
+
+   document.getElementById("addToCart").addEventListener("click" , ()=> {
+       
+          const productId = "<%= product._id %>"
+          const sizeId = "<%= selectedObject._id %>"
+          const size = "<%= selectedObject.size %>" ;
+          const price = "<%= selectedObject.price %>" ;
+          const discountedPrice = "<%= selectedObject.discountedPrice %>" ; 
+          const discountPercentage = "<%= selectedObject.discountedPercentage %>" ; 
+          
+          const userId = "<%= user ? user._id : '' %>";
+
+             
+          if(userId == ""){
+            window.location.href = "http://localhost:8001/userlogin" ;
+            return;  // prevent further code execution
+          }
+         
+          fetch('/addToCart', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json' ,
+              },
+              body: JSON.stringify({
+                userId, 
+                productId,
+                sizeId,
+                size,
+                price,
+                discountedPrice,
+                discountPercentage
+              }),
+            })
+            .then(response =>{
+              console.log(response) ;
+             return response.json() ;
+            })
+            .then(data => {
+              // Handle success (e.g., show a success message,    UI)
+              if(data.success){
+               showModal(data.message);
+              }else{
+               showModal(data.message); 
+              }
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+              // Handle error (e.g., show an error message)
+            });
+          })
+
+
+
+ })
+
+
+
+    
     </script>
 </body>
 </html>

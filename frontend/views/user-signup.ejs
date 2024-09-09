@@ -45,16 +45,24 @@
             <input type="text" name="email" id="email" required class="border w-full text-base px-2 py-1 focus:outline-none  focus:border-gray-600" placeholder="Enter Email...">
             <div><span id="emailError"></span></div>
         </div>
-        <div>
+        <div class="relative">
             <label for="password" class="block text-base mb-2">Password</label>
-            <input type="password" name="password" id="password" required class="border w-full text-base px-2 py-1 focus:outline-none  focus:border-gray-600" placeholder="Enter Password...">
-             <div><span id="passwordError"></span></div>
+            <input type="password" name="password" id="password" class="border w-full text-base px-2 py-1 focus:outline-none  focus:border-gray-600" placeholder="Enter Password...">
+            <div><span id="passwordError"></span></div>
+            <button type="button" id="togglePassword" class="absolute right-2 top-8">
+                <i id="eyeIcon" class="fa fa-eye-slash"></i>
+            </button>
         </div>
-        <div>
-            <label for="confirmPassword" class="block text-base mb-2">Password</label>
+        
+        <div class="relative">
+            <label for="confirmPassword" class="block text-base mb-2">Confirm Password</label>
             <input type="password" name="confirmPassword" id="confirmPassword" required class="border w-full text-base px-2 py-1 focus:outline-none  focus:border-gray-600" placeholder="Confirm Password...">
-            <div><span id="confirmPasswordError"></span></div>  
+            <div><span id="confirmPasswordError"></span></div>
+            <button type="button" id="toggleConfirmPassword" class="absolute right-2 top-8">
+                <i id="eyeIcon2" class="fa fa-eye-slash"></i>
+            </button>
         </div>
+        
 
         <div class="flex justify-center mt-5">
             <span>If you have already Account? <a class="text-indigo-700" onclick="navigateToUserLogin()">Login</a></span>
@@ -150,6 +158,8 @@
                 showMessage(confirmPasswordError , "Password and Confirm Password must be equal" , false)
               }
            }
+
+
            
            firstNameInput.addEventListener("keyup" , validateFirstName );
            lastNameInput.addEventListener("keyup" , validateLastName)
@@ -171,7 +181,50 @@
                    e.preventDefault();
                }
            });
-           });
+
+         //eye button password
+
+      // Toggle password visibility for password field
+    const togglePassword = document.getElementById("togglePassword");
+    const eyeIcon = document.getElementById('eyeIcon');
+
+    togglePassword.addEventListener('click', function () {
+    
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+
+        // Toggle the eye icon
+        if (type === 'text') {
+            eyeIcon.classList.remove('fa-eye-slash');
+            eyeIcon.classList.add('fa-eye');
+        } else {
+            eyeIcon.classList.remove('fa-eye');
+            eyeIcon.classList.add('fa-eye-slash');
+        }
+    });
+
+    //Toggle password visibility for confirm password field
+    const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
+    const eyeIcon2 = document.getElementById('eyeIcon2');
+
+    toggleConfirmPassword.addEventListener('click', function () {
+        const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        confirmPasswordInput.setAttribute('type', type);
+
+        // Toggle the eye icon
+        if (type === 'text') {
+            eyeIcon2.classList.remove('fa-eye-slash');
+            eyeIcon2.classList.add('fa-eye');
+        } else {
+            eyeIcon2.classList.remove('fa-eye');
+            eyeIcon2.classList.add('fa-eye-slash');
+        }
+    });
+
+    })
+
+
+    
    </script>
    
 </body>

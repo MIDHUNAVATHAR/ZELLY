@@ -11,14 +11,19 @@ passport.use('google-user', new GoogleStrategy({
     callbackURL: 'http://localhost:8001/auth/google/callback'
 }, async (accessToken, refreshToken, profile, done) => { 
     let user = await User.findOne({ googleId: profile.id }); 
+    let existingUser = await User.findOne({email : profile.emails[0].value } ) ;
     if (!user) {
+        if( existingUser ){
+            // If an existing user is found with the same email but without Google login
+            return done(null, false, { message: 'This email is already registered. Please log in email and password' })  ; 
+        }
         user = await User.create({
-            googleId: profile.id,    
-            email: profile.emails[0].value,
-            firstName : profile.name.givenName, 
-            lastName : profile.name.familyName, 
+            googleId: profile.id ,    
+            email: profile.emails[0].value ,
+            firstName : profile.name.givenName , 
+            lastName : profile.name.familyName , 
             verified : true,
-        });
+        }); 
     }
     done(null, user);
 })); 
@@ -32,7 +37,7 @@ passport.deserializeUser(async (id, done) => {
     try {
         const user = await User.findById(id);
         if (user) {
-            done(null, user);
+            done(null, user); 
         } else {
             done(null, false, { message: 'User not found' });
         }

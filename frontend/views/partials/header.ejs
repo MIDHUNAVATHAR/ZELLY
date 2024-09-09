@@ -1,12 +1,12 @@
-<header class="bg-gray-100">
+<header class="bg-gray-100" >
     <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center">
         <div class="flex items-center">
 
-          <a href="/" class="flex items-center">
+          <a href="/" class="flex items-center"> 
             <div>
               <% if (logo) { %>
-                <img src="<%= logo.image.data %>" alt="Logo" style="width: 50px; height: 50px; object-fit: cover;"> 
+                <img src="<%= logo.image.data %>" alt="Logo" style="width: 50px; height: 50px; object-fit: cover;" class="rounded-full"> 
               <% } else { %>
                 <p>No logo available</p>
               <% } %>
@@ -72,9 +72,16 @@
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#FF0000"/>
               </svg>
             </a>
-            <a href="/cart" class="text-gray-600 hover:text-gray-900">  
-              <img src="images/logos/—Pngtree—shopping cart icon_4460491.png" class="w-10" alt="Cart">
-            </a> 
+
+            <a href="/cart" class="text-gray-600 hover:text-gray-900">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+            </a>
+          
+
             <button id="mobile-menu-button" class="md:hidden flex items-center"> 
               <svg class="h-6 w-6 text-gray-500 hover:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
@@ -106,8 +113,14 @@
   </div>
 
   
-  <!-- JavaScript to toggle the profile menu and mobile menu -->
+  
   <script>
+   
+    
+  
+
+   //<!-- JavaScript to toggle the profile menu and mobile menu -->
+
     document.addEventListener('DOMContentLoaded', () => {
       const profileButton = document.getElementById('profile-menu-button');
       const profileMenu = document.getElementById('profile-menu');
@@ -140,19 +153,43 @@
      
         button.addEventListener('click', function(e) {
             e.preventDefault();
-            const categoryId = event.target.dataset.category; 
+            const categoryId = event.target.dataset.category ; 
           
            
             fetch(`/categories/${categoryId}`)        //sends a GET request to the specified URL.
                 .then(response => response.text())    //converts the response to text. Use response.json() if the response is JSON.
-                .then(html => {
+                .then(html => {   
                     categoryContent.innerHTML = html; // updates the inner HTML of the categoryContent element with the fetched content. 
                 })
                 .catch(error => console.error('Error:', error));
         });
     });
+
+
+
+
+    //search 
+    const searchBtn = document.getElementById("search-button") ;   
+    const searchVal = document.getElementById("search-input") ;
+    
+    searchBtn.addEventListener("click" , function(){
+       
+      const currentUrl = new Url (window.location.href) ;
+      alert(currentUrl) ;  
+      //window.location.href = `/products?result=${searchVal.value}`
+      
+    })
+    
+
     
 });
+
+ 
+
+
+
+//search products
+
 
   </script>
   

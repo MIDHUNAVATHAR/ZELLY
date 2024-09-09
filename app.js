@@ -2,11 +2,11 @@ const express = require("express");
 const app = express();
 const session = require('express-session');
 const passport = require('passport');
-require("./configs/passport-config"); // Include passport configuration 
+require("./configs/passport-config"); // Include passport configuration   
 const mongoose = require("mongoose");
-const nocache = require("nocache");
+const nocache = require("nocache"); 
 const path = require("path"); 
-const dotenv = require("dotenv");
+const dotenv = require("dotenv") ; 
 
 
 //loads env variables from .env file  

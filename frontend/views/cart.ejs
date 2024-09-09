@@ -6,79 +6,269 @@
     <title>Your Cart - YourStore</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100">
+<body class="">
 
   <!-- Header --> 
   <%- include("partials/header") %> 
+  <!--Header-->
 
-    <div class="container mx-auto">
-        <div class="flex shadow-md"> 
-            <div class="w-3/4 bg-white px-10 ">
-                <div class="flex justify-between border-b py-8"> 
-                    <h1 class="font-semibold text-2xl">Shopping Cart</h1>
-                    <h2 class="font-semibold text-2xl"><%= cartItems.length %> Items</h2>
-                </div>
-                <div class="flex mt-10 mb-5">
-                    <h3 class="font-semibold text-gray-600 text-xs uppercase w-2/5">Product Details</h3>
-                    <h3 class="font-semibold text-center text-gray-600 text-xs uppercase w-1/5">Quantity</h3>
-                    <h3 class="font-semibold text-center text-gray-600 text-xs uppercase w-1/5">Price</h3>
-                    <h3 class="font-semibold text-center text-gray-600 text-xs uppercase w-1/5">Total</h3>
-                </div>
-                <% cartItems.forEach(item => { %>
-                    <div class="flex items-center hover:bg-gray-100 -mx-8 px-6 py-5">
-                        <div class="flex w-2/5">
-                            <div class="w-20">
-                                <img class="h-24" src="<%= item.image %>" alt="<%= item.name %>">
-                            </div>
-                            <div class="flex flex-col justify-between ml-4 flex-grow">
-                                <span class="font-bold text-sm"><%= item.name %></span>
-                                <span class="text-red-500 text-xs"><%= item.brand %></span>
-                                <a href="#" class="font-semibold hover:text-red-500 text-gray-500 text-xs">Remove</a>
+  <div class="container mx-auto px-4 py-8">
+    <% if ( cart ) { %>
+    <div class="flex flex-col lg:flex-row gap-8"> 
+
+        <!-- Product List -->
+        <div class="w-full lg:w-2/3">
+            <% cart.items.forEach(item => { %>
+                <div class="bg-white rounded-lg shadow-md p-6 mb-4 lg:ml-5">
+                    <div class="flex items-center">
+                        <img src="<%= item.product.images[0] %>" alt="<%= item.product.title %>" class="w-20 h-20 object-cover rounded-md mr-4 ml-4">
+                        <div class="flex-1 ml-5">
+                            <h2 class="text-lg font-semibold"><%= item.product.title %></h2>
+                            <p class="text-sm text-gray-600">Size : <%= item.size %>  </p>
+                            <p class="text-sm text-gray-600">Description  : <%= item.product.titleDescription %> </p>
+                            <p class="text-sm text-gray-600">Spec : <%= item.product.productDescription %> </p>
+
+                            <div class="flex items-center mt-2">
+                                <span class="text-lg font-bold">₹<%= item.discountedPrice %></span>
+                                <span class="text-sm text-gray-500 line-through ml-2">₹<%= item.price %></span>
+                                <span class="text-sm text-green-500 ml-2"><%= item.discountPercentage %>% OFF</span>
                             </div>
                         </div>
-                        <div class="flex justify-center w-1/5">
-                            <input class="mx-2 border text-center w-8" type="text" value="<%= item.quantity %>">
+                    </div>
+                    <div class="flex items-center justify-between mt-4">
+                        <div class="flex items-center border rounded ml-4">
+                            <button  class="decreBtn px-3 py-1 bg-gray-200 text-gray-700 hover:bg-gray-300"  data-id="<%= item._id %>" >-</button>
+                            <span  class="quantity px-3 py-1"><%= item.quantity %></span>
+                            <button  class="increBtn px-3 py-1 bg-gray-200 text-gray-700 hover:bg-gray-300" data-id="<%= item._id %>" >+</button>
                         </div>
-                        <span class="text-center w-1/5 font-semibold text-sm">$<%= item.price.toFixed(2) %></span>
-                        <span class="text-center w-1/5 font-semibold text-sm">$<%= (item.price * item.quantity).toFixed(2) %></span>
+                        <span class="message text-red-900"></span>
+                        <button class="removeBtn text-pink-500 hover:text-pink-600"  data-id="<%= item._id %>"> REMOVE</button>
                     </div>
-                <% }); %>
-                <a href="#" class="flex font-semibold text-indigo-600 text-sm mt-10">
-                    <svg class="fill-current mr-2 text-indigo-600 w-4" viewBox="0 0 448 512"><path d="M134.059 296H436c6.627 0 12-5.373 12-12v-56c0-6.627-5.373-12-12-12H134.059v-46.059c0-21.382-25.851-32.09-40.971-16.971L7.029 239.029c-9.373 9.373-9.373 24.569 0 33.941l86.059 86.059c15.119 15.119 40.971 4.411 40.971-16.971V296z"/></svg>
-                    Continue Shopping
-                </a>
-            </div>
+                </div>
+            <% }); %>
+        </div>
 
-            <div id="summary" class="w-1/4 px-8 py-10">
-                <h1 class="font-semibold text-2xl border-b pb-8">Order Summary</h1>
-                <div class="flex justify-between mt-10 mb-5">
-                    <span class="font-semibold text-sm uppercase">Items <%= cartItems.length %></span>
-                    <span class="font-semibold text-sm">$<%= cartTotal.toFixed(2) %></span>
+        <!-- Checkout Section -->
+        <div class="w-full lg:w-1/3">
+            <div class="bg-white rounded-lg shadow-md p-6 lg:sticky lg:top-8">
+                <h2 class="text-lg font-semibold mb-4">PRICE DETAILS</h2>
+                <div class="flex justify-between mb-2">
+                    <span>Price (<%= totalItems %> items)</span>
+                    <span >₹<%= totalPrice %></span>
                 </div>
-                <div>
-                    <label class="font-medium inline-block mb-3 text-sm uppercase">Shipping</label>
-                    <select class="block p-2 text-gray-600 w-full text-sm">
-                        <option>Standard shipping - $10.00</option>
-                    </select>
+                <div class="flex justify-between mb-2">
+                    <span>Coupon Discount</span>
+                    <span>₹<%= discount %></span>
                 </div>
-                <div class="py-10">
-                    <label for="promo" class="font-semibold inline-block mb-3 text-sm uppercase">Promo Code</label>
-                    <input type="text" id="promo" placeholder="Enter your code" class="p-2 text-sm w-full">
-                </div>
-                <button class="bg-red-500 hover:bg-red-600 px-5 py-2 text-sm text-white uppercase">Apply</button>
-                <div class="border-t mt-8">
-                    <div class="flex font-semibold justify-between py-6 text-sm uppercase">
-                        <span>Total cost</span>
-                        <span>$<%= (cartTotal + 10).toFixed(2) %></span>
+            
+                <div class="border-t pt-2 mt-2">
+        
+                    <div class="flex justify-between font-semibold">
+                        <span>Total Amount</span>
+                        <span class="text-green-500">₹<%= totalAmount %></span>
                     </div>
-                    <button class="bg-indigo-500 font-semibold hover:bg-indigo-600 py-3 text-sm text-white uppercase w-full">Checkout</button>
                 </div>
-            </div>
+                <a href="/checkout"><button class="w-full bg-blue-500 text-white py-2 rounded mt-10 mb-10 hover:bg-blue-600">CHECKOUT</button></a>
+                
+                <div class="mt-4"> 
+                    <div class="flex gap-2">
+                        <input type="text" placeholder="COUPON CODE" class="flex-1 border rounded px-2 py-1">
+                        <button class="bg-pink-500 text-white px-4 py-1 rounded hover:bg-pink-600">APPLY COUPON</button>
+                    </div>
+                </div>
+            </div>  
         </div>
     </div>
+    <% } else { %>
+        <div class="w-full text-center py-10  ">
+          <h2 class="text-2xl font-semibold text-gray-700">Your cart is empty</h2>
+          <p class="text-gray-500 mt-2">No items have been added to your cart yet.</p>
+          <a href="/" class="inline-block mt-4 px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+            Continue Shopping
+          </a>
+        </div>
+      <% } %>
+</div>
 
+<!-- Delete Confirmation Modal -->
+<div id="deleteConfirmModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+  <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div class="mt-3 text-center">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Delete Confirmation</h3>
+          <div class="mt-2 px-7 py-3">
+              <p class="text-sm text-gray-500">
+                  Are you sure you want to remove this item from your cart?
+              </p>
+          </div>
+          <div class="items-center px-4 py-3">
+              <button id="confirmDelete" class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-24 mr-2 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300">
+                  Delete
+              </button>
+              <button id="cancelDelete" class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-24 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                  Cancel
+              </button>
+          </div>
+      </div>
+  </div>
+</div>
     
   <!-- Footer -->
   <%- include("partials/footer") %>
+  <!-- Footer-->
+
+  <script>
+    const increBtn = document.getElementsByClassName("increBtn");
+    const decreBtn = document.getElementsByClassName("decreBtn"); 
+    const removeBtn = document.getElementsByClassName("removeBtn");
+
+    const modal = document.getElementById("deleteConfirmModal");
+    const confirmDeleteBtn = document.getElementById("confirmDelete");
+    const cancelDeleteBtn = document.getElementById("cancelDelete");
+
+    let userId ;
+    let itemId ;
+
+    // Function to show modal
+    function showModal(User , Item) {
+      userId = User ;
+      itemId = Item ; 
+      modal.classList.remove("hidden");
+    }
+
+    // Function to hide modal
+    function hideModal() {
+      modal.classList.add("hidden");
+    }
+
+    cancelDeleteBtn.addEventListener("click" , function(){
+      hideModal();
+    })
+
+    confirmDeleteBtn.addEventListener("click" ,function(){
+      fetch("/removeItem" , {
+        method : "POST",
+        headers : { 'Content-Type' : "application/json" },
+        body : JSON.stringify({ userId , itemId }) 
+       })
+       .then(response => {
+         return response.json();
+       })
+       .then(data => {
+         window.location.reload();
+       })
+       .catch( err =>{
+          console.error("Error : ", err.message);
+        } )
+    })
+    
+
+    //quantity increment
+    for(let i = 0 ; i < increBtn.length ; i++){
+        increBtn[i].addEventListener("click" , function(){
+          const itemId = this.dataset.id;
+          const userId = "<%= user ? user._id :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  '' %>";
+          if(userId == ""){
+            window.location.href = "http://localhost:8001/userlogin"  
+            return;  // prevent further code execution
+          }
+
+     
+          fetch("/cartProductInc" ,  {
+            method : "POST" , 
+            headers : { 'Content-Type' : "application/json" }
+          ,
+          body: JSON.stringify({
+            userId,
+            itemId
+          })
+        })
+        .then( response => {
+          return response.json();
+        } )
+        .then( data => {
+          document.getElementsByClassName("message")[i].innerHTML = data.message ;
+          let quantity = document.getElementsByClassName("quantity")[i].innerHTML;
+          if(quantity<5 ){
+            if(data.productQuant > quantity){
+              let updatedQunt = Number(quantity) + 1 ; 
+              document.getElementsByClassName("quantity")[i].innerHTML = updatedQunt ;
+            }
+          }else{
+            if(productQuant<= quantity){
+            document.getElementsByClassName("quantity")[i].innerHTML = data.productQuant 
+            }
+          }
+          console.log("Success : " ,  data)
+        } )
+        .catch( err =>{
+          console.error("Error : ", err.message);
+        } )
+         
+        })
+    }
+
+    
+
+    //quantity decrement
+    for(let i = 0 ; i < decreBtn.length ; i++){
+        decreBtn[i].addEventListener("click" , function(){
+
+          const userId = "<%= user ? user._id : '' %>";
+          const itemId = this.dataset.id ;
+          if(userId == ""){
+            window.location.href = "http://localhost:8001/userlogin" ;
+            return;  // prevent further code execution
+          }
+
+          fetch("/cartProductDec" ,{
+            method : "POST",
+            headers : { 'Content-Type' : "application/json" },
+            body : JSON.stringify({ userId , itemId }) 
+          })
+          .then(response =>{
+            return response.json();
+          })
+          .then( data => {
+          document.getElementsByClassName("message")[i].innerHTML = data.message ;
+          let quantity = document.getElementsByClassName("quantity")[i].innerHTML;
+          if(quantity > 1){
+            if(data.productQuant < quantity ){  
+               document.getElementsByClassName("quantity")[i].innerHTML = data.productQuant ;
+             
+            }else{
+              let updatedQunt = Number(quantity) - 1 ; 
+              document.getElementsByClassName("quantity")[i].innerHTML = updatedQunt ;
+            }
+          }
+          console.log("Success : " ,  data)
+        
+        } )
+        .catch( err =>{
+          console.error("Error : ", err.message);
+        } ) 
+        })
+    }
+
+    
+
+    //remove cart item
+    for(let i=0 ; i<removeBtn.length ; i++){
+      removeBtn[i].addEventListener("click" , function(){
+
+      const userId = "<%= user ? user._id : '' %>";
+      const itemId = this.dataset.id ;
+       if(userId == ""){
+         window.location.href = "http://localhost:8001/userlogin" ;
+         return;  // prevent further code execution
+       }
+       
+       showModal( userId ,itemId) ; 
+      })
+    }
+
+    
+
+     
+  </script>
 </body>
 </html>

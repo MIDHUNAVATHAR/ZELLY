@@ -7,13 +7,13 @@ const Crypto = require("crypto");
 const transporter = require("../../configs/email-config"); 
 
 //import schemas
-const User = require("../../models/userSchema");
-const Logo = require("../../models/logoSchema");  
-const Banner = require("../../models/bannerSchema");
-const GenderCategory = require("../../models/genderCategory");   
-const ProductCategory = require("../../models/productCategory"); 
-const ProductSubCategory = require("../../models/productSubCategory");
-const Product = require("../../models/product");
+const User = require("../../models/userSchema") ;
+const Logo = require("../../models/logoSchema") ;  
+const Banner = require("../../models/bannerSchema") ;
+const GenderCategory = require("../../models/genderCategory") ;   
+const ProductCategory = require("../../models/productCategory") ; 
+const ProductSubCategory = require("../../models/productSubCategory") ;
+const Product = require("../../models/product") ;
 
 //send email otp function
 const sendOTPEmail = async (email, otp) => {
@@ -48,33 +48,30 @@ const sendOTPEmail = async (email, otp) => {
 //get front page
 const frontPage = async (req, res) => {
    try {
-     const logo = await Logo.findOne().sort({ updatedAt: -1 });
-     const banners = await Banner.find().sort({updatedAt :-1}).limit(3) ; 
+     const logo = await Logo.findOne().sort({ updatedAt: -1 }); 
+     const banners = await Banner.find().sort({updatedAt :-1}).limit(3) ;   
      const user = await User.findById(req.session.userId) || req.user
-     const genderCategory = await GenderCategory.find({softDelete : false});   
-     //const productCategory = await ProductCategory.find({softDelete : false}); 
-     const subCategories = await ProductSubCategory.find({softDelete : false}).populate('genderCategory productCategory');
+     const genderCategory = await GenderCategory.find({softDelete : false}) ;    
+     //const productCategory = await ProductCategory.find({softDelete : false}) ; 
+     const subCategories = await ProductSubCategory.find({softDelete : false}).populate('genderCategory productCategory'); 
 
-     const subCategoryProducts = await Promise.all(subCategories.map(async (subCategory) => {
-        const products = await Product.find({ productSubCategory: { $in: [subCategory._id] } , softDelete : false })  
+     const subCategoryProducts = await Promise.all( subCategories.map ( async ( subCategory ) => {
+        const products = await Product.find({ productSubCategory : { $in: [subCategory._id] } , softDelete : false })  
           .sort({ createdAt: -1 })  
           .limit(8); 
-         return {
-           subCategory, 
-           products 
+         return {    
+           subCategory,      
+           products  
          };
      })) ; 
-
-     console.log(subCategoryProducts);
-     
-     res.render('front-page', { subCategoryProducts , logo , banners , user ,genderCategory});
+     res.render('front-page', { subCategoryProducts , logo , banners , user , genderCategory } )  ; 
    } catch (error) {
      console.error(error);
-     res.status(500).send('Error loading main page');
+     res.status(500).send('Error loading main page') ;
    }
  };
 
-//get login page
+//get login page 
 const userLogin = (req , res) =>{ 
    res.redirect("/");          // get main page  :  already user authenticated using middleware
 }
@@ -83,7 +80,7 @@ const userLogin = (req , res) =>{
 //post login page
 const userLoginPost = async ( req , res ) => {
 
-   let {email , password , remember_me } = req.body;
+   let {email , password , remember_me } = req.body ;
    email  = email.trim();
    password = password.trim(); 
    
@@ -122,14 +119,13 @@ const userSignup = (req,res) =>{
 
 // user logout
 const userLogout = (req,res) =>{
-//    req.session.destroy((err) => {
-//       if (err) {
-//           return res.status(500).send('Failed to log out.');
-//       }
-//       res.redirect('/'); // Redirect to login or home page
-//   });
-      req.session.userId =null;
-      res.redirect("/userLogin");
+   req.session.destroy((err) => {
+      if (err) {
+          return res.status(500).send('Failed to log out.');
+      }
+      res.redirect('/userlogin'); // Redirect to login
+  }); 
+     
 }
 
 
@@ -219,8 +215,8 @@ const checkOtp = async (req,res) =>{
 
 //get forgot password
 const forgotPassword = (req,res) =>{
-   res.render("user-forgot-password" , {message : ''});
-}
+   res.render("user-forgot-password" , { message : ''} );
+} 
 
 //post forgotpassword
 const forgotPasswordPost = async (req, res) =>{
