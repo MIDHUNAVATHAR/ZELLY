@@ -14,6 +14,7 @@ const GenderCategory = require("../../models/genderCategory") ;
 const ProductCategory = require("../../models/productCategory") ; 
 const ProductSubCategory = require("../../models/productSubCategory") ;
 const Product = require("../../models/product") ;
+const Cart = require("../../models/cartSchema") ;
 
 //send email otp function
 const sendOTPEmail = async (email, otp) => {
@@ -64,7 +65,20 @@ const frontPage = async (req, res) => {
            products  
          };
      })) ; 
-     res.render('front-page', { subCategoryProducts , logo , banners , user , genderCategory } )  ; 
+     
+     let cartTotal ; 
+     if(user){
+     const cart = await Cart.findOne({user : user._id});
+     if(cart){
+      cartTotal = cart.items.reduce((total, item) =>{  
+        return item.status== "Available" ? total + item.quantity : total},
+         0); 
+      }
+     }else{
+     cartTotal = 0;
+     }
+     
+     res.render('front-page', { subCategoryProducts , logo , banners , user , genderCategory ,cartTotal } )  ; 
    } catch (error) {
      console.error(error);
      res.status(500).send('Error loading main page') ;
@@ -164,6 +178,8 @@ const userSignupPost = async (req,res) =>{
 
 }
 
+
+
 //post resend otp
 const resendEmailOtp =async (req ,res) =>{ 
    let {email } = req.body; 
@@ -181,6 +197,8 @@ const resendEmailOtp =async (req ,res) =>{
    res.render("../views/user-otp-verify" , {email : email ,  message : `A new OTP is sent to your registered email : ${email} . Plese enter new Otp for verify.`});  
    
 }
+
+
 
 //post check otp for verify
 const checkOtp = async (req,res) =>{
@@ -213,10 +231,14 @@ const checkOtp = async (req,res) =>{
    } 
 }
 
+
+
 //get forgot password
 const forgotPassword = (req,res) =>{
    res.render("user-forgot-password" , { message : ''} );
 } 
+
+
 
 //post forgotpassword
 const forgotPasswordPost = async (req, res) =>{
@@ -246,6 +268,8 @@ const forgotPasswordPost = async (req, res) =>{
 }
 
 
+
+
 //get reset password  
 const resetPassword = async (req,res) =>{
    try {
@@ -260,6 +284,9 @@ const resetPassword = async (req,res) =>{
       res.render('user-reset-password', { message: 'Error loading reset form. Please try again later.' });
     }
 }
+
+
+
 
 //post reset password
 const resetPasswordPost =async (req , res) =>{
@@ -286,7 +313,7 @@ const resetPasswordPost =async (req , res) =>{
       console.log(err);
       res.render('user-reset-password', { message: 'Error resetting password. Please try again later.',token : "" });
     }
-}
+} 
 
 
 

@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= product.title %></title>
+  <!-- Notyf CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   
      <style>
@@ -102,7 +104,7 @@
 
     <!-- Size Options -->
     <div class="mt-4">
-      <h3 class="text-sm font-medium text-gray-700">Size</h3>
+      <h3 class="text-sm font-medium text-gray-700"> Size </h3>
       <div class="flex mt-2 space-x-2">
         <% if (product.sizes && product.sizes.length > 0) { %>
           <% product.sizes.forEach(size => { %>
@@ -113,14 +115,14 @@
     </div>
 
     <!-- Add to Cart & Wishlist -->
-    <div class="mt-6 flex space-x-4">
+    <div class="mt-6 flex space-x-4"> 
       <button class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700" id="addToCart">ADD TO CART</button>
-      <button class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700">ADD TO WISHLIST</button>
+      <button class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700" onclick="addToWishlist('<%= product._id %>' , '<%= selectedSizeId%>' )" >ADD TO WISHLIST</button>
     </div>
 
     <!-- Highlights Section -->
     <div class="mt-8">
-      <h3 class="text-lg font-medium text-gray-900">Highlights</h3>
+      <h3 class="text-lg font-medium text-gray-900">Highlights</h3> 
       <p class="mt-2 text-gray-700"><%= product.highlights %></p>
     </div>
 
@@ -133,51 +135,38 @@
 </div>
 
 
-  
-
-    <!-- Reviews Section -->
-    <div class="mt-12">
-      <h2 class="text-2xl font-bold text-gray-900">Recent Review & Ratings</h2>
-      <div class="mt-6">
-        <!-- Ratings Breakdown -->
-        <div class="flex items-center space-x-4">
-          <div class="text-yellow-400">
-            <!-- Assuming a 5-star rating system -->
+<!-- Reviews Section -->
+<div class="mt-20">
+  <h2 class="text-2xl font-bold text-gray-900 mb-4">Recent Reviews & Ratings</h2>
+  <!-- Individual Reviews -->
+  <% if (product.reviews && product.reviews.length > 0) { %>
+    <% product.reviews.forEach(review => { %>
+      <div class="bg-white shadow-md rounded-lg p-4 mb-4">
+        <div class="flex items-start space-x-4">
+          <div class="flex text-yellow-400">
+            <!-- Assuming a 5-star rating system for individual reviews -->
             <% for(let i = 0; i < 5; i++) { %>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 <%= i < Math.round(product.rating) ? 'text-yellow-400' : 'text-gray-200' %>" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 <%= i < Math.round(review.rating) ? 'text-yellow-400' : 'text-gray-200' %>" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M9.049 3.255a1 1 0 011.902 0l1.68 3.407a1 1 0 00.755.546l3.764.547a1 1 0 01.554 1.706l-2.724 2.654a1 1 0 00-.287.885l.644 3.753a1 1 0 01-1.451 1.054l-3.372-1.772a1 1 0 00-.931 0l-3.372 1.772a1 1 0 01-1.451-1.054l.644-3.753a1 1 0 00-.287-.885L2.96 8.91a1 1 0 01.554-1.706l3.764-.547a1 1 0 00.755-.546l1.68-3.407z"/>
               </svg>
             <% } %>
           </div>
-          <div class="text-sm text-gray-600">
-            <%= product.rating %> out of 5 stars
+          <div>
+            <h4 class="text-gray-900 font-bold"><%= review.user.firstName %> (<%= review.user.email %>)</h4> <!-- Display user's name and email -->
+            <p class="text-gray-600 text-sm mt-2"><%= review.comment %></p>
+            <p class="text-xs text-gray-500 mt-1">Reviewed on: <%= new Date(review.createdAt).toLocaleDateString() %></p> <!-- Display review date -->
           </div>
         </div>
-
-        <!-- Individual Reviews -->
-        <% if (product.reviews && product.reviews.length > 0) { %>
-          <% product.reviews.forEach(review => { %>
-            <div class="mt-4">
-              <div class="flex items-center space-x-4">
-                <div class="flex text-yellow-400">
-                  <!-- Assuming a 5-star rating system -->
-                  <% for(let i = 0; i < 5; i++) { %>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 <%= i < Math.round(review.rating) ? 'text-yellow-400' : 'text-gray-200' %>" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M9.049 3.255a1 1 0 011.902 0l1.68 3.407a1 1 0 00.755.546l3.764.547a1 1 0 01.554 1.706l-2.724 2.654a1 1 0 00-.287.885l.644 3.753a1 1 0 01-1.451 1.054l-3.372-1.772a1 1 0 00-.931 0l-3.372 1.772a1 1 0 01-1.451-1.054l.644-3.753a1 1 0 00-.287-.885L2.96 8.91a1 1 0 01.554-1.706l3.764-.547a1 1 0 00.755-.546l1.68-3.407z"/>
-                    </svg>
-                  <% } %>
-                </div>
-                <div>
-                  <h4 class="text-gray-900 font-bold"><%= review.user.name %></h4> 
-                  <p class="text-gray-600 text-sm"><%= review.comment %></p>
-                </div>
-              </div>
-            </div>
-          <% }) %>
-        <% } %>
-         
       </div>
-    </div>
+    <% }) %>
+  <% } else { %>
+    <!-- No Reviews Message -->
+    <div class="text-gray-600 text-sm mt-4">Currently no reviews yet.</div>
+  <% } %>
+</div>
+
+
+
   </div>
 
     <!-- Footer -->
@@ -192,7 +181,13 @@
     </div>
 
 
-    <script>
+    
+
+
+<script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+<script>   
+const notyf = new Notyf();
+
 
       document.addEventListener("DOMContentLoaded" , ()=>{
 //modals....
@@ -203,10 +198,12 @@
 
         document.getElementById('closeModal').addEventListener('click', function() {
           document.getElementById('successModal').style.display = 'none';
+          location.reload();
         });
 //modals....
 
-        const mainImage = document.getElementById('mainImage');
+
+  const mainImage = document.getElementById('mainImage');
   const thumbnails = document.querySelectorAll('.thumbnail');
 
   thumbnails.forEach(thumbnail => {
@@ -267,7 +264,7 @@
             })
             .then(response =>{
               console.log(response) ;
-             return response.json() ;
+              return response.json() ;
             })
             .then(data => {
               // Handle success (e.g., show a success message,    UI)
@@ -282,11 +279,43 @@
               // Handle error (e.g., show an error message)
             });
           })
-
-
-
  })
 
+
+
+  //add-to-wishlist
+  function addToWishlist(productid , sizeid){
+    
+      const productId = productid;
+      const sizeId    = sizeid;
+      fetch('/wishlist/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            productId: productId,
+            sizeId: sizeId,
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+          notyf.success('Added to wishlist successfully!');
+        }else if (data.redirect) {
+      // Redirect the user to the login page if they are not authenticated
+      window.location.href = data.redirect;
+        }
+         else {
+          notyf.error(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        notyf.error('Failed to add to wishlist. Please try again!');
+    });
+      
+   }
 
 
     

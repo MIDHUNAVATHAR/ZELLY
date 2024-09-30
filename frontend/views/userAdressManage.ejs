@@ -16,7 +16,7 @@
         <div class="bg-white shadow-md rounded-lg p-6">
             <div class="flex items-center mb-6">
                 <img class="h-16 w-16 rounded-full" src="https://via.placeholder.com/150" alt="Profile"> 
-                <h2 class="text-2xl font-semibold ml-4">Hello</h2>
+                <h2  class="text-2xl font-semibold ml-4"> Hello </h2>
             </div>
 
             <div class="flex flex-col lg:flex-row gap-4">
@@ -55,18 +55,20 @@
                             </button>
                         </div>
 
+
                         <!--submit form-->
                         <form id="addressForm" action="/saveAddress" method="POST" class="space-y-4 hidden">
                             
                             <input type="hidden" name="userId"  value="<%= user._id %>">
+                            <input type="hidden" name="checkout" value="1" >
                              
                             <div>
-                                <label for="name" class="block text-gray-700 font-medium">Name</label>
+                                <label for="name" class="block text-gray-700 font-medium"> Name </label>
                                 <input type="text" name="name" id="name" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
                             </div>
 
                             <div>
-                                <label for="phone" class="block text-gray-700 font-medium">Phone</label>
+                                <label for="phone" class="block text-gray-700 font-medium"> Phone </label>
                                 <input type="text" name="phone" id="phone" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
                             </div>
 
@@ -166,7 +168,7 @@
                            
                                 <form id="" action="/saveEditAddress/<%=address.id %>" method="POST" class="editAddressForm space-y-4 hidden">
                             
-                                    <!-- <input type="hidden" name="userId"  value="<%= user._id %>"> -->
+                                    <!-- <input type="hidden" name=""  value="<%= user._id %>"> -->
                                      
                                     <div>
                                         <label for="name" class="block text-gray-700 font-medium">Name</label>
@@ -256,11 +258,11 @@
     <script>
        
       
-
-        //toggle the form input 
+  //toggle the form input 
         document.getElementById("toggleFormBtn").addEventListener("click" , function(){
               document.getElementById("addressForm").classList.toggle("hidden") ;
         })
+      
 
 
         for( let i = 0 ; i < '<%=addresses.length %>'  ; i++ ){

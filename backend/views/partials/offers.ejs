@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offers</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+  <!-- Link Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+ 
+</head>
+<body class="bg-gray-100 p-8">
+
+  <!-- Heading Section -->
+  <div class="text-center mb-8 mt-5">
+    <h1 class="text-4xl font-bold text-gray-800">Gender Category Offers</h1>
+  </div>
+
+  <!-- Table Section -->
+  <div class="max-w-4xl mx-auto">
+    <table class="table-auto w-full bg-white shadow-md rounded-lg overflow-hidden">
+      <thead>
+        <tr class="bg-gray-800 text-white">
+          <th class="px-4 py-3">Gender Category</th>
+          <th class="px-4 py-3">Discount Offer (%)</th>
+          <th class="px-4 py-3">Offer Expiry Date</th>
+          <th class="px-4 py-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Sample Rows (replace with dynamic data as needed) -->
+        <% genderCategories.forEach(function(category) { %>
+        <tr class="bg-gray-50 text-center border-b border-gray-200">
+          <td class="px-4 py-3"><%= category.name %></td>
+          <td class="px-4 py-3"> <input 
+            type="number" 
+            name="offerPercentage" 
+            value="<%= category.offer %>" 
+            class="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            min="0" 
+            max="100"
+            id="genderOffer<%= category.id %>"
+          /> % </td>
+          <td class="px-4 py-3"><input 
+            type="date" 
+            name="expiryDate" 
+            value="<%= category.offerExpiry ? category.offerExpiry.toISOString().split('T')[0] : '' %>" 
+            class="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            id="genderExpiry<%= category.id %>"
+          />
+        </td>
+        <td class="px-4 py-3">
+        <button 
+          onclick="categoryOffer('<%= category.id %>' , document.getElementById('genderOffer<%= category.id %>').value, document.getElementById('genderExpiry<%= category.id %>').value)"
+          class="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600"
+        >
+          Save
+        </button>
+      </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+
+   <!-- Product Offers Section -->
+   <div class="text-center mb-8 mt-20">
+    <h1 class="text-4xl font-bold text-gray-800">Product Offers</h1>
+  </div>
+
+  <!-- Product Offers Table Section -->
+  <div class="max-w-4xl mx-auto mb-20">
+    <table class="table-auto w-full bg-white shadow-md rounded-lg overflow-hidden">
+      <thead>
+        <tr class="bg-gray-800 text-white">
+          <th class="px-4 py-3">Product Name</th>
+          <th class="px-4 py-3">Image</th>
+          <th class="px-4 py-3">Discount Offer (%)</th>
+          <th class="px-4 py-3">Offer Expiry Date</th>
+          <th class="px-4 py-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% products.forEach(function(product) { %>
+        <tr class="bg-gray-50 text-center border-b border-gray-200">
+          <td class="px-4 py-3"><%= product.title %></td>
+          <td class="px-4 py-3">
+            <img src="<%= product.images[0] %>" alt="<%= product.title %>" class="h-16 w-16 object-cover mx-auto" />
+          </td>
+          <td class="px-4 py-3">
+            <input 
+              type="number" 
+              name="productOfferPercentage" 
+              value="<%= product.offer %>" 
+              class="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              min="0" 
+              max="100"
+              id="productOffer<%= product.id %>" 
+            /> %
+          </td>
+          <td class="px-4 py-3">
+            <input 
+              type="date" 
+              name="productExpiryDate" 
+              value="<%= product.offerExpiry ? product.offerExpiry.toISOString().split('T')[0] : '' %>" 
+              class="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="productExpiry<%= product.id %>"
+            />
+          </td>
+          <td class="px-4 py-3">
+            <button 
+              onclick="productOffer('<%= product.id %>' , document.getElementById('productOffer<%= product.id %>').value, document.getElementById('productExpiry<%= product.id %>').value)"
+              class="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600"
+            >
+              Save
+            </button>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <script>
+   
+
+    function categoryOffer( id , offer , date ){
+        const data = {
+        id: id,
+        offer: offer,
+        expiryDate: date
+      };
+    
+      fetch( "/admin/save-category-offer", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(data => {
+        toastr.success(`${data.message}`);
+        console.log('Success:', data);
+        // Optionally, show a success message or update the UI
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        // Optionally, show an error message
+      });
+    }
+
+
+
+  
+    function productOffer( id , offer , date ){
+        const data = {
+        id: id,
+        offer: offer,
+        expiryDate: date
+      };
+      console.log(data)
+      fetch( "/admin/save-product-offer", { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(data => {
+        toastr.success(`${data.message}`);
+        console.log('Success:', data);
+        // Optionally, show a success message or update the UI
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        // Optionally, show an error message
+      });
+    }
+
+   
+     
+  </script>
+
+</body>
+</html>

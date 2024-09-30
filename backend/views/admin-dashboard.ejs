@@ -47,16 +47,16 @@
           <a href="/admin/listProduct" class="block p-2 hover:bg-white hover:text-black  rounded">List Products</a>
         </li>
         <li class="mb-2">
-          <a href="#" class="block p-2 hover:bg-white hover:text-black rounded">Orders</a>
+          <a href="/admin/orders" class="block p-2 hover:bg-white hover:text-black rounded">Orders</a>
         </li>
         <li class="mb-2">
-          <a href="#" class="block p-2 hover:bg-white hover:text-black rounded">Sales Report</a>
+          <a href="/admin/sales-report" class="block p-2 hover:bg-white hover:text-black rounded">Sales Report</a>
         </li>
         <li class="mb-2">
-          <a href="#" class="block p-2 hover:bg-white hover:text-black rounded">Discount</a>
+          <a href="/admin/offers" class="block p-2 hover:bg-white hover:text-black rounded">Discount</a>
         </li>
         <li class="mb-2">
-          <a href="#" class="block p-2  hover:bg-white hover:text-black rounded">Coupon</a>
+          <a href="/admin/coupon" class="block p-2  hover:bg-white hover:text-black rounded">Coupon</a>
         </li>
         
         <!-- Add more sidebar items as needed -->
@@ -70,11 +70,11 @@
     <!-- Header -->
     <header class="bg-gray-900 text-white p-4 flex items-center justify-between">
       <div class="text-xl">Admin Dashboard</div>
-      <div class="text-sm">Welcome, <%= admin %></div>
+      <div class="text-sm">Welcome , <%= admin %> </div>
     </header>
 
     <!-- Dynamic Content Area -->
-    <main id="content" class="flex-1 p-4 overflow-y-auto bg-green-300">
+    <main id="content" class="flex-1  overflow-y-auto bg-green-300">
       <!-- Dynamic content will be loaded here -->
       <%- include(partial) %>
     </main>

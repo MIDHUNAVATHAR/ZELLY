@@ -8,7 +8,7 @@ const checkAuthentication = async (req, res ,next) =>{
     try{
         const user = await User.findById(req.session.userId || req.user.id) ; 
         if(user && user.status == "block"){
-           return  res.render("blocked-page.ejs");
+           return  res.render("blocked-page.ejs") ;
         }
         next(); 
 
@@ -21,4 +21,5 @@ const checkAuthentication = async (req, res ,next) =>{
     }
 }
 
-module.exports = checkAuthentication;
+
+module.exports = checkAuthentication ; 

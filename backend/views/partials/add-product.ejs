@@ -1,4 +1,4 @@
-
+<div class="p-4">
       <h1>ADD PRODUCT...</h1>
       <hr>
 
@@ -27,7 +27,7 @@
           <textarea name="details" id="details" class="mt-1 p-2 border border-gray-300 rounded w-full" ></textarea>
         </div>
 
-        <!---------------------- SIZE TABLE ----------------------->
+        <!---------------------- SIZE TABLE -----------------------> 
           <div class="overflow-x-auto">
             <table id="productTable" class="min-w-full bg-white border border-gray-300">
                 <thead class="bg-gray-200">
@@ -36,7 +36,7 @@
                         <th class="py-2 px-4 border-b">Quantity</th>
                         <th class="py-2 px-4 border-b">Price</th>
                         <th class="py-2 px-4 border-b">Discounted Price</th>
-                        <th class="py-2 px-4 border-b">Discount Percentage</th>
+                        <th class="py-2 px-4 border-b">Discount Percentage</th>  
                         <th class="py-2 px-4 border-b">Action</th>
                     </tr>
                 </thead>
@@ -78,7 +78,7 @@
         </div>
         <div class="mb-4">  
           <label for="images" class="block text-sm font-medium text-gray-700">Product Images</label>
-          <input type="file" name="productImages" id="productImages" class="mt-1 p-2 border border-gray-300 rounded w-full">
+          <input type="file" name="productImages" id="productImages" class="mt-1 p-2 border border-gray-300 rounded w-full " >
           <label class="productImgErr text-red-500"></label>
         </div> 
 
@@ -92,7 +92,7 @@
        <!-- Cropped images preview container -->
        <div id="croppedImagesContainer" class="mb-4">
        <h3 class="text-sm font-medium text-gray-700">Cropped Images</h3>
-       <div id="croppedImages" class="flex flex-wrap"></div>
+       <div id="croppedImages" class="flex flex-wrap">  </div>
        </div>
 
       <button type="button" id="cropButton" style="display: none;" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Crop & Upload</button>
@@ -102,8 +102,10 @@
   </div> 
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>        
 
+
+</div>
   <script>
 
 let cropper;
@@ -112,13 +114,13 @@ let cropper;
         const cropButton = document.getElementById('cropButton') ; 
         const cropperContainer = document.getElementById('cropperContainer');
         const croppedImagesContainer = document.getElementById('croppedImages');
-        let croppedImagesData = [];
+        let croppedImagesData = [ ] ;
 
         inputImage.addEventListener('change', (event) => {
             const files = event.target.files; 
             if (files && files.length > 0) {
                 const file = files[0];
-                const reader = new FileReader(); 
+                const reader = new FileReader() ; 
                 reader.onload = (e) => {
                     image.src = e.target.result; 
                     cropperContainer.style.display = 'block'; 
@@ -126,7 +128,7 @@ let cropper;
                     if (cropper) {
                         cropper.destroy();
                     }
-                    cropper = new Cropper(image, {
+                    cropper = new Cropper( image, {
                         aspectRatio: NaN,
                         viewMode: 1,
                         dragMode: 'move',
@@ -136,7 +138,7 @@ let cropper;
                         minCropBoxHeight: 50,
                     });
                 };
-                reader.readAsDataURL(file);
+                reader.readAsDataURL( file )  ; 
             }
         });
 
@@ -150,50 +152,29 @@ let cropper;
                 croppedImagesData.push(blob);
 
                 const url = URL.createObjectURL(blob);
-                const imgElement = document.createElement('img');
+                const imgElement = document.createElement('img') ;  
                 imgElement.src = url;
-                imgElement.style.maxWidth = '100px';
-                imgElement.style.margin = '10px';
+                imgElement.style.maxWidth = '100px' ;
+                imgElement.style.margin = '10px'    ;
                 croppedImagesContainer.appendChild(imgElement) ;
 
                 cropperContainer.style.display = 'none';
                 cropButton.style.display = 'none'; 
                 inputImage.value = '';
-                inputImage.disabled = false; 
+                inputImage.disabled = false;  
             }, 'image/png');
         });
 
-        document.getElementById('form').addEventListener('submit', function(event) {
+        
+
+
+        document.getElementById('form').addEventListener( 'submit' , function( event ) {
             event.preventDefault();
 
-            const formData = new FormData(this);
-            formData.delete('productImages'); 
-
-      
-            
-     
-      // const sizes = [];
-
-      // const sizeNames = formData.getAll('size[]');
-      // const prices = formData.getAll('price[]');
-      // const quantities = formData.getAll('quantity[]');
-      // const discountedPrices = formData.getAll('discountedPrice[]');
-      // const discountPercentages = formData.getAll('discountPercentage[]'); 
-
-      // sizeNames.forEach((size, index) => {
-      //   sizes.push({
-      //     [size]: {
-      //       price: prices[index],
-      //       quantity: quantities[index],
-      //       discountedPrice: discountedPrices[index],
-      //       discountPercentage: discountPercentages[index],
-      //     }
-      //   });
-      // });
-        
-    
+            const formData = new FormData(this) ; 
+            formData.delete('productImages');     
             croppedImagesData.forEach((blob , index) => {
-                formData.append(`productImages`, blob, `cropped_${index}.png`)  ;
+                formData.append(`productImages`, blob, `cropped_${index}.png`) ; 
             });  
 
             fetch(this.action, {
@@ -205,7 +186,7 @@ let cropper;
                     alert(data.message);
                     location.reload();
                 } else {
-                    alert('Failed to add product: ' + data.error); 
+                    alert('Failed to add product: ' + data.error ); 
                 }
             }).catch(error => {
                 console.error( ' Error : ' , error );
@@ -222,15 +203,17 @@ let cropper;
         const newRow = table.insertRow() ;
     
         newRow.innerHTML = `
-            <td><input type="text"  name="size[]" class="border border-gray-300 p-1"></td>
-            <td><input type="number" name="quantity[]" class="border border-gray-300 p-1" min="0"></td>
-            <td><input type="number" name="price[]" class="border border-gray-300 p-1" min="0"></td>
-            <td><input type="number" name="discountedPrice[]" class="border border-gray-300 p-1" min="0"></td>
-            <td><input type="number" name="discountedPercentage[]" class="border border-gray-300 p-1" min="0"></td>
+            <td><input type="text"  name="size[]" class="border border-gray-300 p-1 " required></td>
+            <td><input type="number" name="quantity[]" class="border border-gray-300 p-1" min="0" required ></td>
+            <td><input type="number" name="price[]" class="border border-gray-300 p-1" min="0" required></td>
+            <td><input type="number" name="discountedPrice[]" class="border border-gray-300 p-1" min="0" required></td>
+            <td><input type="number" name="discountedPercentage[]" class="border border-gray-300 p-1" min="0" required></td>
             <td><button type="button" class="text-red-500" onclick="deleteRow(this)">Delete</button></td>
         `;
         }
 
+
+        //delete size ; 
         function deleteRow(button) {
             const row = button.parentNode.parentNode;
             row.parentNode.removeChild(row);

@@ -11,14 +11,17 @@ const addressSchema = new Schema({
     city : { type : String },
     state : { type : String },
     pincode : { type : Number },
-    landmark : { type : String },
+    landmark : { type : String }, 
     alternatePhone : { type : Number },
     addresstype : { type : String },
-    userId : { type : Schema.Types.ObjectId , ref: 'UserSchema', required : true }, 
+    softDelete : { type : Boolean,
+        default : false,  } ,
+    userId : { type : Schema.Types.ObjectId , ref: 'UserSchema', required : true } , 
 })
 
+
 // Enable indexing on userId
-addressSchema.index({ userId : 1 });
+addressSchema.index({ userId : 1 }) ; 
 
 
 const Address = mongoose.model('Address', addressSchema );

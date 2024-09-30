@@ -6,6 +6,6 @@ const logoSchema = new mongoose.Schema({
 { timestamps : true } 
 ); 
 
-module.exports = mongoose.model( 'Logo' , logoSchema ) ; 
+module.exports = mongoose.model( 'Logo' , logoSchema ) ;  
 
 

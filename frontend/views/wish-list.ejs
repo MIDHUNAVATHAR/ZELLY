@@ -15,60 +15,63 @@
 
 <div class="p-5 bg-white" style="min-height: 75vh;">
 
-<!-- Breadcrumbs -->
-<nav class="text-sm" aria-label="Breadcrumb">
-    <ol class="inline-flex items-center">
-      <% breadcrumbs.forEach((crumb, index) => { %>
-        <li class="inline-flex items-center">
-          <% if (index !== 0) { %>
-            <span class="mx-2 text-gray-500">\</span>
-          <% } %>
-          <% if (index === breadcrumbs.length - 1) { %>
-            <span class="text-gray-500"><%= crumb.label %></span>
-          <% } else { %>
-            <a href="<%= crumb.url %>" class="text-gray-700 hover:text-blue-600">
-              <%= crumb.label %>
-            </a>
-          <% } %>
-        </li>
-      <% }); %>
-    </ol>
-  </nav>
 
-    <% if (wishlist.length > 0) { %>
-      <% wishlist.forEach(item => { %>
-        <div class="bg-white shadow-md rounded p-4 mb-4 flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <img class="w-20 h-20 object-cover rounded" src="<%= item.productId.image %>" alt="<%= item.productId.name %>">
-            <div>
-              <div class="text-lg font-semibold"><%= item.productId.name %></div>
-              <div class="text-gray-600"><%= item.productId.price %></div>
-            </div>
-          </div>
-          <div class="flex space-x-2">
-            <button class="bg-green-500 text-white px-4 py-2 rounded" onclick="buyNow('<%= item.productId._id %>')">Buy Now</button>
-            <button class="bg-red-500 text-white px-4 py-2 rounded" onclick="removeFromWishlist('<%= item._id %>')">Remove</button>
-          </div>
-        </div>
-      <% }); %>
-    <% } else { %>
-      <div class="text-center text-gray-500">Your wishlist is empty.</div>
-    <% } %>
+
+  <div class="container mx-auto mt-10">
+    <h1 class="text-2xl font-bold mb-6">Your Wishlist</h1>
+    
+    <% if (wishlist && wishlist.items.length > 0) { %> 
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <% wishlist.items.forEach(item => { %>
+            
+              <div class="bg-white p-4 rounded-lg shadow-md">
+                <a href= "/product/<%= item.product._id%>?id=<%= item.sizeId%>" target="_blank">
+                  <img src="<%= item.product.images[0] %>" alt="<%= item.product.title %>" class="w-full h-48 object-cover rounded">
+                
+                  <h2 class="text-lg font-semibold mt-2"><%= item.product.title %></h2>
+                  <p class="text-gray-600">Size:  <%=  item.product.sizes.find(size => size._id.toString() === item.sizeId.toString()).size; %></p>
+                  <p class="text-gray-600">Price:  ₹ <%= item.product.sizes.find(size => size._id.toString() === item.sizeId.toString()).discountedPrice %></p> 
+                </a>
+                  <div class="mt-4 flex space-x-4">
+                     
+                      <button onclick="removeItem('<%=item._id %>')" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                          Remove from Wishlist
+                      </button>
+                  </div>
+               
+              </div>
+           
+          <% }) %>
+      </div>
+  <% } else { %>
+      <p class="mt-4 text-gray-600">Your wishlist is currently empty.</p>
+  <% } %>
+  
+  
+</div>
+ 
   </div>
 
   <!-- Footer -->
   <%- include("partials/footer") %>
 
-  <script>
-    async function buyNow(productId) {
-      // Handle the buy now action
-      alert('Buy Now functionality is not implemented yet.');
-    }
 
-    async function removeFromWishlist(wishlistItemId) {
-      await fetch(`/wishlist/${wishlistItemId}`, { method: 'DELETE' });
-      location.reload();
-    }
+  <script>
+
+ 
+
+   async function removeItem(itemId ){
+     const response =  await fetch(`/removeWishlistItem/${itemId}` , { method : "DELETE"} )
+      if (response.ok) {
+        window.location.reload();
+      }
+   }
+
+  
+
+   
+
+  
   </script>
 </body>
 </html>

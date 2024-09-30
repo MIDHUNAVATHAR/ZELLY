@@ -27,7 +27,7 @@ const cartSchema = new Schema({
       quantity: {
         type: Number,
         required: true,
-        min: 1
+        min: 0,
       },
       discountedPrice: {
         type: Number,
@@ -37,13 +37,21 @@ const cartSchema = new Schema({
         type: Number,
         min: 0,
         max: 100
+      },
+      status : {
+        type: String,
+        default : "Available" , 
+        required: true
       }
-    }]
+    }],
+    walletBalance : { type : Number , default :0 },
+    couponBalance : { type : Number , default :0 }
+    
   },
-   {
+   { 
     timestamps: true
   });
 
 
-const Cart = mongoose.model('Cart', cartSchema );
-module.exports = Cart ;   
+const Cart = mongoose.model('Cart', cartSchema ); 
+module.exports = Cart ;    

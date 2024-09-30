@@ -1,14 +1,21 @@
 <div class="container mx-auto p-6 bg-white rounded-lg shadow-lg">
+
+    <div class="flex items-center mb-6">
+        <input type="text" id="searchInput" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="Search Products here">
+        <button class="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg w-30" onclick="search()">Search </button> 
+    </div>
+
     <h1 class="text-2xl font-bold mb-6">Product List</h1>
+
     <div class="overflow-x-auto">
         <table class="min-w-full bg-gray-100 rounded-lg">
             <thead>
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Product Name</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Images</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Total Stocks</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Edit</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Block</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-black-500 uppercase tracking-wider">Delete</th> 
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">  
@@ -28,10 +35,6 @@
                         </div>
                     </td>
 
-                    <!-- Total Stocks -->
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900"><%= product.totalStocks %></div>
-                    </td>
 
                     <!-- Edit Button -->
                     <td class="px-6 py-4 whitespace-nowrap">
@@ -40,35 +43,133 @@
                         </a>
                     </td>
 
+
+
                     <!-- Block Button -->
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <button onclick="blockProduct('<%= product._id %>')" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
-                            Block
-                        </button>
+                        <button onclick="toggleBlockProduct('<%= product._id %>')" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+                           <% if(product.softDelete){ %>
+                                Block
+                           <% }else{ %>
+                                Unblock
+                           <% } %>   
+                        </button> 
+                    </td>
+
+
+
+                    <!-- Delete Button -->
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <button onclick="deleteProduct('<%= product._id %>')" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+                          DELETE 
+                        </button> 
                     </td>
                 </tr>
                 <% }) %>
             </tbody>
         </table>
     </div>
+
+
     <!-- Pagination -->
     <div class="mt-4">
-        <nav class="flex justify-center">
-            <ul class="inline-flex items-center -space-x-px">
-                <li>
-                    <a href="#" class="py-2 px-3 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700">1</a>
-                </li>
-                <!-- Add more pagination buttons as needed -->
-            </ul>
-        </nav>
-    </div>
-</div>
+        <div class="flex justify-center mt-4">
+            <a href="<%= currentPage > 1 ? '?page=' + (currentPage - 1) + '&search=' + searchKeyword : '#' %>" 
+                class="px-4 py-2 mx-1 rounded 
+                       <%= currentPage === 1 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-gray-500 text-white hover:bg-gray-600' %>">
+                 &laquo; Prev
+            </a>
 
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="?page=<%= i %>&search=<%= searchKeyword %>"  
+                   class="px-4 py-2 mx-1 rounded 
+                          <%= currentPage === i ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-300 text-white hover:bg-gray-400' %>">
+                    <%= i %>
+                </a>
+            <% } %>
+          
+            <a href="<%= currentPage < totalPages ? '?page=' + (currentPage + 1) + '&search=' + searchKeyword : '#' %>" 
+                class="px-4 py-2 mx-1 rounded 
+                       <%= currentPage === totalPages ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-gray-500 text-white hover:bg-gray-600' %>">
+                 &raquo; Next
+            </a>
+
+          </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function blockProduct(productId) {
-        if (confirm('Are you sure you want to block this product?')) {
-            // Implement block functionality
-            console.log('Product blocked:', productId);
-        }
+
+    // product search 
+    function search(){
+        const searchKey = document.getElementById("searchInput").value;
+        window.location.href = `/admin/listProduct?search=${searchKey}` ;  
+    }
+
+
+    //product block
+    function toggleBlockProduct(productId) {
+        fetch("/admin/blockProduct" ,{ 
+            method : "POST",
+            headers: {    
+            'Content-Type': 'application/json' // Set content type to JSON
+            },
+            body: JSON.stringify({ productId }) // Serialize the body as JSON
+        }).then(response => response.json())
+        .then(data => {
+            if(data.status){ 
+                window.location.reload();
+            }
+        })
+    }
+
+
+    //delete product
+    function deleteProduct(productId){
+Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Trigger the API call if confirmed
+        fetch('/admin/deleteProduct', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id: productId })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            Swal.fire(
+              'Deleted!',
+              'Your item has been deleted.',
+              'success'
+            );
+          } else {
+            Swal.fire(
+              'Error!',
+              'There was a problem deleting your item.',
+              'error'
+            );
+          }
+        })
+        .catch(error => {
+          Swal.fire(
+            'Error!',
+            'There was a problem deleting your item.',
+            'error'
+          );
+        });
+      }
+    });
     }
 </script>

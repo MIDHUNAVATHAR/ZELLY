@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
+   
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="">
@@ -12,89 +15,457 @@
   <%- include("partials/header") %> 
   <!--Header-->
 
-    <div class="container mx-auto px-4 py-8 max-w-3xl">
-        <!-- Checkout Steps -->
-        <div class="flex justify-between mb-8">
-            <% ['LOGIN', 'DELIVERY ADDRESS', 'ORDER SUMMARY', 'PAYMENT'].forEach((step, index) => { %>
-                <div class="flex items-center">
-                    <div class="w-8 h-8 rounded-full <%= index < 2 ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600' %> flex items-center justify-center font-bold">
-                        <%= index + 1 %>
-                    </div>
-                    <span class="ml-2 text-sm font-medium <%= index < 2 ? 'text-blue-500' : 'text-gray-500' %>"><%= step %></span>
-                </div>
-                <% if (index < 3) { %>
-                    <div class="flex-grow border-t border-gray-300 mx-4 mt-4"></div>
-                <% } %>
-            <% }) %>
+  <div class="mb-6 max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md my-10 ">
+    <button id="toggleFormBtn" class="text-blue-600 font-semibold hover:underline">
+        + ADD A NEW ADDRESS 
+    </button>
+  </div>
+  
+
+  <div id="addressForm" class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md my-10 hidden">
+    <!-- Delivery Address -->
+    <h2 class="text-2xl font-bold mb-4 border-b pb-2">Delivery Address</h2> 
+
+    <form id="addressForm" action="/saveAddress" method="POST">
+    <input type="hidden" name="userId"  value="<%= user._id %>">
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">                
+        <div>
+            <label for="name" class="block text-gray-700 font-medium">Name</label>
+            <input type="text" name="name" id="name" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
         </div>
+    <div>
+        <label for="addressType" class="block text-gray-700 font-medium">Address Type</label>
+        <select name="addresstype" id="addressType" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+            <option value="home">Home</option>
+            <option value="work">Work</option>
+        </select>
+    </div>
+    </div>
 
-        <!-- Login Section -->
-        <div class="bg-white shadow-md rounded-lg p-6 mb-4">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h2 class="text-lg font-semibold mb-1">1 LOGIN <span class="text-green-500">✓</span></h2>
-                    <p class="text-gray-600">+918138990315</p>
-                </div>
-                <button class="text-blue-500 hover:text-blue-600">CHANGE</button>
-            </div>
+    <div class="mb-6">
+        <label class="block text-gray-700 font-medium mb-2" for="address">Full Address</label>
+        <input id="address" type="text" name="address" placeholder="Enter your delivery address" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+            <label class="block text-gray-700 font-medium mb-2" for="city">City</label>
+            <input id="city" type="text" name="city" placeholder="City" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
         </div>
-
-        <!-- Delivery Address Section -->
-        <div class="bg-blue-500 text-white shadow-md rounded-lg p-6 mb-4">
-            <h2 class="text-lg font-semibold mb-4">2 DELIVERY ADDRESS</h2>
-            
-            <!-- Address Option 1 -->
-            <div class="bg-white text-gray-800 rounded-lg p-4 mb-4">
-                <div class="flex items-center mb-2">
-                    <input type="radio" name="address" class="mr-2">
-                    <span class="font-semibold">Midhun</span>
-                    <span class="ml-2 text-gray-500">HOME</span>
-                    <span class="ml-2">8138990315</span>
-                </div>
-                <p class="text-sm">Kichu nivas arumalloor, kandala p. O, Arumalloor, TRIVANDRUM, Kerala - 695512</p>
-            </div>
-
-            <!-- Address Option 2 (Selected) -->
-            <div class="bg-blue-100 text-gray-800 rounded-lg p-4 mb-4">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="flex items-center">
-                        <input type="radio" name="address" class="mr-2" checked>
-                        <span class="font-semibold">MIDHUN M</span>
-                        <span class="ml-2 text-gray-500">HOME</span>
-                        <span class="ml-2">8138990315</span>
-                    </div>
-                    <button class="text-blue-500 hover:text-blue-600">EDIT</button>
-                </div>
-                <p class="text-sm mb-4">Kichu Nivas Arumalloor Kandala p.o, Neyyattinkara Subdistrict, Thiruvananthapuram District, Kerala - 695512</p>
-                <button class="bg-orange-500 text-white py-2 px-4 rounded hover:bg-orange-600">DELIVER HERE</button>
-            </div>
-        </div>
-
-        <!-- Add New Address -->
-        <div class="bg-white shadow-md rounded-lg p-6 mb-4">
-            <button class="text-blue-500 hover:text-blue-600 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                </svg>
-                Add a new address
-            </button>
-        </div>
-
-        <!-- Order Summary Section -->
-        <div class="bg-white shadow-md rounded-lg p-6 mb-4">
-            <h2 class="text-lg font-semibold mb-1">3 ORDER SUMMARY</h2>
-        </div>
-
-        <!-- Payment Options Section -->
-        <div class="bg-white shadow-md rounded-lg p-6">
-            <h2 class="text-lg font-semibold mb-1">4 PAYMENT OPTIONS</h2>
+        <div>
+            <label class="block text-gray-700 font-medium mb-2" for="postal-code">Postal Code</label>
+            <input id="postal-code" type="text" name="pincode" placeholder="Postal Code" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
         </div>
     </div>
 
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+            <label class="block text-gray-700 font-medium mb-2" for="city">Phone Number </label>
+            <input id="phone-number" type="text" name="phone" placeholder="phone Number" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+        </div>
+        <div>
+            <label class="block text-gray-700 font-medium mb-2" for="postal-code">Alternate Number</label>
+            <input id="alternate-number" type="text" name="alternatephone" placeholder="alternateNumber" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+            <label class="block text-gray-700 font-medium mb-2" for="state">State</label>
+            <input id="state" type="text" name="state" placeholder="State" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+        </div>
+        <div>
+            <label class="block text-gray-700 font-medium mb-2" for="country">Land Mark</label>
+            <input id="landMark" type="text" name="landmark" placeholder="landMark" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+        </div>
+    </div>
+
+    <div class="text-right">
+        <button type="submit" class="px-4 py-2 mt-10 mb-10 bg-violet-600 text-white font-semibold rounded hover:bg-violet-700">Save</button>
+    </div>
+
+    </form>
+    </div>
+
+
+<!-- user Addresses -->
+ <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md my-10">
+    <h1 class="font-extrabold text-xl">Select Your Address</h1>
+    <% userAddresses.forEach(function( address , index) { %>
+        <div class="address-card" style="border: 1px solid #ccc; padding: 15px; margin: 35px 0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <!-- Address Details Section -->
+            <div class="address-details" style="flex-grow: 1 ;"> 
+              <p><strong>Name:</strong> <%= address.name %></p>
+              <p><strong>Phone:</strong> <%= address.phone %></p>
+              <p><strong>Alternate Phone:</strong> <%= address.alternatePhone %></p>
+              <p><strong>Address:</strong> <%= address.address %> , <%= address.city %>, <%= address.state %>, <%= address.pincode %></p>
+              <p><strong>Landmark:</strong> <%= address.landmark %></p>
+              <p><strong>Address Type:</strong> <%= address.addresstype %></p>
+            </div>
+            
+            <!-- Action Buttons Section -->
+            <div class="address-actions" style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
+              <a  class="editbtn btn btn-primary" style="background-color: #007bff; color: white; padding: 8px 28px; border-radius: 5px; border: none; text-decoration: none;">Edit</a>
+              <a href="/deleteAddress/<%= address._id %>?checkout=1" class="btn btn-primary" style="background-color: #dc3545; color: white; padding: 8px 20px; border-radius: 5px; border: none; text-decoration: none;">Delete</a>
+              <input type="checkbox"  style="transform: scale(2); " class=" addCheck mt-5 mr-2" onchange="addressCheck('<%= address._id %>' , '<%= index %>' )" >
+            </div>
+          </div>
+        </div>
+
+        <!-- addressform -->
+        <div class="userAddressForm hidden mt-5 border-2 border-grey-900 rounded-lg p-5"> 
+        <form  action="/saveEditAddress/<%=address.id %>" method="POST"> 
+            <!-- <input type="hidden" name="userId"  value="<%= user._id %>"> -->
+            <input type="hidden" name="checkout"  value="1">
+         
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">                
+                <div>
+                    <label for="name" class="block text-gray-700 font-medium">Name</label>
+                    <input type="text" value="<%=address.name %>" name="name" id="name" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                </div>
+            <div>
+                <label for="addressType" class="block text-gray-700 font-medium">Address Type</label>
+                <select name="addresstype" id="addressType" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                    <option value="home" <%= address.addresstype === 'home' ? 'selected' : '' %> >Home</option>
+                    <option value="work" <%= address.addresstype === 'work' ? 'selected' : '' %> >Work</option>
+                </select>
+            </div>
+            </div>
+        
+            <div class="mb-6">
+                <label class="block text-gray-700 font-medium mb-2" for="address">Full Address</label>
+                <input id="address" type="text" name="address" value="<%=address.address %>" placeholder="Enter your delivery address" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2" for="city">City</label>
+                    <input id="city" type="text" name="city" value="<%=address.city %>" placeholder="City" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2" for="postal-code">Postal Code</label>
+                    <input id="postal-code" type="text" name="pincode" value="<%=address.pincode %>" placeholder="Postal Code" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2" for="phone">Phone Number</label>
+                    <input id="phone-number" type="text" name="phone" value="<%=address.phone %>" placeholder="phoneNumber" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2" for="alternatePhone">Alternate Number</label>
+                    <input id="alternate-number" type="text" name="alternatephone" value="<%=address.alternatePhone %>" placeholder="alternateNumber" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2" for="state">State</label>
+                    <input id="state" type="text" name="state" value="<%=address.state %>" placeholder="State" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2" for="landMark">Land Mark</label>
+                    <input id="landMark" type="text" name="landmark" value="<%=address.landmark %>" placeholder="land Mark" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+                </div>
+            </div>
+        
+            <div class="text-right">
+                <button type="submit" class="px-4 py-2 mt-10 mb-10 bg-violet-600 text-white font-semibold rounded hover:bg-violet-700">Save</button>
+            </div>
+        
+            </form>
+        </div>
+
+      <% }) %>
+      
+ </div> 
+
+
+  
+ 
+
+
+<div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md my-10" id="order">
+    <!-- Order Summary -->
+    <h2 class="text-2xl font-bold mb-4 border-b pb-2">Order Summary</h2>
+ <!-- Product List -->
+ <div class="w-full ">
+     <% cart.items.forEach(item => { %>  
+        <div class="bg-white rounded-lg  p-6  lg:ml-5">
+            <div class="flex items-center">
+                <img src="<%= item.product.images[0] %>" alt="<%= item.product.title %>" class="w-20 h-20 object-cover rounded-md mr-4 ml-4">
+                <div class="flex-1 ml-5">
+                    <h2 class="text-lg font-semibold"><%= item.product.title %></h2>
+                    <p class="text-sm text-gray-600">Size : <%= item.size %>  </p>
+                    <p class="text-sm text-gray-600">Description  : <%= item.product.titleDescription %> </p>
+                    <p class="text-sm text-gray-600">Spec : <%= item.product.productDescription %> </p>
+
+                    <div class="flex items-center mt-2">
+                        <span class="text-lg font-bold">₹<%= item.discountedPrice %></span>  
+                        <span class="text-sm text-gray-500 line-through ml-2">₹<%= item.price %></span>
+                        <span class="text-sm text-green-500 ml-2"><%= item.discountPercentage %>% OFF</span>
+                    </div>
+                </div>
+            </div>
+          
+        </div>
+    <% }); %> 
+
+    <div class="w-full mt-5" > 
+        <div class="bg-white rounded-lg shadow-md p-6 lg:sticky lg:top-8">
+            <h2 class="text-lg font-semibold mb-4">PRICE DETAILS</h2>
+            <div class="flex justify-between mb-2">
+                <span>Price (<%= totalItems %> items)</span>
+                <span >₹<%= totalPrice %></span>
+            </div>
+            <div class="flex justify-between mb-2">
+                <span>Coupon Discount</span>
+                <span>₹<%= cart.couponBalance %></span>
+            </div>
+            <div class="flex justify-between mb-2">
+                <span>Wallet Discount</span>
+                <span>₹<%= cart.walletBalance %></span>
+            </div>
+            <div class="border-t pt-2 mt-2">
+                <div class="flex justify-between font-semibold">
+                    <span>Payable Amount</span>
+                    <span class="text-green-500">₹<%= totalAmount %></span>
+                </div>
+            </div>
+        </div>  
+    </div>
+ </div>
+ </div>
+
+ 
+
+
+
+    <!-- Payment Options -->
+    <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md my-10" >
+    <h2 class="text-2xl font-bold mb-4 border-b pb-2">Payment Options</h2>
+    <div class="mb-6">
+        <div class="flex items-center mb-4">
+            <input id="razor-pay" name="payment-method" onchange="paymentMethod('razor-pay')" type="radio" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+            <label for="razor-pay" class="ml-2 text-gray-700">RazorPay</label> 
+        </div>
+        <div class="flex items-center mb-4">
+            <input id="paypal" name="payment-method" type="radio" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" disabled>
+            <label for="paypal" class="ml-2 text-gray-700">PayPal</label>
+        </div>
+        <div class="flex items-center mb-4"> 
+            <input id="cash-on-delivery" name="payment-method" onchange="paymentMethod('cash-on-delivery')" type="radio" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+            <label for="cash-on-delivery" class="ml-2 text-gray-700">Cash on Delivery</label>
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="text-right">
+        <button id="placeOrder" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">Place Order</button>
+    </div>
+</div>
+
+
+<!-- Modal Background -->
+<div id="successModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50 hidden">
+    <!-- Modal Content -->
+    <div class="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
+      <!-- Modal Header -->
+      <h2 class="text-xl font-semibold text-green-600">Order Placed Successfully!</h2>
+  
+      <!-- Modal Body -->
+      <p class="mt-4 text-gray-700">Your order has been successfully placed. You can view your current order details by clicking the button below.</p>
+  
+      <!-- Modal Footer -->
+      <div class="mt-6 flex justify-end">
+        <a href="/myOrders/current-order-id" id="viewOrderButton" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+          OK, View Order
+        </a>
+      </div>
+    </div>
+  </div>
+ 
+
+
+
   <!-- Footer -->
-  <%- include("partials/footer") %>
+  <%- include("partials/footer") %> 
   <!-- Footer-->
 
+
+  
+
+
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    // order success modal
+     function showModal() {
+      document.getElementById('successModal').classList.remove('hidden');
+    }
+
+
+
+      const editbtn = Array.from(document.getElementsByClassName("editbtn")) ; 
+      const userAddressForm = document.getElementsByClassName("userAddressForm");
+
+      //toggle the form input 
+      document.getElementById("toggleFormBtn").addEventListener("click" , function(){
+              document.getElementById("addressForm").classList.toggle("hidden") ;
+      })
+
+
+      //toggle the edit form
+      editbtn.forEach( (editbutton , index )=>{
+        editbutton.addEventListener("click" , function(){ 
+        Array.from(userAddressForm)[index].classList.toggle("hidden");
+      })
+      });
+
+      
+        
+      //address checked
+      const currentUrl = new URL(window.location.href) ; 
+      const addCheck = document.getElementsByClassName("addCheck");
+      if(currentUrl.searchParams.get("addressIndex")){
+      addCheck[currentUrl.searchParams.get("addressIndex")].setAttribute("checked" , true); 
+      } 
+
+
+      if(currentUrl.searchParams.get("payment-mode") == "cash-on-delivery" ){
+         document.getElementById("cash-on-delivery").setAttribute("checked" , true);
+      }else if(currentUrl.searchParams.get("payment-mode") == "razor-pay" ){
+        document.getElementById("razor-pay").setAttribute("checked", true );
+      }
+
+
+      function addressCheck( id , index ){
+        currentUrl.searchParams.set("address" , id );
+        currentUrl.searchParams.set("addressIndex" , index) ;   
+        window.location.href=currentUrl ; 
+      }  
+
+
+
+  //select payment method
+  function paymentMethod(paymentType){  
+     currentUrl.searchParams.set("payment-mode" , `${paymentType}`) ;
+     window.location.href = currentUrl ; 
+  }
+    
+
+
+  //place order
+  document.getElementById("placeOrder").addEventListener( "click" , async function(){  
+
+    const cartId = "<%=cart._id%>" ; 
+    const userId = "<%=user._id%>" ;
+    const currentUrl = new URL(window.location.href) ; 
+
+    if(!currentUrl.searchParams.get("address")){
+       
+        toastr.error('Select an Address !');
+        return;
+    }
+
+    if(!currentUrl.searchParams.get("payment-mode")){
+        toastr.error('Select a Payment Mode !');
+        return;
+    }
+
+
+    const addressId = currentUrl.searchParams.get("address") ;
+    const paymentMethod = currentUrl.searchParams.get("payment-mode"); 
+
+    if(paymentMethod == "cash-on-delivery"){
+
+    fetch("/placeorder" ,{ 
+        method : "POST",
+        headers : { 'Content-Type' : "application/json" },
+        body : JSON.stringify({ userId , cartId , addressId , paymentMethod })})       
+    .then(response=>response.json())
+    .then(data =>{
+        if(data.status){
+            const orderId = data.orderId ;  
+            const viewOrderButton = document.getElementById('viewOrderButton') ; 
+            viewOrderButton.href = `/myOrders/${orderId}`;
+            showModal();  
+        }else{  
+            toastr.error("order couldn't happen");
+        }
+    })
+    .catch(err=>console.error(err));
+     
+    }else if (paymentMethod == "razor-pay"){
+
+
+            const amount = '<%= totalPrice - cart.walletBalance - cart.couponBalance %>' ;  // Amount in INR
+            const currency = 'INR';
+
+            // Step 1: Call backend to create an order
+            const response = await fetch('/create-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ amount, currency })
+            });
+            const { orderId, amount: orderAmount, currency: orderCurrency , keyId } = await response.json() ;
+        
+            // Step 2: Razorpay Checkout options
+            const options = {
+                key: keyId,
+                amount: orderAmount,
+                currency: orderCurrency,
+                name: 'Zelly App',
+                description: 'Test Transaction',
+                order_id: orderId, // Pass the Razorpay order_id
+                handler: function (response) {
+                    // Step 3: Call backend to verify the payment
+                    fetch('/verify-payment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id, 
+                            razorpay_signature: response.razorpay_signature,
+                            userId , cartId , addressId , paymentMethod 
+                        })
+                    }).then((res) => res.json())
+                      .then((result) => {
+                          window.location.href(window.location.href = `/myOrders/${result.orderId}`)
+                      });
+                },
+                theme: {
+                    color: "#3399cc"
+                }
+            };
+
+            // Step 4: Open the Razorpay Checkout
+            const rzp = new Razorpay(options);
+            rzp.open();
+       
+    }else{
+        console.log("no payment method")
+    }
+
+    })
+
+   
+    
+
+  
+
+
+  </script>
 </body>
 </html>
 

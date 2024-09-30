@@ -27,10 +27,13 @@
             <input type="text" name="email" id="email" class="border w-full text-base px-2 py-1 focus:outline-none  focus:border-gray-600" placeholder="Enter Email...">
             <span id="emailError"></span>
         </div>
-        <div>
+        <div class="relative">
             <label for="password" class="block text-base mb-2">Password</label>
             <input type="password" name="password" id="password" class="border w-full text-base px-2 py-1 focus:outline-none  focus:border-gray-600" placeholder="Enter Password...">
             <span id="passwordError"></span>
+            <button type="button" id="togglePassword" class="absolute right-2 top-8">
+                <i id="eyeIcon" class=" fa fa-eye-slash"></i> 
+            </button>
         </div>
         <div class="mt-4 flex justify-between">
             <div>
@@ -62,6 +65,8 @@
            function navigateToAdminSignup(){
                window.location.href="/admin/adminSignup" ;     
             } 
+
+
  
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -105,6 +110,28 @@
                     e.preventDefault();
                 }
             });
+
+         //eye button password
+         const passwordinput = document.getElementById('password');
+            const togglePasswordButton = document.getElementById('togglePassword');
+            const eyeIcon = document.getElementById('eyeIcon');
+
+            togglePasswordButton.addEventListener('click', function () {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+            
+                // Toggle the eye icon
+                if (type === 'text') {
+                    eyeIcon.classList.remove('fa-eye-slash');
+                    eyeIcon.classList.add('fa-eye');
+                } else {
+                    eyeIcon.classList.remove('fa-eye');
+                    eyeIcon.classList.add('fa-eye-slash');
+                }
+            });
+
+
+
         });
     </script>
 </body>

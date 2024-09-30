@@ -6,9 +6,13 @@ const router = express.Router();
 const frontPage = require("../frontend/controllers/front-page") ;
 const productPage = require("../frontend/controllers/product-page") ;
 const cartManagement = require("../frontend/controllers/cart-management");
+const razorPay = require("../frontend/controllers/razor-pay") ;
+const couponWallet = require("../frontend/controllers/coupon-wallet");
 
 //import middlewares
 const checkAuthentication = require("../middlewares/check-authentication") ; 
+const cartAvailability = require("../middlewares/check-cartavailability");
+const implementOffers  = require("../middlewares/implement-offers"); 
 
 
 // get main page
@@ -35,31 +39,31 @@ router.get('/auth/google/callback', passport.authenticate('google-user', {
 
 
 // get signup page
-router.get("/userSignup" , frontPage.userSignup) ;
+router.get("/userSignup" , frontPage.userSignup ) ;
 
 //post signup 
-router.post("/userSignupPost" , frontPage.userSignupPost) ;  
+router.post("/userSignupPost" , frontPage.userSignupPost ) ; 
 
 //post user resend otp
-router.post("/resendEmailOtp" , frontPage.resendEmailOtp);
+router.post("/resendEmailOtp" , frontPage.resendEmailOtp );
 
 //user logout
-router.get("/userLogout" , frontPage.userLogout); 
+router.get("/userLogout" , frontPage.userLogout ); 
 
 //post user check otp
-router.post("/userCheckOtp" , frontPage.checkOtp);
+router.post("/userCheckOtp" , frontPage.checkOtp );
 
 //get forgot password
 router.get("/userForgotPassword" ,frontPage.forgotPassword );
 
 //post forgot password
-router.post("/userForgotPassword" , frontPage.forgotPasswordPost);
+router.post("/userForgotPassword" , frontPage.forgotPasswordPost );
 
 //get reset password
-router.get("/userResetPassword/:token" , frontPage.resetPassword);   
+router.get("/userResetPassword/:token" , frontPage.resetPassword );   
 
 //post reset password
-router.post("/userResetPassword/:token" , frontPage.resetPasswordPost);
+router.post("/userResetPassword/:token" , frontPage.resetPasswordPost );
 
 
 
@@ -89,14 +93,14 @@ router.post("/saveEditAddress/:id" , productPage.editAddress);
 router.get( "/wishlist" , checkAuthentication, productPage.wishlist); 
 
 //get cart
-router.get("/cart" ,checkAuthentication, productPage.cart) ;
+router.get("/cart" ,checkAuthentication, cartAvailability, productPage.cart) ;
 
 
 //get categories
 router.get('/categories/:id', productPage.categorySection); 
 
 //get product page
-router.get("/product/:id" ,productPage.product) ;
+router.get("/product/:id", implementOffers  ,productPage.product) ;
 
 //get products page
 router.get("/products" , productPage.products)
@@ -112,17 +116,52 @@ router.post("/cartProductInc" , cartManagement.increQuantity);
 router.post("/cartProductDec" , cartManagement.decreQuantity);
 
 //post remove quantity
-router.post("/removeItem" , cartManagement.removeItem );
+router.post("/removeItem" , cartManagement.removeItem ); 
 
 //get my orders
-router.get("/myOrders" , cartManagement.myOrders);
+router.get("/myOrders" , cartManagement.myOrders); 
 
 //get checkout delivery address
-router.get("/checkout" , cartManagement.checkout); 
+router.get("/checkout" ,checkAuthentication , cartAvailability , cartManagement.checkout ); 
+
+//post place order
+router.post('/placeorder' ,cartAvailability , cartManagement.placeorder); 
+
+//post cancel order
+router.post("/cancelOrder" , cartManagement.cancelOrder ) 
+
+//get order view page 
+router.get("/myOrders/:orderId" , cartManagement.viewOrder ); 
 
 
 
+//razor -pay
+router.post("/create-order" ,razorPay.createOrder );
 
+router.post("/verify-payment" , razorPay.verifyPayment ) ;
+
+
+
+//post  add wallet to cart
+router.post("/add-wallet-cart" , couponWallet.walletAddCart)
+
+//post remove wallet cart
+router.post("/remove-wallet-cart" , couponWallet.walletRemoveCart ) ;
+
+//post add coupon
+router.post("/add-coupon-code" , couponWallet.couponAddCart );
+
+//post remove coupon
+router.post("/remove-coupon-code" , couponWallet.removeCoupon ); 
+
+//post add-wishlist
+router.post("/wishlist/add" , couponWallet.addToWishlist) ;
+
+//delete remove wishl;ist item
+router.delete("/removeWishlistItem/:id" , couponWallet.removeWishlistitem );
+
+//submit review
+router.post("/submitReview" , couponWallet.submitReview ) ;
 
 
 module.exports = router ;

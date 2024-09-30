@@ -1,4 +1,4 @@
-
+<div class="p-4">
 <h1>  Edit PRODUCT...</h1>
 <hr>
 
@@ -12,26 +12,49 @@
     <label for="titleDescription" class="block text-sm font-medium text-gray-700">Title Description</label>
     <input type="text" name="titleDescription" value="<%=product.titleDescription %>" id="titleDescription" class="mt-1 p-2 border border-gray-300 rounded w-full" >
   </div>
-  <div class="mb-4">
-    <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
-    <input type="number" name="price" id="price" value="<%=product.price %>" class="mt-1 p-2 border border-gray-300 rounded w-full" >
-  </div>
-  <div class="mb-4">
-    <label for="discountedPrice" class="block text-sm font-medium text-gray-700">Discounted Price</label> 
-    <input type="number" name="discountedPrice" id="discountedPrice" value="<%=product.discountedPrice%>" class="mt-1 p-2 border border-gray-300 rounded w-full" >
-  </div>
-  <div class="mb-4">
-    <label for="discountPercentage" class="block text-sm font-medium text-gray-700">Discount Percentage</label>
-    <input type="number" name="discountPercentage" id="discountPercentage" value="<%=product.discountedPercentage %>" class="mt-1 p-2 border border-gray-300 rounded w-full" >
-  </div>
-  <div class="mb-4">
-    <label for="sizes" class="block text-sm font-medium text-gray-700">Sizes</label>
-    <input type="text" name="sizes" id="sizes" value="<%=product.sizes %>" class="mt-1 p-2 border border-gray-300 rounded w-full">
-  </div>
-  <div class="mb-4">
-    <label for="sizes" class="block text-sm font-medium text-gray-700">Total Stocks</label>
-    <input type="text" name="totalStocks" id="totalStocks" value="<%=product.totalStocks %>" class="mt-1 p-2 border border-gray-300 rounded w-full">
-  </div>
+  <div class="container mx-auto p-4">
+    <table class="table-auto w-full border-collapse border border-gray-200">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="border border-gray-300 p-2">Size</th>
+                <th class="border border-gray-300 p-2">Quantity</th>
+                <th class="border border-gray-300 p-2">Price</th>
+                <th class="border border-gray-300 p-2">Discounted Price</th>   
+                <th class="border border-gray-300 p-2">Discount Percentage</th>
+                <th class="border border-gray-300 p-2">Action</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+            <% product.sizes.forEach(function(size, index) { %>
+            <tr>
+                <td class="border border-gray-300 p-2">
+                    <input type="text" name="size[]" value="<%= size.size %>" class="w-full p-1 border border-gray-300">
+                </td>
+                <td class="border border-gray-300 p-2">
+                    <input type="number" name="quantity[]" value="<%= size.quantity %>" class="w-full p-1 border border-gray-300">
+                </td>
+                <td class="border border-gray-300 p-2">
+                    <input type="number" name="price[]" value="<%= size.price %>" class="w-full p-1 border border-gray-300">
+                </td>
+                <td class="border border-gray-300 p-2">
+                    <input type="number" name="discountedPrice[]" value="<%= size.discountedPrice %>" class="w-full p-1 border border-gray-300">
+                </td>
+                <td class="border border-gray-300 p-2">
+                    <input type="number" name="discountedPercentage[]" value="<%= size.discountedPercentage %>" class="w-full p-1 border border-gray-300">
+                </td>
+                <td class="border border-gray-300 p-2 text-red-500">
+                    <button class="text-red-500 hover:underline" onclick="deleteRow('<%= size._id %> ')">Delete</button>
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+    <button id="addRowButton" class="mt-4 p-2 bg-blue-500 text-white rounded">Add Row</button>
+
+
+</div>
+
   <div class="mb-4">
     <label for="productDescription" class="block text-sm font-medium text-gray-700">Product Description</label>
     <textarea name="productDescription" id="productDescription"  class="mt-1 p-2 border border-gray-300 rounded w-full"> <%=product.productDescription %> </textarea>
@@ -87,7 +110,7 @@
 
   <div class="mb-4">  
     <label for="images" class="block text-sm font-medium text-gray-700">Product Images</label>
-    <input type="file" name="productImages" id="productImages" class="mt-1 p-2 border border-gray-300 rounded w-full">
+    <input type="file" name="productImages" id="productImages" class="mt-1 p-2 border border-gray-300 rounded w-full"> 
     <label class="productImgErr text-red-500"></label>
   </div> 
   <!-- cropping contiainer -->
@@ -102,11 +125,11 @@
  <div id="croppedImages" class="flex flex-wrap"></div>
  </div>
 
-<button type="button" id="cropButton" style="display: none;" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Crop & Upload</button>
+  <button type="button" id="cropButton" style="display: none;" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Crop & Upload</button>
   <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save Changes</button> 
 </form>
 </div> 
-</div> 
+
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
@@ -119,7 +142,7 @@ let cropper;
   const cropButton = document.getElementById('cropButton');
   const cropperContainer = document.getElementById('cropperContainer');
   const croppedImagesContainer = document.getElementById('croppedImages');
-  let croppedImagesData = [];
+  let croppedImagesData = [] ;  
 
   inputImage.addEventListener('change', (event) => {
       const files = event.target.files;
@@ -172,15 +195,90 @@ let cropper;
 
   
 
+ //delete the size objects in sizes array
+ function deleteRow(s_id) {
+  event.preventDefault();
+  const p_id = '<%= product._id %>' ; 
+
+  fetch(`/admin/products/${p_id}/sizes/${s_id}`,{method :'DELETE' })
+  .then(response => response.json())
+  .then(data => {
+    alert( data.message ) ; 
+    window.location.reload();
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+}
+
+
+//delete image 
+function deleteImage(imgsrc){
+   event.preventDefault(); 
+   const p_id = '<%= product._id %>' ; 
+   fetch("/admin/delete-product-image",{
+    method : "DELETE",
+    headers : { 'Content-Type' : 'application/json' },
+    body : JSON.stringify( { imgSrc : imgsrc , productId : p_id }) ,  
+   })
+   .then(response => response.json())
+   .then(data =>{
+       alert(data.message);
+       window.location.reload();
+   })
+   .catch(err=>{
+    console.error("Error : " ,err );
+   })
+}
+
+
+
+//add rows ;
+document.getElementById('addRowButton').addEventListener( 'click' , function() {
+    event.preventDefault() ; 
+    const tableBody = document.getElementById('table-body') ; 
+    const newRow = document.createElement('tr') ; 
+
+    newRow.innerHTML = `
+        <td class="border border-gray-300 p-2">
+            <input type="text" name="size[]" class="w-full p-1 border border-gray-300" placeholder="Size" required >
+        </td>
+        <td class="border border-gray-300 p-2">
+            <input type="number" name="quantity[]" class="w-full p-1 border border-gray-300" placeholder="Quantity" required>
+        </td>
+        <td class="border border-gray-300 p-2">
+            <input type="number" name="price[]" class="w-full p-1 border border-gray-300" placeholder="Price" required>
+        </td>
+        <td class="border border-gray-300 p-2">
+            <input type="number" name="discountedPrice[]" class="w-full p-1 border border-gray-300" placeholder="Discounted Price" required>
+        </td>
+        <td class="border border-gray-300 p-2">
+            <input type="number" name="discountedPercentage[]" class="w-full p-1 border border-gray-300" placeholder="Discount Percentage" required>
+        </td>
+        <td class="border border-gray-300 p-2 text-red-500">
+            <button class="text-red-500 hover:underline" onclick="this.closest('tr').remove()">Delete</button>
+        </td>
+    `;
+
+    tableBody.appendChild(newRow) ; 
+});
+
+
+
+
+
+
+//submit the form
+
   document.getElementById('form').addEventListener('submit', function(event) {
     event.preventDefault(); // Prevent the default form submission behavior 
 
-    const formData = new FormData(this);
+    const formData = new FormData(this) ; 
     formData.delete('productImages'); // Remove the default file input field data
 
     // Append the cropped images to the form data
     croppedImagesData.forEach((blob, index) => {
-        formData.append(`productImages`, blob, `cropped_${index}.png`); 
+        formData.append(`productImages`, blob, `cropped_${index}.png`) ; 
     });
 
     fetch(this.action, {
@@ -190,6 +288,7 @@ let cropper;
     .then(data => {
         if (data.message) {
             alert('Product updated successfully!');
+           window.location.reload() ;  
             // Optionally, you can redirect or refresh the page here
         } else if (data.error) {
             alert(`Error: ${data.error}`);

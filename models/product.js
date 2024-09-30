@@ -11,7 +11,7 @@ const productSchema = new Schema({
       price : { type : Number , required : true },
       quantity : { type : Number , required : true },
       discountedPrice : {type : Number , required : true},
-      discountedPercentage : {type : Number , required : true}
+      discountedPercentage : {type : Number , required : true} 
     }
   ], required: true }, 
   productDescription: { type: String, required: true },
@@ -21,7 +21,13 @@ const productSchema = new Schema({
   productCategory: { type: Schema.Types.ObjectId, ref: 'ProductCategory', required: true } , 
   productSubCategory: [{ type: Schema.Types.ObjectId, ref: 'ProductSubCategory', required: true }] ,  
   images: { type: [String] } ,  
-  softDelete : {type : Boolean , default : false }  
+  offer : { type : Number , default : 0  },
+  offerExpiry : { type : Date  } , 
+  softDelete : {type : Boolean , default : false } ,
+  reviews: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Review'  // Referencing the Review model
+  }] 
 },{ timestamps : true } );  
 
 module.exports = mongoose.model( 'Product' , productSchema ) ;  

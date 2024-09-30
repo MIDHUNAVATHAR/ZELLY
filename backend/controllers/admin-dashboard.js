@@ -347,4 +347,9 @@ const softDeleteProductCate =  async(req,res) =>{
 
 
 
-module.exports = { softDeleteProductSubCate , deleteProductSubCategory , softDeleteProductCate ,deleteProductCategory ,softDeleteGenderCat, softDeleteGenderCate , updateBannerDate , updatelogoDate , deleteImages , dashboard , frontPageLogo, frontPageBanner, customers ,userDel ,userEdit ,updateUsers ,updateStatus, addCategory ,addGenderCategory ,addProductCategory ,addProductSubCategory ,frontPage} ;  
+
+
+
+module.exports = { softDeleteProductSubCate , deleteProductSubCategory , softDeleteProductCate ,deleteProductCategory ,softDeleteGenderCat, 
+    softDeleteGenderCate , updateBannerDate , updatelogoDate , deleteImages , dashboard , frontPageLogo, frontPageBanner, customers ,userDel ,
+    userEdit ,updateUsers ,updateStatus, addCategory ,addGenderCategory ,addProductCategory ,addProductSubCategory ,frontPage } ;  

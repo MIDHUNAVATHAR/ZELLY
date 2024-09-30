@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Order</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900">
+
+   <!-- Header --> 
+   <%- include("partials/header") %>  
+
+  <!-- Page Container -->
+  <div class="max-w-4xl mx-auto p-6 bg-white shadow-md mt-10 mb-10 rounded-lg">
+    
+    <!-- Order Title -->
+    <div class="mb-6">
+      <h1 class="text-3xl font-semibold text-gray-800">Order Details</h1>
+      <p class="text-gray-600 mt-5">Order ID: <span id="orderId" class="font-semibold"><%=order._id%></span></p>
+      <p class="text-gray-600">Order Date: <span class="font-semibold"><%=orderDate%></span></p>
+    </div>
+
+    <!-- Order Info Section --> 
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <!-- Shipping Address --> 
+      <div class="bg-gray-50 p-4 rounded-lg"> 
+        <h2 class="text-lg font-semibold mb-2">Shipping Address</h2>
+        <p id="shippingAddress" class="text-gray-900"> <%=order.shippingAddress.address%> , <%=order.shippingAddress.landmark%> , <%=order.shippingAddress.city%> , <%=order.shippingAddress.state%> , <%=order.shippingAddress.pincode%></p>
+        <p class="text-gray-900"> <span>Address Type : </span> <%=order.shippingAddress.addresstype%>  , <%=order.shippingAddress.phone%> , <%=order.shippingAddress.alternatePhone%> </p>
+      </div>
+
+      <!-- Payment Info -->
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <h2 class="text-lg font-semibold mb-2"> Order Status </h2> 
+        <p id="orderStatus" class="text-gray-600">
+          <% if (order.orderStatus === 'delivered') { %>
+            <span class="font-semibold text-green-600"><%= order.orderStatus %></span>
+          <% } else { %>
+            <span class="font-semibold text-red-600"><%= order.orderStatus %></span> <!-- Use a different color for non-completed statuses -->
+          <% } %>
+        </p>
+        <h2 class="text-lg font-semibold mb-2">Payment Method</h2> 
+        <p id="paymentMethod" class="font-semibold text-blue-900"> <%=order.paymentMethod%> </p> 
+        <h2 class="text-lg font-semibold mb-2"> Payment Status </h2> 
+        <p id="paymentStatus" class="text-gray-600">
+          <% if (order.paymentStatus === 'completed') { %>
+            <span class="font-semibold text-green-600"><%= order.paymentStatus %></span>
+          <% } else { %>
+            <span class="font-semibold text-red-600"><%= order.paymentStatus %></span> <!-- Use a different color for non-completed statuses -->
+          <% } %>
+        </p>
+        
+      </div>
+    </div>
+
+    <!-- Order Items Section -->
+    <div class="mb-6">
+      <h2 class="text-xl font-semibold mb-4">Items Purchased</h2>
+      <div class="overflow-x-auto">
+        <table class="table-auto w-full text-left">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="px-4 py-2">Product</th>
+              <th class="px-4 py-2">Size</th>
+              <th class="px-4 py-2">Quantity</th>
+              <th class="px-4 py-2">Price</th>
+              <th class="px-4 py-2">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody id="orderItems">
+            <% order.items.forEach(item => { %>
+              <tr>
+                <td class="border px-4 py-2 flex items-center">
+                  <img src="<%= item.product.images[0] %>" alt="<%= item.product.title %>" class="w-12 h-12 object-cover mr-2">
+                  <div>
+                    <div><%= item.product.title %></div>
+                    <div class="text-gray-500 text-sm"><span>Product Id : </span><%= item.product._id %></div>
+                  </div>
+                </td>
+                <td class="border px-4 py-2"><%= item.size %></td>
+                <td class="border px-4 py-2"><%= item.quantity %></td>
+                <td class="border px-4 py-2">₹<%= item.price %></td>
+                <td class="border px-4 py-2">₹<%= item.totalPrice %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Total Price Section -->
+    <div class="flex justify-end mt-6">
+      <div class="text-right">
+         <p class="text-xl font-semibold">Payable Amount : <span id="totalPrice">   ₹ <%=order.totalPrice%></span></p>
+      </div>
+    </div>
+
+    <!-- Back to Orders Button -->
+    <div class="mt-6">
+      <a href="/myOrders" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">Back to My Orders</a>
+    </div>
+
+  </div>
+
+
+   <!-- Footer -->
+   <%- include("partials/footer") %>
+
+  <script>
+    
+  </script>
+
+</body>
+</html>

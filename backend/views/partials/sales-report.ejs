@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Report</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+  <!-- Header Section -->
+  <div class="container mx-auto p-5 my-2">
+    <h1 class="text-2xl text-center font-bold text-gray-700">Admin Sales Report</h1>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="container mx-auto bg-white shadow-lg rounded-lg p-5 mb-8">
+    <h2 class="text-xl font-semibold text-gray-600 mb-4">Filter Sales Report</h2>
+     
+    <form id="sales-filter-form" method="GET" action="/admin/sales-report">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <!-- Date Filter Options -->
+        <div class="col-span-1">
+          <label class="block text-gray-700">Select Date Range</label>
+          <select id="dateRange" name="dateRange" class="w-full p-2 border rounded-md">
+            <option value="day">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+            <option value="year">This Year</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+
+        <!-- Custom Date Range -->
+        <div id="custom-date-range" class="col-span-2 hidden">
+          <div class="flex gap-4">
+            <div>
+              <label class="block text-gray-700">From</label>
+              <input type="date" id="formData" name="fromDate" class="w-full p-2 border rounded-md" />
+            </div>
+            <div>
+              <label class="block text-gray-700">To</label>
+              <input type="date" id="toDate" name="toDate" class="w-full p-2 border rounded-md" />
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Submit Button -->
+      <div class="mt-4">
+        <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700">Filter Report</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Sales Report Summary -->
+  <div class="container mx-auto bg-white shadow-lg rounded-lg p-5 mb-8">
+    <h2 class="text-xl font-semibold text-gray-600 mb-4">Sales Report Summary</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-green-100 p-4 rounded-md">
+        <h3 class="text-lg font-bold text-green-700">Total Sales</h3>
+        <p class="text-2xl font-semibold text-green-900"><%= totalSalesCount %></p>
+      </div>
+
+      <div class="bg-blue-100 p-4 rounded-md">
+        <h3 class="text-lg font-bold text-blue-700">Total Order Amount</h3>
+        <p class="text-2xl font-semibold text-blue-900">₹ <%= totalOrderAmount %></p>
+      </div>
+
+      <div class="bg-red-100 p-4 rounded-md">
+        <h3 class="text-lg font-bold text-red-700">Total Discount</h3>
+        <p class="text-2xl font-semibold text-red-900">₹ <%= totalDiscount %></p>
+      </div>
+
+      <div class="bg-yellow-100 p-4 rounded-md"> 
+        <h3 class="text-lg font-bold text-yellow-700">Total Coupon Deduction</h3>
+        <p class="text-2xl font-semibold text-yellow-900">₹ <%= totalCouponDeduction %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sales Report Table -->
+  <div class="container mx-auto bg-white shadow-lg rounded-lg p-5">
+    <h2 class="text-xl font-semibold text-gray-600 mb-4">Detailed Sales Report</h2>
+    
+    <table class="min-w-full bg-white">
+      <thead>
+        <tr>
+          <th class="py-2 px-4 border-b text-left">Order ID</th>
+          <th class="py-2 px-4 border-b text-left">Customer</th>
+          <th class="py-2 px-4 border-b text-left">Order Date</th>
+          <th class="py-2 px-4 border-b text-left">Total Amount</th>
+          <th class="py-2 px-4 border-b text-left">Discount</th>
+          <th class="py-2 px-4 border-b text-left">Coupon Deduction</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% salesReport.forEach(order => { %>
+          <tr>
+            <td class="py-2 px-4 border-b"><%= order._id %></td>
+            <td class="py-2 px-4 border-b"><%= order.userId.firstName %></td>
+            <td class="py-2 px-4 border-b"><%= order.createdAt.toISOString().split('T')[0]  %></td>
+            <td class="py-2 px-4 border-b">₹ <%= order.totalPrice %></td>
+            <td class="py-2 px-4 border-b">₹ <%= order.totalDiscount %></td>
+            <td class="py-2 px-4 border-b">₹ <%= order.appliedCoupon %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+
+
+
+  <!-- Download Report Section -->
+  <div class="container mx-auto bg-white shadow-lg rounded-lg p-5 mt-10 mb-20 flex justify-between">
+    <div class="flex gap-4">
+        <button id="download-pdf" class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700">Download PDF</button>
+        <button id="download-excel" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-700">Download Excel</button>
+    </div>
+  </div>
+
+
+  <script>
+
+    document.querySelector('[name="dateRange"]').addEventListener('change', function() {
+      const customDateRange = document.getElementById('custom-date-range'); 
+      if (this.value === 'custom') {
+        customDateRange.classList.remove('hidden');
+      } else {
+        customDateRange.classList.add('hidden');
+      }
+    });
+
+   
+
+   let query = '?' ;
+    let currentUrl = new URL(window.location.href);
+    let dateRange = currentUrl.searchParams.get('dateRange') ;
+    query = query + `dateRange=${dateRange}` ;
+
+    let fromDate ;
+    let toDate ;
+    if(dateRange == "custom"){
+       fromDate = currentUrl.searchParams.get('fromDate');
+       toDate   = currentUrl.searchParams.get('toDate');
+    }
+
+    query+= `&fromDate=${fromDate}&toDate=${toDate}`
+      
+      // Update the download buttons' URLs
+      document.getElementById('download-pdf').setAttribute('onclick', `window.location.href='/admin/download-pdf${query}'`);
+      document.getElementById('download-excel').setAttribute('onclick', `window.location.href='/admin/download-excel${query}'`);
+
+
+
+</script>
+ 
+
+</body>
+</html>

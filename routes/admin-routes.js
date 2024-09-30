@@ -1,12 +1,24 @@
 const passport = require("passport");
 const express = require("express") ;
-
+const multer = require("multer");
 const router = express.Router() ;
 
 //import controllers
 const adminAuth = require( "../backend/controllers/admin-auth" );
 const adminDash = require( "../backend/controllers/admin-dashboard"); 
 const adminProduct = require("../backend/controllers/admin-product");
+const couponOffer = require("../backend/controllers/coupon-offer") ; 
+
+
+const uploadProduct = multer({
+    storage :  multer.diskStorage ({  
+        destination : "uploads/product",   
+        filename    : (req , file , cb ) =>{ 
+            cb(null , Date.now() + file.originalname)   
+        }
+     })
+ }).array( 'productImages' , 10 ) ;     
+
 
 
 // ADMIN AUTH // 
@@ -94,7 +106,7 @@ router.post("/addProductCategory" , adminDash.addProductCategory);
 router.post("/addProductSubCategory" , adminDash.addProductSubCategory); 
 
 //post gendercategroy softdelete true 
-router.post("/deleteGenderCategory" , adminDash.softDeleteGenderCat);   
+router.post("/deleteGenderCategory" , adminDash.softDeleteGenderCat) ; 
 
 //post gendercategory softdelete false
 router.post("/softDeleteGenderCate" , adminDash.softDeleteGenderCate);
@@ -123,23 +135,67 @@ router.post("/addProductPost" , adminProduct.addProductPost);
 //get product list  
 router.get("/listProduct" , adminProduct.listProducts);
 
-//post product image delete
-router.get("/") ; 
-
 //get edit product
-router.get("/editProduct/:id" ,adminProduct.editProduct);
+router.get("/editProduct/:id" ,adminProduct.editProduct) ; 
+
+//delete edit product size
+ router.delete('/products/:productid/sizes/:sizeid' , adminProduct.deleteSize ) ;
+
+//delete product image
+router.delete("/delete-product-image" , adminProduct.deleteProductImage ) ;
 
 //post edit product
-router.post("/editProductPost/:id", adminProduct.editProductPost);
+router.post("/editProductPost/:id" , uploadProduct , adminProduct.editProductPost);
+
+//block product
+router.post("/blockProduct" , adminProduct.blockProduct ) ; 
+
+//delete product
+router.delete("/deleteproduct" , adminProduct.deleteproduct ) 
+
+//get orders
+router.get("/orders" , adminProduct.orders );
+
+//get order view
+router.get("/orders/:orderId" , adminProduct.viewOrder );
+
+//post update  order status
+router.post("/updateOrderStatus" , adminProduct.updateOrderStatus );
+
+//post  update paymwnt status
+router.post("/updatePaymentStatus" , adminProduct.updatePaymentStatus );
 
 
 
 
 
 
+//get coupon add
+router.get("/coupon" , couponOffer.getCoupon);
 
+//post coupon
+router.post("/coupon-add" , couponOffer.addCoupon ) ;
 
+//delete coupon
+router.delete("/coupon-delete/:id" , couponOffer.deleteCoupon ) ; 
 
+//get offers
+router.get("/offers" , couponOffer.Offers ) ;
+
+//post category offer
+router.post("/save-category-offer", couponOffer.saveCategoryOffer );
+
+//post product offer
+router.post("/save-product-offer" ,couponOffer.saveProductOffer );
+
+//get sales report
+router.get("/sales-report" , couponOffer.salesReport);
+
+//post downlaod sales report
+router.get( '/download-pdf' ,couponOffer.generatePDF) ;
+
+//post downlaod excel report
+router.get("/download-excel" , couponOffer.generateExcel);
 
 
 

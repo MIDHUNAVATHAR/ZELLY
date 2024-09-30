@@ -5,29 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Orders</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
 </head>
 <body class="bg-black"> 
 
   <!--header-->
-  <%- include("partials/header") %> 
+  <%- include("partials/header") %>  
   <!--header-->
 
+  
+
   <!--breadcrumb-->
-  <nav class="text-sm mb-4 pl-10 pt-5" aria-label="Breadcrumb">
+  <nav class="text-sm mb-4 pl-10 pt-5" aria-label="Breadcrumb"> 
     <ol class="list-reset inline-flex items-center space-x-2">
         <li>
-            <a href="/" class="text-gray-600 hover:text-gray-900">Home</a>
+            <a href="/" class="text-white hover:text-gray-500">Home</a> 
         </li>
         <li>
-            <span class="text-gray-500">/</span>
+            <span class="text-white">/</span>
         </li>
         <li>
-            <a href="/account" class="text-gray-600 hover:text-gray-900">My Account</a>
+            <a href="/userProfile" class="text-white hover:text-gray-500">My Account</a>
         </li>
         <li>
-            <span class="text-gray-500">/</span>
+            <span class="text-white">/</span>
         </li>
-        <li class="text-gray-500">
+        <li class="text-white">
             My Orders
         </li>
     </ol>
@@ -37,7 +40,7 @@
 
 
 <!--main-->
-<div class="container mx-auto mt-8">
+<div class="container mx-auto mt-8 mb-32">
         <div class="flex ">
             <!-- Filters Sidebar -->
             <div class="w-1/4 bg-white p-4 rounded-lg shadow-md pl-10">
@@ -45,77 +48,165 @@
                 <div class="mb-6">
                     <h3 class="font-medium mb-2">ORDER STATUS</h3>
                     <div class="flex items-center mb-2">
-                        <input type="checkbox" id="onTheWay" class="mr-2">
+                        <input type="checkbox" id="onTheWay" class="mr-2" <%= orderStatus === 'shipped' ? 'checked' : '' %>  value="shipped"  onchange="orderStatus(this.value)" >
                         <label for="onTheWay">On the way</label>
                     </div>
                     <div class="flex items-center mb-2">
-                        <input type="checkbox" id="delivered" class="mr-2">
+                        <input type="checkbox" id="delivered" class="mr-2" <%= orderStatus === 'delivered' ? 'checked' : '' %> value="delivered"  onchange="orderStatus(this.value)">
                         <label for="delivered">Delivered</label>
                     </div>
                     <div class="flex items-center mb-2">
-                        <input type="checkbox" id="cancelled" class="mr-2">
+                        <input type="checkbox" id="cancelled" class="mr-2" <%= orderStatus === 'cancelled' ? 'checked' : '' %> value="cancelled"  onchange="orderStatus(this.value)">
                         <label for="cancelled">Cancelled</label>
                     </div>
                     <div class="flex items-center mb-2">
-                        <input type="checkbox" id="returned" class="mr-2">
-                        <label for="returned">Returned</label>
+                        <input type="checkbox" id="returned" class="mr-2" <%= orderStatus === 'pending' ? 'checked' : '' %> value="pending"  onchange="orderStatus(this.value)">
+                        <label for="returned">Pending</label>
                     </div>
                 </div>
                 <div>
                     <h3 class="font-medium mb-2">ORDER TIME</h3>
                     <div class="flex items-center mb-2">
-                        <input type="checkbox" id="last30Days" class="mr-2">
+                        <input type="checkbox" id="last30Days" class="mr-2" <%= orderTime === '30day' ? 'checked' : '' %> value="30day" onchange="orderTime(this.value)" >
                         <label for="last30Days">Last 30 days</label>
                     </div>
               
                     <% years.forEach ( year => { %>
                       <div class="flex items-center mb-2">
-                        <input type="checkbox" id="year <% year %>" >
+                        <input type="checkbox" id="year <% year %>" <%= orderTime ===  year ? 'checked' : '' %> value= "<%= year%>"  onchange="orderTime(this.value)" >
                         <label for = "year <% year %>" ><%= year %></label>
                       </div>
                     <% }) %>
 
                     <div class="flex items-center mb-2">
-                        <input type="checkbox" id="older" class="mr-2">
+                        <input type="checkbox" id="older" class="mr-2" <%= orderTime === 'older' ? 'checked' : '' %> value="older"  onchange="orderTime(this.value)" >
                         <label for="older">Older</label>
                     </div>
                 </div>
             </div>
 
-            <!-- Orders Content -->
+            <!-- Orders Content --> 
             <div class="w-4/6 ml-8">
-                <div class="flex items-center mb-6">
-                    <input type="text" id="searchInput" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="Search your orders here">
-                    <button class="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg w-30">Search </button>
-                </div>
-
-                <div id="orderList">
+               
+                <div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-6">
                     <% if (orders.length > 0) { %>
-                        <% orders.forEach(order => { %>
-                            <div class="bg-white p-4 rounded-lg shadow-md mb-4 flex">
-                                <img src="<%= order.productImage %>" alt="<%= order.productName %>" class="w-16 h-16 object-cover rounded-lg mr-4">
-                                <div class="flex-1">
-                                    <p class="text-lg font-semibold"><%= order.productName %></p>
-                                    <p class="text-gray-600">Color: <%= order.color %>, Size: <%= order.size %></p>
-                                    <p class="text-xl font-bold mt-2">₹<%= order.price %></p>
-                                </div>
-                                <div class="text-right">
-                                    <% if (order.status === 'Delivered') { %>
-                                        <p class="text-green-500 font-semibold">Delivered on <%= order.deliveryDate %></p>
-                                        <a href="#" class="text-blue-500 underline">Rate & Review Product</a>
-                                    <% } else if (order.status === 'Cancelled') { %>
-                                        <p class="text-red-500 font-semibold">Cancelled on <%= order.cancellationDate %></p>
-                                        <p class="text-gray-600"><%= order.cancellationReason %></p>
-                                    <% } else { %>
-                                        <p class="text-yellow-500 font-semibold"><%= order.status %> on <%= order.updateDate %></p>
-                                    <% } %>
-                                </div>
+                      <% orders.forEach(order => { %>
+                        <% if(order.orderStatus == "pending" || order.orderStatus == "shipped" ){ %>
+                        <div class="border rounded-lg shadow-md p-4 bg-white w-full">
+                          <h2 class="text-xl font-bold text-gray-700 mb-2">Order ID: <%= order._id %></h2>
+                          <p class="text-gray-600 text-sm">Date: <%= new Date(order.createdAt).toLocaleString() %></p>
+                  
+                          <div class="flex items-center mt-4"> 
+                            <!-- Add a placeholder for the product image -->
+                            
+                            <% if (order.items.length > 0 && order.items[0].product.images.length > 0) { %>
+                              <img src="<%= order.items[0].product.images[0] %>" alt="Product Image" class="w-20 h-20 object-cover rounded-md mr-4">
+                            <% } else { %>
+                              <img src="/path/to/default-image.jpg" alt="No Image Available" class="w-20 h-20 object-cover rounded-md mr-4">
+                            <% } %>
+                            
+                            <!-- Product Details -->
+                            <div>
+                              <p class="text-sm text-gray-600">Total Price: <span class="font-bold text-green-600">₹<%= order.totalPrice %></span></p>
+                              <p class="text-sm text-gray-600">Order Status: 
+                                <% if (order.orderStatus === 'delivered') { %>
+                                  <span class="font-bold text-green-600">Delivered</span>
+                                <% } else if(order.orderStatus ===  "cancelled") { %>
+                                  <span class="font-bold text-red-500">Order Cancelled</span> 
+                                <% } else { %>
+                                  <span class="font-bold text-red-900"><%= order.orderStatus %></span>
+                                <% } %>
+                              </p>
                             </div>
-                        <% }) %>
+                          </div>
+                  
+                          <div class="mt-6 flex justify-between">
+
+                            
+                              <button type="submit" class="text-white bg-red-500 hover:bg-red-600 font-semibold py-2 px-4 rounded-lg" onclick="cancelOrder('<%= order._id%>')">
+                                Cancel Order
+                              </button>
+                          
+                            
+                            <a href="/myOrders/<%= order._id %>" class="text-white bg-blue-500 hover:bg-blue-600 font-semibold py-2 px-4 rounded-lg">
+                              View Order
+                            </a>
+
+
+                          </div>
+                  
+                       </div>
+                        <% } %>
+                      <% }) %>
+
+
+
+ 
                     <% } else { %>
-                        <p class="text-center text-gray-600">No orders</p>
+                      <div class="text-center col-span-full">
+                        <p class="text-gray-600 text-lg">No orders found.</p>
+                      </div>
                     <% } %>
-                </div>
+                  </div>
+                  
+                  <h1 class="mt-10 mb-10 text-3xl font-extrabold text-gray-100 tracking-wide">Previous Orders</h1>
+
+                  
+                  <div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-6">
+                    <% if (orders.length > 0) { %>
+                      <% orders.forEach(order => { %>
+                        <% if(order.orderStatus == "delivered" || order.orderStatus == "cancelled" ){ %>
+                        <div class="border rounded-lg shadow-md p-4 bg-white w-full">
+                          <h2 class="text-xl font-bold text-gray-700 mb-2">Order ID: <%= order._id %></h2>
+                          <p class="text-gray-600 text-sm">Date: <%= new Date(order.createdAt).toLocaleString() %></p>
+                  
+                          <div class="flex items-center mt-4">
+                            <!-- Add a placeholder for the product image -->
+                            <% if (order.items.length > 0 && order.items[0].product.images.length > 0) { %>
+                              <img src="<%= order.items[0].product.images[0] %>" alt="Product Image" class="w-20 h-20 object-cover rounded-md mr-4">
+                            <% } else { %>
+                              <img src="/path/to/default-image.jpg" alt="No Image Available" class="w-20 h-20 object-cover rounded-md mr-4">
+                            <% } %>                            
+                            <!-- Product Details -->
+                            <div>
+                              <p class="text-sm text-gray-600">Total price : <span class="font-bold text-green-600">₹<%= order.totalPrice %></span></p>
+                              <p class="text-sm text-gray-600">Order Status: 
+                                <% if (order.orderStatus === 'delivered') { %>
+                                  <span class="font-bold text-green-600">Delivered</span> 
+                            
+                                <% } else { %>
+                                  <span class="font-bold text-red-500"><%= order.orderStatus %></span>
+                                <% } %>
+                              </p>
+                            </div>
+                          </div>
+                  
+                          <div class="mt-4 flex justify-end">
+                            <a href="/myOrders/<%= order._id %>" class="text-white bg-blue-500 hover:bg-blue-600 font-semibold py-2 px-4 rounded-lg">
+                              View Order
+                            </a>
+                          </div>
+
+
+                           <!-- Button to trigger the modal (only if the order is delivered) -->
+                           <% if (order.orderStatus === 'delivered') { %>
+                             <button type="button" class="bg-yellow-500 mt-5 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded w-full" onclick="openReviewModal('<%= order.items[0].product._id %>')">
+                               Leave a Review
+                             </button>
+                           <% } %>
+                         
+
+                        </div>
+                        <% } %>
+                         
+                      <% }) %>
+                    <% } else { %>
+                      <div class="text-center col-span-full">
+                        <p class="text-white text-lg">No orders found.</p>
+                      </div>
+                    <% } %>
+                  </div>
+                  
             </div>
         </div>
 </div>
@@ -125,5 +216,180 @@
   <!--footer-->
   <%- include("partials/footer") %>
   <!--footer-->
+
+
+    <!-- Modal Structure -->
+<div id="reviewModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-bold">Leave a Review</h2>
+      <button onclick="closeReviewModal()" class="text-gray-600 hover:text-red-600">&times;</button>
+    </div>
+
+    <!-- Review Form -->
+    <form id="reviewForm">
+      <input type="hidden" id="productId" name="productId" value="">
+
+      <!-- Rating -->
+      <div class="mb-4">
+        <label class="block text-gray-700">Rating:</label>
+        <div class="flex">
+          <!-- Stars (clickable) -->
+          <span class="text-gray-400 text-2xl cursor-pointer" onclick="setRating(1)">&#9734;</span>
+          <span class="text-gray-400 text-2xl cursor-pointer" onclick="setRating(2)">&#9734;</span>
+          <span class="text-gray-400 text-2xl cursor-pointer" onclick="setRating(3)">&#9734;</span>
+          <span class="text-gray-400 text-2xl cursor-pointer" onclick="setRating(4)">&#9734;</span>
+          <span class="text-gray-400 text-2xl cursor-pointer" onclick="setRating(5)">&#9734;</span>
+        </div>
+        <input type="hidden" id="rating" name="rating" value="1">
+      </div>
+
+      <!-- Comment -->
+      <div class="mb-4">
+        <label class="block text-gray-700">Comment:</label>
+        <textarea id="comment" name="comment" rows="4" class="w-full p-2 border rounded-lg" required></textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-full">Submit Review</button>
+    </form>
+  </div>
+</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+     
+    function orderStatus(status){
+      const currentUrl = new URL(window.location.href) ; 
+      if(currentUrl.searchParams.get("orderStatus")== status ){
+        currentUrl.searchParams.delete('orderStatus') ;
+        window.location.href = currentUrl.href ; 
+      }else{
+        currentUrl.searchParams.set("orderStatus",status) ;
+        window.location.href = currentUrl.href ; 
+      }
+    }
+
+    function orderTime(time){
+      const currentUrl = new URL(window.location.href) ; 
+      if(currentUrl.searchParams.get("orderTime") == time ){
+        currentUrl.searchParams.delete('orderTime') ;
+        window.location.href = currentUrl.href ; 
+      }else{
+        currentUrl.searchParams.set("orderTime",time) ;
+        window.location.href = currentUrl.href ; 
+      }
+    }
+
+
+    //cancel order
+    function cancelOrder(id){
+      Swal.fire({
+      title: 'Are you sure?',
+      text: "Cancel this order ?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, Cancel it!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Trigger the API call if confirmed
+        fetch('/cancelOrder', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status) {
+            Swal.fire(
+              'Cancell!',
+              'Your item has been cancelled.',
+              'success'
+            );
+
+    
+            if(data.wallet){
+             toastr.success(`${data.wallet} added to your wallet`, 'Wallet');
+             }
+
+
+            setTimeout(()=>location.reload() , 3000)
+          } else {
+            Swal.fire(
+              'Error!',
+              'There was a problem cancelling your item.',
+              'error'
+            );
+          }
+        })
+        .catch(error => {
+          Swal.fire(
+            'Error!',
+            'There was a problem cancelling your item.',
+            'error'
+          );
+        });
+      }
+    });
+    }
+
+
+  
+   // Function to open the modal
+   function openReviewModal(productId) {
+    document.getElementById('reviewModal').classList.remove('hidden') ; 
+    document.getElementById('productId').value = productId ;
+  }
+
+  // Function to close the modal
+  function closeReviewModal() {
+    document.getElementById('reviewModal').classList.add('hidden');
+  }
+
+  // Function to set the rating by clicking stars
+  function setRating(rating) {
+    document.getElementById('rating').value = rating;
+    let stars = document.querySelectorAll('#reviewModal .text-2xl');
+    stars.forEach((star, index) => {
+      star.classList.toggle('text-yellow-500', index < rating);
+      star.classList.toggle('text-gray-400', index >= rating);
+    });
+  }
+
+
+  // Submit the review form via AJAX
+  document.getElementById('reviewForm').addEventListener( 'submit', function (event) {
+    event.preventDefault();
+
+    const productId = document.getElementById('productId').value;
+    const rating = document.getElementById('rating').value;
+    const comment = document.getElementById('comment').value;
+
+    fetch('/submitReview', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId, rating, comment })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('Review submitted successfully!');
+        closeReviewModal();
+      } else {
+        alert('Error submitting review.');
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  });
+
+  </script>
+
 </body>
 </html>
