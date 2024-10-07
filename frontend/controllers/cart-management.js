@@ -297,6 +297,7 @@ const checkout = async ( req , res ) =>{                     // update the price
     return res.redirect("/userLogin") ;
   }
 
+  
   let cartTotal ; 
      if(user){
      const cart = await Cart.findOne({user : user._id});
@@ -306,45 +307,53 @@ const checkout = async ( req , res ) =>{                     // update the price
      }else{
      cartTotal = 0;
      }
+
+     
     
   const userAddresses = await Addresses.find({ userId : user._id , softDelete : false });    
    
   const cart = await Cart.findOne({ user : user._id}).populate('items.product') ; 
 
+
   const availableItems = cart.items.filter(item => item.status === 'Available');
   cart.items = availableItems;
 
- 
- 
+
 
   let totalItems =0 ;
     cart.items.forEach(item =>{
       totalItems += item.quantity ; 
     })
 
-    let totalPrice = 0;  
-    
 
+    let totalPrice = 0;  
     for(let i=0 ; i< cart.items.length ; i++){
-        for(let m =0 ; m < cart.items[i].quantity ; m++ ){
-            totalPrice += cart.items[i].discountedPrice ;
+        for(let m =0 ; m < cart.items[i].quantity ; m++ ){         
+            totalPrice += cart.items[i].discountedPrice ;   
         }
     }  
 
-    let totalAmount = totalPrice - ( cart.couponBalance + cart.walletBalance ); 
+    const deliveryCharge = parseFloat(req.query.deliveryCharge) || 0 ;
 
-  res.render("checkout.ejs" , { logo , genderCategory , user , userAddresses , cart , totalItems , totalAmount , totalPrice , cartTotal} );   
+    let totalAmount = (totalPrice + deliveryCharge)  - ( cart.couponBalance + cart.walletBalance ) ;   
+    totalAmount = totalAmount.toFixed(2)
+
+    if(totalAmount == 0){
+      return res.redirect("/cart") ; 
+    }
+
+  res.render("checkout.ejs" , { logo , genderCategory , user , userAddresses , cart , totalItems, deliveryCharge , totalAmount , totalPrice , cartTotal} );   
 }
 
 
 
 
 //place order
-const placeorder = async (req,res) =>{
+const placeorder = async (req,res) =>{ 
   try{
-  const {userId , cartId , addressId ,paymentMethod } = req.body ;
+  const {userId , cartId , addressId ,paymentMethod ,deliveryCharge } = req.body ;
   const cart = await Cart.findById(cartId);
-  
+  console.log(userId)
   const cartItems = cart.items
   .filter(item => item.status === "Available") // filter items by status
   .map( item =>{
@@ -372,17 +381,18 @@ const placeorder = async (req,res) =>{
     return total + (item.discount) ;
   }, 0); 
   
-  console.log(totalDiscount)
+
  
   const newOrder = new Order({
     userId,
     shippingAddress : addressId,
     items : cartItems , 
     paymentMethod,
-    totalPrice : (productsPrice - cart.walletBalance - cart.couponBalance),
+    totalPrice : (productsPrice + parseFloat(deliveryCharge) ) - (cart.walletBalance + cart.couponBalance ) , 
     appliedWallet : cart.walletBalance ,
-    appliedCoupon : cart.couponBalance ,
-    totalDiscount 
+    appliedCoupon : cart.couponBalance , 
+    totalDiscount ,
+    deliveryCharge : parseFloat(deliveryCharge),
   })
 
   const savedOrder = await newOrder.save() ; 

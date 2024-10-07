@@ -10,6 +10,7 @@ const genderCategory = require("../../models/genderCategory");
 const Address = require("../../models/addressSchema");
 const Cart = require("../../models/cartSchema");
 const WishList  = require("../../models/wishList") ; 
+const Reviews = require("../../models/reviewShema") ;
 
 
 //get blocked page
@@ -166,15 +167,9 @@ const product = async (req,res) =>{
     .populate('genderCategory')
     .populate('productCategory')
     .populate('productSubCategory')
-    .populate({
-      path: 'reviews',
-      populate: {
-        path: 'user', // Populate the 'user' reference inside 'reviews'
-        select: 'firstName email' // Optional: select specific fields from the User model
-      }
-    });
     
- 
+
+    const reviews = await Reviews.find({product : productId}).populate("user")
 
       // Convert sizeId to ObjectId
       const selectedSizeId = sizeId  || product.sizes[0]._id ;
@@ -220,7 +215,8 @@ const product = async (req,res) =>{
       genderCategory,
       selectedObject,
       cartTotal,
-      selectedSizeId
+      selectedSizeId,
+      reviews
       
     });
   } catch (error) {

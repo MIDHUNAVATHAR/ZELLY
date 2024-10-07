@@ -1,19 +1,19 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-    firstName: {
+    firstName : {
         type:String,
         required :true,
     },
-    lastName: {
+    lastName : {
         type:String,
     },
-    password:{
+    password : {
         type:String, 
         required :true,
-        default:"password",
+        default : "password" , 
     },
-    email:{
+    email : {
         type:String,
         required:true,
         unique:true,
@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
     otpExpiry : {
         type : Date
       },
-    resetPasswordToken:{ type : String},
+    resetPasswordToken:{ type : String },
     resetPasswordExpires :{ type : Date } ,
     googleId : { 
     type: String, unique: true, sparse: true 
@@ -37,24 +37,24 @@ const userSchema = new mongoose.Schema({
     status : { type : String , default : "Unblock" } ,
     gender : { type : String },
     mobile : {type :Number },
-    walletBalance : { type : Number , default : 0},
-    couponBalance : { type : Number , default : 0}, 
+    walletBalance : { type : Number , default : 0},   
+    couponBalance : { type : Number , default : 0},   
     appliedCoupons: [
         {
           couponCode : String ,
           totalApply : { type : Number } ,
         }
       ],
-
     coupon: {
       type: mongoose.Schema.Types.ObjectId, 
       ref: 'Coupon', // assuming you have a Coupon model
     },
-    referralCode: String,  // Unique code to share
-    referredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },  // User who referred them
-    rewards: { type: Number, default: 0 } // Track earned rewards
+    referralCode: { type: String, unique: true },
+    referredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } ,  
+    rewardsBalance: { type: Number, default: 0 },
+    referralCount: { type: Number, default: 0 }
 
-} ,{ timestamps : true } )  ; 
+} , { timestamps : true } )  ; 
 
 
 

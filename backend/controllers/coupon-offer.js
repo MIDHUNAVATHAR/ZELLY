@@ -193,6 +193,7 @@ const salesReport = async ( req , res ) =>{
 }
 
 
+
 const generatePDF = async (req,res ) =>{
     try {
         const { dateRange, fromDate, toDate } = req.query;
@@ -357,4 +358,4 @@ const generateExcel = async (req,res) =>{
  
 
  
-module.exports = { getCoupon ,addCoupon  , deleteCoupon , Offers , saveCategoryOffer , saveProductOffer , salesReport, generatePDF , generateExcel }  
+module.exports = { getCoupon ,addCoupon  , deleteCoupon , Offers , saveCategoryOffer , saveProductOffer , salesReport  , generateExcel }  

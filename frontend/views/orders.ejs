@@ -115,6 +115,7 @@
                                   <span class="font-bold text-red-500">Order Cancelled</span> 
                                 <% } else { %>
                                   <span class="font-bold text-red-900"><%= order.orderStatus %></span>
+                                  <p class="text-sm text-gray-600">Payment Status: <span class="font-bold text-red-500"> <%= order.paymentStatus %> </span></p>
                                 <% } %>
                               </p>
                             </div>
@@ -138,9 +139,6 @@
                        </div>
                         <% } %>
                       <% }) %>
-
-
-
  
                     <% } else { %>
                       <div class="text-center col-span-full">
@@ -350,13 +348,13 @@
 
   // Function to close the modal
   function closeReviewModal() {
-    document.getElementById('reviewModal').classList.add('hidden');
+    document.getElementById('reviewModal').classList.add('hidden');    
   }
 
   // Function to set the rating by clicking stars
   function setRating(rating) {
     document.getElementById('rating').value = rating;
-    let stars = document.querySelectorAll('#reviewModal .text-2xl');
+    let stars = document.querySelectorAll('#reviewModal .text-2xl'); 
     stars.forEach((star, index) => {
       star.classList.toggle('text-yellow-500', index < rating);
       star.classList.toggle('text-gray-400', index >= rating);

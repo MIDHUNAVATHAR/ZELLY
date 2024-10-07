@@ -10,7 +10,7 @@
 
    <!-- Header --> 
    <%- include("partials/header") %>  
-
+ 
   <!-- Page Container -->
   <div class="max-w-4xl mx-auto p-6 bg-white shadow-md mt-10 mb-10 rounded-lg">
     
@@ -96,20 +96,129 @@
       </div>
     </div>
 
-    <!-- Back to Orders Button -->
-    <div class="mt-6">
+    <div class="mt-6 flex gap-4">
+      <button onclick="downloadOrderPDF()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
+        Download PDF
+      </button>
       <a href="/myOrders" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">Back to My Orders</a>
     </div>
+
+   
+
+      <!-- Payment Retry Button -->
+      <% if (order.paymentStatus === 'failed') { %>
+        <div class="text-center">
+            <button id="continuePayment" 
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg 
+                           transition duration-200 ease-in-out transform hover:scale-105">
+                Continue Payment
+            </button>
+        </div>
+    <% } %>
 
   </div>
 
 
    <!-- Footer -->
-   <%- include("partials/footer") %>
+   <%- include("partials/footer") %> 
 
-  <script>
+  
+
+   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+   <script>
+
+   
+
+//download pdf
+async function downloadOrderPDF() {
+    try {
+        const orderId = document.getElementById('orderId').textContent;
+        console.log(orderId)
+        const response = await fetch(`/api/orders/download-pdf/${orderId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        
+        if (!response.ok) throw new Error('PDF generation failed');
+        
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = `order-${orderId}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+        console.error('Error downloading PDF:', error);
+        alert('Failed to download PDF. Please try again.');
+    }
+}
+
+  
+//continue payment code 
+
+     document.getElementById('continuePayment').addEventListener( 'click' ,async function () {
+            const amount = '<%=order.totalPrice%>' ;  // Amount in INR
+            const currency = 'INR';
+
+            // Step 1: Call backend to create an order
+            const response = await fetch('/continue-failed-payment' , {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }, 
+                body: JSON.stringify({ amount, currency }) 
+            });
+
     
-  </script>
+
+            const { orderId, amount: orderAmount , currency: orderCurrency , keyId } = await response.json() ;
+        
+            // Step 2: Razorpay Checkout options
+            const options = { 
+                key: keyId ,
+                amount: orderAmount ,
+                currency: orderCurrency ,
+                name: 'Zelly App' ,
+                description: 'Test Transaction' ,
+                order_id: orderId , // Pass the Razorpay order_id
+                handler: function (response) {
+                    // Step 3: Call backend to verify the payment
+                    fetch('/continue-verify-payment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id, 
+                            razorpay_signature: response.razorpay_signature,
+                            orderid : '<%=order._id%>' ,  
+                        })
+                    }).then((res) => res.json())
+                      .then((result) => { 
+                          window.location.href(window.location.href = `/myOrders/${result.orderId}` )   
+                      });
+                },
+                theme: {
+                    color: "#3399cc"
+                }
+            };
+
+            // Step 4: Open the Razorpay Checkout 
+            const rzp = new Razorpay(options);
+            rzp.open();
+
+   });
+     
+   </script>
+
+  
 
 </body>
 </html>

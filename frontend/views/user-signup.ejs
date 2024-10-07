@@ -78,21 +78,22 @@
     </form>
 
     <div class="flex justify-center mt-5">
-        <a href="/auth/google/login" class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50 focus:outline-none">
+        <a href="/auth/google/login" id="google-login" class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50 focus:outline-none">
             <img class="w-5 h-5 mr-2" src="https://www.google.com/favicon.ico" alt="Google logo"> 
             <span class="text-sm font-medium text-gray-700">Continue with Google</span>
         </a>
-        </div>
+    </div>
+
     </div>
     
-   </div>
+   </div> 
    <script>
     function navigateToUserLogin(){
         window.location.href="/userLogin" ; 
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-       
+        
           
            const firstNameInput = document.getElementById("firstName");
            const lastNameInput  = document.getElementById("lastName");
@@ -126,7 +127,7 @@
                if(nameRegex.test(lastName)){
                 showMessage(lastNameError ,  "Valid" , true)
                }else{  
-                showMessage(lastNameError , "Last Name must be a text" , false);  
+                showMessage(lastNameError , "Last Name must be a text" , false );  
                } 
            }
           
@@ -222,6 +223,20 @@
     });
 
     })
+
+
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const referralCode = new URLSearchParams(window.location.search).get('referral'); // Get referral code from query params
+        const googleLoginLink = document.getElementById('google-login');
+         
+        if (referralCode) {
+            googleLoginLink.href += `?referral=${referralCode}`; // Append referral code to the link
+        }
+        console.log(referralCode)
+        console.log(googleLoginLink.href) 
+    });
 
 
     

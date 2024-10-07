@@ -13,7 +13,7 @@ const Banner = require("../../models/bannerSchema") ;
 const GenderCategory = require("../../models/genderCategory") ;   
 const ProductCategory = require("../../models/productCategory") ; 
 const ProductSubCategory = require("../../models/productSubCategory") ;
-const Product = require("../../models/product") ;
+const Product = require("../../models/product") ; 
 const Cart = require("../../models/cartSchema") ;
 
 //send email otp function
@@ -85,10 +85,12 @@ const frontPage = async (req, res) => {
    }
  };
 
+
 //get login page 
 const userLogin = (req , res) =>{ 
    res.redirect("/");          // get main page  :  already user authenticated using middleware
 }
+
 
 
 //post login page
@@ -126,10 +128,12 @@ const userLoginPost = async ( req , res ) => {
    }
 }
 
+
 //get signup page
 const userSignup = (req,res) =>{
    res.render( "../views/user-signup.ejs" , {message : ""}); 
 }
+
 
 // user logout
 const userLogout = (req,res) =>{
@@ -151,6 +155,12 @@ const userSignupPost = async (req,res) =>{
    email = email.trim();
    password = password.trim();
 
+    // First find the referring user by their referral code
+    const referringUser = await User.findOne({ 
+      referralCode: req.query.referralCode 
+    });
+
+
    // Check if a user with the given email already exists
    const existingUser = await User.findOne({ email: email.trim() });
 
@@ -163,15 +173,38 @@ const userSignupPost = async (req,res) =>{
    const otp = Crypto.randomBytes(3).toString('hex');
    const otpExpiry = Date.now() + 30000; // OTP valid for 30 sec 
 
-    await User.create({
-      firstName,
-      lastName,
-      email,
-      password,
-      otp,
-      otpExpiry
-   })
+  //   await User.create({
+  //     firstName,
+  //     lastName,
+  //     email,
+  //     password,
+  //     otp,
+  //     otpExpiry
+  //  })
 
+  const user = new User({
+    firstName,
+    lastName,
+    email,
+    password,
+    otp,
+    otpExpiry,
+    referredBy: referringUser ? referringUser._id : null
+  });
+
+  
+  await user.save();
+
+  // If there was a referring user, update their referral count and maybe add rewards
+  if (referringUser) {
+    await User.findByIdAndUpdate(referringUser._id, {
+      $inc: { 
+        referralCount: 1 ,
+        rewardsBalance: 10 // or whatever reward amount
+      }
+    });
+  }
+ 
    sendOTPEmail(email , otp);
 
    res.render("../views/user-otp-verify" , {email : email ,  message : `An OTP is sent to your registered email : ${email} . Plese enter Otp for verify.`});
@@ -192,7 +225,9 @@ const resendEmailOtp =async (req ,res) =>{
    user.otpExpiry = otpExpiry;
    user.save(); 
 
-   sendOTPEmail(email , otp);
+ 
+
+   sendOTPEmail( email , otp ) ; 
    
    res.render("../views/user-otp-verify" , {email : email ,  message : `A new OTP is sent to your registered email : ${email} . Plese enter new Otp for verify.`});  
    
@@ -201,7 +236,7 @@ const resendEmailOtp =async (req ,res) =>{
 
 
 //post check otp for verify
-const checkOtp = async (req,res) =>{
+const checkOtp = async (req,res) =>{ 
    let { email , otp } = req.body;
    email = email.trim(); 
    otp = otp.trim();
@@ -311,10 +346,10 @@ const resetPasswordPost =async (req , res) =>{
       }
     } catch (err) {
       console.log(err);
-      res.render('user-reset-password', { message: 'Error resetting password. Please try again later.',token : "" });
+      res.render('user-reset-password', { message: 'Error resetting password. Please try again later.', token : "" });
     }
 } 
 
 
 
-module.exports = { frontPage , userLogin , userLoginPost, userSignup , userLogout ,userSignupPost ,resendEmailOtp , checkOtp , forgotPassword , forgotPasswordPost ,resetPasswordPost , resetPassword} ;   
+module.exports = { frontPage , userLogin , userLoginPost , userSignup , userLogout , userSignupPost , resendEmailOtp , checkOtp , forgotPassword , forgotPasswordPost , resetPasswordPost , resetPassword } ;   

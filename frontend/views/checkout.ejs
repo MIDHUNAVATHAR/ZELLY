@@ -109,7 +109,7 @@
             <div class="address-actions" style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
               <a  class="editbtn btn btn-primary" style="background-color: #007bff; color: white; padding: 8px 28px; border-radius: 5px; border: none; text-decoration: none;">Edit</a>
               <a href="/deleteAddress/<%= address._id %>?checkout=1" class="btn btn-primary" style="background-color: #dc3545; color: white; padding: 8px 20px; border-radius: 5px; border: none; text-decoration: none;">Delete</a>
-              <input type="checkbox"  style="transform: scale(2); " class=" addCheck mt-5 mr-2" onchange="addressCheck('<%= address._id %>' , '<%= index %>' )" >
+              <input type="checkbox"  style="transform: scale(2); " class="addCheck mt-5 mr-2" onchange="addressCheck('<%= address._id %>' , '<%= index %>' )"  data-pincode="<%= address.pincode %>" data-address="<%= address._id%>" data-index = '<%= index %>' >
             </div>
           </div>
         </div>
@@ -118,7 +118,7 @@
         <div class="userAddressForm hidden mt-5 border-2 border-grey-900 rounded-lg p-5"> 
         <form  action="/saveEditAddress/<%=address.id %>" method="POST"> 
             <!-- <input type="hidden" name="userId"  value="<%= user._id %>"> -->
-            <input type="hidden" name="checkout"  value="1">
+            <input type="hidden" name="checkout"  value="1" >
          
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">                
                 <div>
@@ -219,12 +219,16 @@
                 <span >₹<%= totalPrice %></span>
             </div>
             <div class="flex justify-between mb-2">
+                <span>Delivery Charges </span>
+                <span >+ ₹<%= deliveryCharge %></span>
+            </div>
+            <div class="flex justify-between mb-2">
                 <span>Coupon Discount</span>
-                <span>₹<%= cart.couponBalance %></span>
+                <span>- ₹<%= cart.couponBalance %></span>
             </div>
             <div class="flex justify-between mb-2">
                 <span>Wallet Discount</span>
-                <span>₹<%= cart.walletBalance %></span>
+                <span>- ₹<%= cart.walletBalance %></span>
             </div>
             <div class="border-t pt-2 mt-2">
                 <div class="flex justify-between font-semibold">
@@ -253,9 +257,29 @@
             <input id="paypal" name="payment-method" type="radio" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" disabled>
             <label for="paypal" class="ml-2 text-gray-700">PayPal</label>
         </div>
-        <div class="flex items-center mb-4"> 
+        <!-- <div class="flex items-center mb-4"> 
             <input id="cash-on-delivery" name="payment-method" onchange="paymentMethod('cash-on-delivery')" type="radio" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
             <label for="cash-on-delivery" class="ml-2 text-gray-700">Cash on Delivery</label>
+        </div> -->
+        <div class="flex items-center mb-4"> 
+            <% if (totalAmount <= 1000) { %>
+                <input id="cash-on-delivery" 
+                       name="payment-method" 
+                       onchange="paymentMethod('cash-on-delivery')" 
+                       type="radio" 
+                       class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                <label for="cash-on-delivery" class="ml-2 text-gray-700">
+                    Cash on Delivery
+                </label>
+            <% } else { %>
+                <input id="cash-on-delivery" 
+                       type="radio" 
+                       disabled 
+                       class="h-4 w-4 text-gray-400 border-gray-300 cursor-not-allowed">
+                <label for="cash-on-delivery" class="ml-2 text-gray-400">
+                    Cash on Delivery (Unavailable for orders over ₹1000)
+                </label>
+            <% } %>
         </div>
     </div>
 
@@ -267,23 +291,23 @@
 
 
 <!-- Modal Background -->
-<div id="successModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50 hidden">
+<div id="successModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50 hidden">  
     <!-- Modal Content -->
     <div class="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
       <!-- Modal Header -->
-      <h2 class="text-xl font-semibold text-green-600">Order Placed Successfully!</h2>
+      <h2 class="text-xl font-semibold text-green-600">Order Placed Successfully!</h2>   
   
       <!-- Modal Body -->
       <p class="mt-4 text-gray-700">Your order has been successfully placed. You can view your current order details by clicking the button below.</p>
   
       <!-- Modal Footer -->
-      <div class="mt-6 flex justify-end">
+      <div class="mt-6 flex justify-end"> 
         <a href="/myOrders/current-order-id" id="viewOrderButton" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
           OK, View Order
         </a>
       </div>
     </div>
-  </div>
+</div>
  
 
 
@@ -313,7 +337,7 @@
 
 
       const editbtn = Array.from(document.getElementsByClassName("editbtn")) ; 
-      const userAddressForm = document.getElementsByClassName("userAddressForm");
+      const userAddressForm = document.getElementsByClassName("userAddressForm") ;
 
       //toggle the form input 
       document.getElementById("toggleFormBtn").addEventListener("click" , function(){
@@ -345,12 +369,12 @@
       }
 
 
-      function addressCheck( id , index ){
-        currentUrl.searchParams.set("address" , id );
-        currentUrl.searchParams.set("addressIndex" , index) ;   
-        window.location.href=currentUrl ; 
-      }  
 
+    //   function addressCheck( id , index ){
+    //    // currentUrl.searchParams.set("address" , id );
+    //     currentUrl.searchParams.set("addressIndex" , index) ;   
+    //     window.location.href=currentUrl 
+    //   }  
 
 
   //select payment method
@@ -382,13 +406,14 @@
 
     const addressId = currentUrl.searchParams.get("address") ;
     const paymentMethod = currentUrl.searchParams.get("payment-mode"); 
+    const deliveryCharge = '<%= deliveryCharge %>' ;
 
     if(paymentMethod == "cash-on-delivery"){
 
     fetch("/placeorder" ,{ 
         method : "POST",
         headers : { 'Content-Type' : "application/json" },
-        body : JSON.stringify({ userId , cartId , addressId , paymentMethod })})       
+        body : JSON.stringify({ userId , cartId , addressId , paymentMethod , deliveryCharge })})       
     .then(response=>response.json())
     .then(data =>{
         if(data.status){
@@ -405,7 +430,7 @@
     }else if (paymentMethod == "razor-pay"){
 
 
-            const amount = '<%= totalPrice - cart.walletBalance - cart.couponBalance %>' ;  // Amount in INR
+            const amount = '<%= (totalPrice + deliveryCharge ) - (cart.walletBalance + cart.couponBalance) %>' ;  // Amount in INR
             const currency = 'INR';
 
             // Step 1: Call backend to create an order
@@ -413,13 +438,16 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ amount, currency })
+                }, 
+                body: JSON.stringify({ amount, currency }) 
             });
-            const { orderId, amount: orderAmount, currency: orderCurrency , keyId } = await response.json() ;
+
+    
+
+            const { orderId, amount: orderAmount , currency: orderCurrency , keyId } = await response.json() ;
         
             // Step 2: Razorpay Checkout options
-            const options = {
+            const options = { 
                 key: keyId,
                 amount: orderAmount,
                 currency: orderCurrency,
@@ -437,11 +465,11 @@
                             razorpay_order_id: response.razorpay_order_id,
                             razorpay_payment_id: response.razorpay_payment_id, 
                             razorpay_signature: response.razorpay_signature,
-                            userId , cartId , addressId , paymentMethod 
+                            userId , cartId , addressId , paymentMethod , deliveryCharge
                         })
                     }).then((res) => res.json())
                       .then((result) => {
-                          window.location.href(window.location.href = `/myOrders/${result.orderId}`)
+                          window.location.href(window.location.href = `/myOrders/${result.orderId}` )  
                       });
                 },
                 theme: {
@@ -449,9 +477,45 @@
                 }
             };
 
-            // Step 4: Open the Razorpay Checkout
+            // Step 4: Open the Razorpay Checkout 
             const rzp = new Razorpay(options);
             rzp.open();
+
+
+            // Step 5: Handle payment failure
+rzp.on('payment.failed', function (response) {
+    // Log the error or show the user a message
+    console.error('Payment failed:', response.error) ; 
+
+    // Display an error message to the user
+    alert(`Payment failed: ${response.error.description}`);
+    
+    // Optionally, call the backend to log the failure or perform any other actions
+    fetch('/payment-failed', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            error_code: response.error.code,
+            error_description: response.error.description,
+            error_source: response.error.source,
+            error_reason: response.error.reason,
+            razorpay_order_id: response.error.metadata.order_id,
+            razorpay_payment_id: response.error.metadata.payment_id,
+            userId, cartId, addressId, paymentMethod, deliveryCharge
+        })
+    }).then((res) => res.json())
+      .then((result) => {
+        if (result.status === true) { 
+            // If the order is placed successfully, show this message
+            alert("Payment failed, but the order has been placed successfully.");
+        } else {
+            // Handle error if order placement failed
+            alert("Payment failed and the order could not be placed.");
+        }
+      });
+});
        
     }else{
         console.log("no payment method")
@@ -462,6 +526,83 @@
    
     
 
+
+    //delivery charge
+    const shopPincode = "695512"; // Shop's fixed pincode
+        const apiKey = "a357284bfa1f4e10b485d4580c8d0c99" ; // Replace with your Geoapify API key
+
+        // Function to get latitude and longitude from pincode
+        async function getCoordinatesFromPincode(pincode) {
+            const apiUrl = `https://api.geoapify.com/v1/geocode/search?postcode=${pincode}&apiKey=${apiKey}`;
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+            
+            if (data.features.length > 0) {
+                const { lat, lon } = data.features[0].properties;
+                return { latitude: lat, longitude: lon };
+            } else {
+                throw new Error('Unable to get coordinates for the given pincode');
+            }
+        }
+
+        // Function to calculate distance between two locations using Geoapify Routing API
+        async function getDistance(lat1, lon1, lat2, lon2) {
+            const apiUrl = `https://api.geoapify.com/v1/routing?waypoints=${lat1},${lon1}|${lat2},${lon2}&mode=drive&apiKey=${apiKey}`;
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+          
+       
+                const distanceInKm = data.features[0].properties.distance / 1000 ; // Convert to kilometers
+                return distanceInKm;
+         
+        }
+
+        // Function to calculate delivery charge based on distance
+        function calculateDeliveryCharge(distanceInKm) {
+            const chargePerKm = 10; // ₹10 per kilometer
+            return chargePerKm * distanceInKm;
+        }
+
+       // Handle address selection and delivery charge calculation
+document.querySelectorAll('.addCheck').forEach( (checkbox , index )=> { 
+    checkbox.addEventListener('click', async (event) => {
+    
+      //  if (event.target.checked) {
+
+            const buyerPincode = event.target.dataset.pincode; // Get the pincode from data attribute
+            const addressId = event.target.dataset.address;
+            const index = event.target.dataset.index;
+            
+            try {
+                // Get coordinates of shop and buyer
+                const shopCoords = await getCoordinatesFromPincode(shopPincode);  
+                const buyerCoords = await getCoordinatesFromPincode(buyerPincode);  
+                
+                // Calculate distance between shop and buyer
+                const distanceInKm = await getDistance(
+                    shopCoords.latitude, shopCoords.longitude,   
+                    buyerCoords.latitude, buyerCoords.longitude   
+                );
+              
+                // Calculate delivery charge
+                const deliveryCharge = calculateDeliveryCharge(distanceInKm);
+                const currentUrl =  new URL(window.location.href) ;
+                currentUrl.searchParams.set("deliveryCharge" , deliveryCharge) ;  
+                currentUrl.searchParams.set("address" , addressId) ;
+                currentUrl.searchParams.set("addressIndex" , index )
+                setTimeout(()=>window.location.href=currentUrl  , 0) 
+              
+                
+                // Example: document.getElementById('delivery-charge-display').innerText = `Delivery Charge: ₹${deliveryCharge.toFixed(2)}`;
+            } catch (error) {
+                console.error(error.message);
+                // Handle error appropriately in your UI
+            }
+        }
+   // }
+);
+});
+        
   
 
 

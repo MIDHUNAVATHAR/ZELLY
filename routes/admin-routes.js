@@ -6,8 +6,9 @@ const router = express.Router() ;
 //import controllers
 const adminAuth = require( "../backend/controllers/admin-auth" );
 const adminDash = require( "../backend/controllers/admin-dashboard"); 
-const adminProduct = require("../backend/controllers/admin-product");
+const adminProduct = require("../backend/controllers/admin-product");  
 const couponOffer = require("../backend/controllers/coupon-offer") ; 
+const pdfExcelDown = require("../backend/controllers/pdf-excel-controller"); 
 
 
 const uploadProduct = multer({
@@ -62,6 +63,8 @@ router.post("/adminResetPassword/:token" , adminAuth.resetPasswordPost);  //
 //ADMIN DASH 
 //get dashboard
 router.get("/dashboard" , adminDash.dashboard) ; 
+
+//router.get('/api/sales-data/:timePeriod', adminDash.saleschart )
 
 //get front page logo banner
 router.get("/frontPage",adminDash.frontPage);
@@ -192,12 +195,12 @@ router.post("/save-product-offer" ,couponOffer.saveProductOffer );
 router.get("/sales-report" , couponOffer.salesReport);
 
 //post downlaod sales report
-router.get( '/download-pdf' ,couponOffer.generatePDF) ;
+router.get( '/download-pdf' , pdfExcelDown.generatePDF) ;
 
 //post downlaod excel report
-router.get("/download-excel" , couponOffer.generateExcel);
+router.get("/download-excel" , pdfExcelDown.generateExcel);
 
-
+ 
 
 
 

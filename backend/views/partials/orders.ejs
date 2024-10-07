@@ -20,8 +20,13 @@
             <!-- Order Date -->
             <td class="p-4 border"><%= new Date(order.createdAt).toLocaleDateString() %></td>
 
-            <!-- Username -->
-            <td class="p-4 border"><%= order.userId.email %></td>       
+            <td class="p-4 border">
+              <% if (order.userId && order.userId.email) { %>
+                <%= order.userId.email %>
+              <% } else { %>
+                N/A
+              <% } %>
+            </td>
 
             <!-- Order Status -->
       <td class="p-4 border">

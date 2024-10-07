@@ -30,17 +30,222 @@ const ProductSubCategory = require("../../models/productSubCategory");
 const Logo = require("../../models/logoSchema");  
 const Banner = require("../../models/bannerSchema");
 const Product = require("../../models/product"); 
+const  Order = require("../../models/orderSchema") ;
 
 
- //get dashboard 
- const dashboard = (req,res) =>{ 
-    if(req.session.adminId){ 
-    res.render("admin-dashboard.ejs" ,{admin : req.session.adminEmail , partial : "partials/dashboard" }) ;  
-    }else{
+
+
+
+
+
+// Route to render the admin dashboard
+const dashboard = async (req, res) => { 
+    if (req.session.adminId) {
+
+
+        try {
+            const dataPerPage = 10;  // Number of products per page
+            const currentPage = parseInt(req.query.page) || 1 ;  // Current page from query parameter, default to 1
+            const skip = (currentPage - 1) * dataPerPage ;
+            
+            // Fetching order details for the frontend order table 
+            const orderDetails = await Order.find()
+                .populate('items.product')
+                .skip(skip)  
+                .limit(dataPerPage)
+                .sort({ createdAt: -1 }) ; 
+          
+    
+            // Fetching order details for calculations
+            const orderDetailsProfit = await Order.find({  orderStatus: { $nin: 'pending' } })
+                .populate('items.product')
+                .sort({ createdAt: -1 });
+
+    
+            // Total number of orders
+            const totalCollections = await Order.countDocuments(); 
+          
+    
+            // Calculate total number of pages for pagination
+            const pageNumber = Math.ceil(totalCollections / dataPerPage) ; 
+    
+            // Current date
+            const currentDate = new Date();
+            // Start of today, week, and month
+            const startOfToday = new Date(currentDate.setHours(0, 0, 0, 0));
+            const startOfWeek = new Date(currentDate);
+            startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+            const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    
+           
+            // Arrays for daily sales and daily array
+            const dailySalesArray = [];
+            const dailyArray = [];
+    
+            // Iterate over days starting from today to start of the month
+            let dayIterator = new Date(currentDate);
+            while (dayIterator >= startOfMonth) {
+                const dayStart = new Date(dayIterator);
+                dayStart.setHours(0, 0, 0, 0);
+                const dayEnd = new Date(dayIterator);
+                dayEnd.setHours(23, 59, 59, 999);
+    
+                const dayTotal = orderDetailsProfit.reduce((acc, ele) => {
+                    const eleDate = new Date(ele.createdAt);
+                    if (eleDate >= dayStart && eleDate <= dayEnd) {
+                        return acc + ele.totalPrice;
+                    }
+                    return acc;
+                }, 0);
+    
+                dailySalesArray.push(dayTotal);
+                dailyArray.push(dayStart.getDate());
+    
+                dayIterator.setDate(dayIterator.getDate() - 1); // Move to the previous day
+            }
+    
+            // Monthly sales array
+            const monthlySalesArray = new Array(12).fill(0); // Initialize array with 12 zeros
+            orderDetailsProfit.forEach(order => {
+                const month = new Date(order.createdAt).getMonth();
+                monthlySalesArray[month] += order.totalPrice;
+            });
+           
+
+    
+            // Calculate daily, weekly, and monthly reports
+            const dailyReport = calculateReport(orderDetailsProfit , startOfToday);
+            const weeklyReport = calculateReport(orderDetailsProfit , startOfWeek);
+            const monthlyReport = calculateReport(orderDetailsProfit , startOfMonth);
+           
+            // Overall sales amount and count
+            const overallSalesAmount = orderDetailsProfit.reduce((acc, ele) => acc + ele.totalPrice, 0);
+            const overallSalesCount = orderDetailsProfit.length ; 
+            
+            
+            // Overall discount calculation
+            // let overallDiscount = orderDetailsProfit.reduce((acc, ele) => acc + ele.couponDiscount, 0);
+            // overallDiscount += orderDetailsProfit.reduce((acc, ele) => {
+            //     return acc + ele.products.reduce((prodAcc, product) => {
+            //         return prodAcc + (((product.price / 100) * product.discount) * product.quantity);
+            //     }, 0);
+            // }, 0);
+            
+            const overallDiscount = 100 ; 
+
+            console.log(overallDiscount)
+
+            
+
+            // find the number of payment methods
+            let payByCash=0
+            let payByRazorPay=0
+            let payByWallet=0
+    
+            orderDetailsProfit.forEach((order)=>{
+                if(order.paymentMethod==='Cash on delivery'){
+                    payByCash++;
+                }
+                if(order.paymentMethod==='Razor pay'){
+                    payByRazorPay++;
+                }
+                if(order.paymentMethod==='Wallet'){
+                    payByWallet++;
+                }
+            })
+    
+            const paymentMethodChart=[payByCash,payByRazorPay,payByWallet]
+           
+    
+            res.render('admin-dashboard.ejs', {
+                title: "Admin Dashboard",
+                partial: "partials/dashboard",
+                admin :"",
+               
+                dailyReport,
+                weeklyReport,
+                monthlyReport,
+                orderDetails, 
+                overallSalesAmount,
+                overallSalesCount,
+                overallDiscount,
+                dailySalesArray,
+                dailyArray,
+                monthlySalesArray,
+                pageNumber,
+                currentPage,
+                paymentMethodChart 
+            });
+    
+       
+    
+
+   
+
+        
+}catch (err) {
+    console.log(`Error during admin dashboard render ${err}`);
+    // Handle error response
+    res.status(500).json('Internal Server Error'); 
+}
+
+    } else {
         res.redirect("/admin"); 
     }
- } 
- 
+
+}
+
+
+// Helper function to calculate report based on start date
+function calculateReport(orderDetailsProfit, startDate) {
+    return orderDetailsProfit.reduce((acc, ele) => {
+        if (new Date(ele.createdAt) >= startDate) {
+            return acc + ele.totalPrice;
+        }
+        return acc; 
+    }, 0);
+}
+
+
+
+
+
+// generate custom sales report using fetch
+const generateCustomSales = async (req, res) => {
+    try {
+        const { startDate, endDate } = req.body;
+
+        // Validate start and end dates
+        if (!startDate || !endDate) {
+            return res.status(400).json({ error: "Start date and end date are required" });
+        }
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999); // Set end time to the end of the day
+
+        // Fetch orders within the specified date range
+        const orders = await orderSchema.find({ createdAt: { $gte: start, $lte: end },isCancelled:false });
+
+        // Calculate total sales
+        const sale = orders.reduce((acc, order) => acc + order.totalPrice, 0);
+        return res.status(200).json({ message: "Report Generated", sale });
+    } catch (err) {
+        console.error(`Error on generating custom sales report: ${err}`);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
  //get front page logo banner 
  const frontPage = async (req,res) =>{ 
     const logo = await Logo.find();

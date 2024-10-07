@@ -315,7 +315,8 @@ const deleteproduct = async ( req , res ) => {
             return res.redirect("/admin");
         }
         
-        const orders = await Orders.find({}).populate("userId"); 
+        const orders = await Orders.find({}).populate("userId") ; 
+        console.log(orders)
 
         res.render("admin-dashboard.ejs" ,{message : '',admin : req.session.adminEmail , partial : "partials/orders" , orders } ) ; 
 

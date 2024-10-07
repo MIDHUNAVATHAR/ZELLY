@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose') ; 
 const Schema = mongoose.Schema;
 
 // Order Schema
@@ -9,7 +9,7 @@ const orderSchema = new Schema({
     required: true
   },
   shippingAddress: {
-   type: Schema.Types.ObjectId ,
+   type: Schema.Types.ObjectId , 
    ref : "Address" ,
    required : true , 
   },
@@ -49,9 +49,9 @@ const orderSchema = new Schema({
     type: Number,
     required: true
   },
-  appliedWallet:{ type : Number , default : 0 },
+  appliedWallet:{ type : Number , default : 0 } ,
   appliedCoupon:{ type : Number , default : 0 } ,
-  totalDiscount  : { type : Number , default : 0 },
+  totalDiscount  : { type : Number , default : 0 } ,
   orderStatus: {
     type: String, 
     enum: [ 'pending' , 'shipped' , 'delivered' , 'cancelled' ] , 
@@ -65,7 +65,11 @@ const orderSchema = new Schema({
   },
   razorpayPaymentId :{
     type : String ,
+  },
+  deliveryCharge : {
+    type : Number , default : 0,
   }
-},{ timestamps : true } );
+} , { timestamps : true } ) ;  
 
 module.exports = mongoose.model( 'Order' , orderSchema ) ;
+ 

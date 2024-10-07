@@ -49,14 +49,45 @@
                             </ul>
                         </div>
                         <div>
-                            <h3 class="font-semibold">PAYMENTS</h3>
+                            <h3 class="font-semibold">WALLET BALANCE</h3>
                             <ul class="mt-2 space-y-2">
-                                <li><a href="#" class="text-gray-700">Gift Cards</a></li>
-                                <li><a href="#" class="text-gray-700">Saved UPI</a></li>
-                                <li><a href="#" class="text-gray-700">Saved Cards</a></li>
+                                <li><a href="#" class="text-gray-700">₹  <%= user.walletBalance %></a></li>
                             </ul>
                         </div>
+                        <div>
+                            <h3 class="font-semibold">REFERRAL BALANCE</h3>
+                            <ul class="mt-2 space-y-2">
+                                <li><a href="#" class="text-gray-700">₹ <%= user.rewardsBalance %></a></li>
+                            </ul>
+                            <button>Withdraw</button>
+                        </div>
+                        <p class="text-indigo-900">My Referral Link  :</p>
+                        <div class="flex items-center gap-2  ">
+                          
+                             
+                            <p class="refLink text-blue-600"></p>
+                        
+                         <button onclick="copyText(this.value)" value="" class="refLink relative inline-flex items-centerp-2 rounded bg-transparent hover:bg-gray-100/10 transition-all duration-200">
+                            <span id="copyIcon" class="text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </span>  
+                            <span id="copiedMessage" class="hidden absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-sm px-2 py-1 rounded">
+                                Copied!
+                            </span>  
+                        </button>
+                        
+                        </div>
+                        <p class="text-gray-700">Send this referal link to Others . You will get Rs : 19 for each New Users</p>
                     </nav>
+
+
+
+
+                   
+                    
 
                     <div style="margin-top : 180px ;" > 
                         <a href="/userLogout" class="bg-gray-900 text-white font-bold py-2 px-4  rounded">
@@ -164,6 +195,54 @@
             document.getElementById("mobile").value = "" ;  
             }
         }
+
+
+        function copyText(text) {
+    // Copy the text
+    navigator.clipboard.writeText(text);
+    
+    // Show the copied message
+    const message = document.getElementById('copiedMessage');
+    const copyIcon = document.getElementById('copyIcon');
+    
+    // Change icon to checkmark
+    copyIcon.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+    `;
+    
+    // Show message
+    message.classList.remove('hidden');
+    
+    // Hide message and restore icon after 2 seconds
+    setTimeout(() => {
+        message.classList.add('hidden');
+        copyIcon.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+        `;
+    }, 2000);
+}
+
+
+
+
+//copy referal link
+
+const referralCode = '<%= user.referralCode %>' ;
+
+const url = new URL(window.location.href);
+
+const referalLink = url.origin  +  '/userSignup' + `?referral=${referralCode}`
+   
+const ref = document.querySelectorAll(".refLink") ; 
+ref[0].textContent = referalLink ;
+ref[1].value = referalLink ;
+
+
     </script>
 
 </body>

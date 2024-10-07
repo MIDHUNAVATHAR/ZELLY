@@ -4,10 +4,10 @@ const Bcrypt = require("bcrypt");
 const Crypto = require("crypto");
 
 //import configs
-const transporter = require("../../configs/email-config")
+const transporter = require("../../configs/email-config") ;
 
 //import schema
-const Admin = require( "../../models/adminSchema"); 
+const Admin = require( "../../models/adminSchema") ; 
 
 
 //send email otp function
@@ -21,6 +21,7 @@ const sendOTPEmail = async (email, otp) => {
   
     await transporter.sendMail(mailOptions);
   }
+
 
 //send password reset email
 const sendPasswordResetEmail = async(email , token , host) =>{
@@ -48,6 +49,7 @@ const adminLogin = ( req , res) =>{
      return;
   }
 }
+
 
 //post login
 const loginPost = async ( req , res ) =>{
@@ -86,20 +88,16 @@ const adminSignup = ( req , res ) =>{
 
 //admin logout
 const adminLogout = (req,res) =>{
-//     req.session.destroy((err) => {
-//        if (err) {
-//            return res.status(500).send('Failed to log out.');
-//        }
-//        res.redirect('/admin'); // Redirect to login or home page
-//    });
+
     req.session.adminId = null;
     res.redirect("/admin");
  }
 
 
  //post admin signup
-const adminSignupPost = async (req,res) =>{
+const adminSignupPost = async (req,res) =>{   
     let {firstName , lastName , email , password } = req.body ; 
+   
     firstName = firstName.trim();
     lastName = lastName.trim();
     email = email.trim();

@@ -52,6 +52,7 @@
       <div class="mt-4">
         <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700">Filter Report</button>
       </div>
+      
     </form>
   </div>
 
@@ -101,7 +102,13 @@
         <% salesReport.forEach(order => { %>
           <tr>
             <td class="py-2 px-4 border-b"><%= order._id %></td>
-            <td class="py-2 px-4 border-b"><%= order.userId.firstName %></td>
+            <td class="py-2 px-4 border-b">
+              <% if (order.userId && order.userId.firstName) { %>
+                <%= order.userId.firstName %>
+              <% } else { %>
+                No Name
+              <% } %>
+            </td>            
             <td class="py-2 px-4 border-b"><%= order.createdAt.toISOString().split('T')[0]  %></td>
             <td class="py-2 px-4 border-b">₹ <%= order.totalPrice %></td>
             <td class="py-2 px-4 border-b">₹ <%= order.totalDiscount %></td>
