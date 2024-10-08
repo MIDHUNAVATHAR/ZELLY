@@ -64,7 +64,7 @@ router.post("/adminResetPassword/:token" , adminAuth.resetPasswordPost);  //
 //get dashboard
 router.get("/dashboard" , adminDash.dashboard) ; 
 
-//router.get('/api/sales-data/:timePeriod', adminDash.saleschart )
+router.post('/dashboard/generate-ledger', adminDash.generateLedger); 
 
 //get front page logo banner
 router.get("/frontPage",adminDash.frontPage);

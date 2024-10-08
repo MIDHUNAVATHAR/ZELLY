@@ -6,7 +6,7 @@ const Logo = require("../../models/logoSchema") ;
 const GenderCategory = require("../../models/genderCategory");
 const User = require("../../models/userSchema") ;
 const Addresses = require("../../models/addressSchema"); 
-const Order = require("../../models/orderSchema") ; 
+const Order = require("../../models/orderSchema") ;   
 
 
 
@@ -14,7 +14,7 @@ const Order = require("../../models/orderSchema") ;
 //get my orders page
 const myOrders = async ( req , res ) =>{ 
 const logo = await Logo.findOne().sort({ updatedAt : -1 }) ; 
-const genderCategory = await GenderCategory.find({ softDelete : false });
+const genderCategory = await GenderCategory.find({ softDelete : false }); 
 
 let user ;   
   if(req.session.userId){
@@ -25,7 +25,7 @@ let user ;
     return res.redirect("/userLogin") ;
   }
 
-  let cartTotal ; 
+let cartTotal ; 
      if(user){
      const cart = await Cart.findOne({user : user._id});
      if(cart){
@@ -54,6 +54,7 @@ const years = [];
  
  res.render("orders" , { orders  , logo , genderCategory ,user , years , orderStatus , orderTime : "" , cartTotal }); 
 }
+
 
 
 
@@ -105,7 +106,6 @@ const addToCart = async ( req , res ) =>{
      }else if(!existingItem && stockAvl > 0){
         cart.items.push(cartItem);
      }else{
-        console.log("item not available");
         return res.status(422).json({
            message: "This item is no more available",
            success : false ,
@@ -128,7 +128,6 @@ const addToCart = async ( req , res ) =>{
   }
 
   await cart.save().then(()=>{ 
-    console.log("cart added");
     return res.status(200).json({ message : "product added to cart" , success : true });
   }).catch((error)=>console.log(error.message)) ;
 }
@@ -168,7 +167,7 @@ const increQuantity = async ( req,res ) =>{
   
   if( cart.items[0].quantity < 5){
       if(cart.items[0].quantity < product.sizes[0].quantity ){
-        //cart.items[0].quantity += 1 ;
+      
         
         await Cart.findOneAndUpdate(
           { user: userId, 'items._id': itemId },
@@ -181,7 +180,7 @@ const increQuantity = async ( req,res ) =>{
         );
        
         
-        //await cart.save().then(()=>console.log("item added")).catch((err)=>console.log(err.message));
+      
         const productQuant = product.sizes[0].quantity;
         return res.status(200).json({ message : "product added to cart" , productQuant , totalItems , totalAmount , success : true });
       }else{
@@ -273,6 +272,8 @@ const decreQuantity = async ( req,res ) =>{
 }
 
 
+
+
 //remove item
 const removeItem = async (req,res) =>{
   const {userId , itemId} = req.body ; 
@@ -282,6 +283,8 @@ const removeItem = async (req,res) =>{
   }).catch((err)=>console.log(err.message));
 }
    
+
+
 
 //get checkout delivery address
 const checkout = async ( req , res ) =>{                     // update the price of cart product whenever prices of product changed
@@ -353,8 +356,8 @@ const placeorder = async (req,res) =>{
   try{
   const {userId , cartId , addressId ,paymentMethod ,deliveryCharge } = req.body ;
   const cart = await Cart.findById(cartId);
-  console.log(userId)
-  const cartItems = cart.items
+  
+  const cartItems = cart.items 
   .filter(item => item.status === "Available") // filter items by status
   .map( item =>{
    
@@ -371,10 +374,12 @@ const placeorder = async (req,res) =>{
 
   
 
+
   // Calculate total price
   const productsPrice = cartItems.reduce((total, item) => {
     return total + (item.price * item.quantity) ;
   }, 0);
+
 
   //calculate total discount
   const totalDiscount = cartItems.reduce((total, item) => {
@@ -438,6 +443,9 @@ const placeorder = async (req,res) =>{
 }
 
 
+
+
+
 //get view order
 const viewOrder = async (req,res) =>{
   const logo = await Logo.findOne().sort({ updatedAt : -1 }) ; 
@@ -472,6 +480,8 @@ const viewOrder = async (req,res) =>{
 
 
 
+
+
 //post cancel order
 const cancelOrder = async (req,res) =>{
   try{
@@ -481,7 +491,8 @@ const cancelOrder = async (req,res) =>{
       orderStatus: "cancelled",
     });
 
-     //increase the quantity of products in the database . 
+
+  //increase the quantity of products in the database . 
   for(let i=0 ; i<savedOrder.items.length ; i++){
     let productId  = savedOrder.items[i].product ; 
     let size = savedOrder.items[i].size ;
@@ -504,6 +515,7 @@ const cancelOrder = async (req,res) =>{
 
 
 
+  
    //add to wallet
    const userId = req.session.userId ||  req.user._id 
    const user = await User.findById(userId) ; 

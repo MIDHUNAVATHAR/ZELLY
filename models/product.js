@@ -10,8 +10,8 @@ const productSchema = new Schema({
       size : { type : String , required: true },
       price : { type : Number , required : true },
       quantity : { type : Number , required : true },
-      discountedPrice : {type : Number , required : true},
-      discountedPercentage : {type : Number , required : true} 
+      discountedPrice : {type : Number , required : true },
+      discountedPercentage : {type : Number , required : true } 
     }
   ], required: true }, 
   productDescription: { type: String, required: true },

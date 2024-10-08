@@ -4,6 +4,8 @@ const User = require('../models/userSchema'); // Assuming you have a User model
 require('dotenv').config();
 
 
+
+
 // Google Strategy for Users
 passport.use('google-user', new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID , 
@@ -57,9 +59,15 @@ passport.use('google-user', new GoogleStrategy({
 })); 
 
 
+
+
+
 passport.serializeUser((user, done) => {
     done(null, user.id); // Serialize only the user ID
 });
+
+
+
 
 passport.deserializeUser(async (id, done) => {
     try {

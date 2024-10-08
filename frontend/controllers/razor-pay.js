@@ -9,7 +9,7 @@ const Order = require("../../models/orderSchema") ;
 const Cart = require("../../models/cartSchema") ;
 const Product = require("../../models/product") ;
 const User = require("../../models/userSchema") ; 
-//const { findById } = require('../../models/couponSchema');
+
 
 
 
@@ -85,7 +85,7 @@ const verifyPayment =  async (req, res) => {
        
         const newOrder = new Order({
           userId,
-          shippingAddress : addressId,
+          shippingAddress : addressId, 
           items : cartItems , 
           paymentMethod,
           totalPrice : ((totalProductPrice + parseFloat(deliveryCharge) ) -( cart.walletBalance + cart.couponBalance)).toFixed(2) ,             

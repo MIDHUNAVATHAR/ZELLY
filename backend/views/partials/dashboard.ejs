@@ -1,2 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <div class="p-6">
+            <h1 class="text-3xl font-bold text-gray-800 mb-8">Dashboard</h1>
+            
+            <!-- Filter Buttons -->
+            <div class="mb-6 flex space-x-4">
+                <% ['day', 'week', 'month', 'year'].forEach(filter => { %>
+                    <a href="/admin/dashboard?filter=<%= filter %>" 
+                       class="px-4 py-2 rounded-lg <%= currentFilter === filter ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50' %> 
+                       shadow-sm transition-colors">
+                        <%= filter.charAt(0).toUpperCase() + filter.slice(1) %>
+                    </a>
+                <% }) %>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <!-- Total Orders -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-gray-500 text-sm font-medium">Total Orders</h3>
+                    <p class="text-3xl font-bold text-gray-900"><%= totalOrders %></p>
+                </div>
+                
+                <!-- Revenue -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-gray-500 text-sm font-medium">Total Revenue</h3>
+                    <p class="text-3xl font-bold text-gray-900">₹<%= totalRevenue.toLocaleString() %></p>
+                </div>
+                
+                <!-- Order Status -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-gray-500 text-sm font-medium">Order Status</h3>
+                    <div class="mt-2">
+                        <% orderStatusCount.forEach(status => { %>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm text-gray-600"><%= status._id %></span>
+                                <span class="text-sm font-medium"><%= status.count %></span>
+                            </div>
+                        <% }) %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales Chart -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Sales Overview</h2>
+                <div id="salesChart"></div>
+            </div>
+        </div>
+    </div>
 
 
+<!-- Add this below your sales chart in the dashboard.ejs template -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 p-5">
+    <!-- Top Selling Products -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Top Selling Products</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity Sold</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Orders</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <% topProducts.forEach((product, index) => { %>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">
+                                            <%= product.name %>
+                                        </div>
+                                     
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900"><%= product.totalQuantity %></div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">₹<%= product.totalRevenue.toLocaleString() %></div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900"><%= product.orderCount %></div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Top Product Categories -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Top Product Categories</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity Sold</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Orders</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <% topCategories.forEach((category, index) => { %>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">
+                                    <%=category.genderCategory %> - <%= category.category %>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900"><%= category.totalQuantity %></div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">₹<%= category.totalRevenue.toLocaleString() %></div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900"><%= category.orderCount %></div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+ <!-- Top Product Categories -->
+ <div class="bg-white rounded-lg shadow p-6 m-10">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Top Product Sub Categories</h2>
+    <div class="overflow-x-auto">
+        <table class="min-w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity Sold</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Orders</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <% topSubcategories.forEach((category, index) => { %>
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">
+                                <%= category.parentCategory %>  - <%= category.subcategory %>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900"><%= category.totalQuantity %></div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">₹<%= category.totalRevenue.toLocaleString() %></div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900"><%= category.orderCount %></div>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+<!-- Generate Ledger Button -->
+<div class="flex justify-end my-20 pr-10  ">
+    <form action="/admin/dashboard/generate-ledger" method="POST">
+        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition">
+            Generate Ledger
+        </button>
+    </form>
+</div>
+
+</div>
+
+
+
+    <script>
+        // ApexCharts configuration
+        const salesData = <%- salesData %> ;
+        
+        const options = {
+            chart: {
+                type: 'area',
+                height: 350,
+                zoom: {
+                    enabled: true
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth'
+            },
+            series: [{
+                name: 'Sales',
+                data: salesData
+            }],
+            title: {
+                text: 'Sales Trend',
+                align: 'left'
+            },
+            xaxis: {
+                type: 'datetime'
+            },
+            yaxis: {
+                labels: {
+                    formatter: function(value) {
+                        return "₹" + value.toLocaleString();
+                    }
+                }
+            },
+            tooltip: {
+                x: {
+                    format: 'dd MMM yyyy'
+                }
+            },
+            theme: {
+                palette: 'palette1'
+            }
+        };
+
+        const chart = new ApexCharts(document.querySelector("#salesChart"), options);
+        chart.render();
+    </script>
+</body>
+</html>

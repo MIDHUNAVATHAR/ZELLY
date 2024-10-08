@@ -6,6 +6,7 @@ const Crypto = require("crypto");
 //import configs
 const transporter = require("../../configs/email-config"); 
 
+
 //import schemas
 const User = require("../../models/userSchema") ;
 const Logo = require("../../models/logoSchema") ;  
@@ -15,6 +16,9 @@ const ProductCategory = require("../../models/productCategory") ;
 const ProductSubCategory = require("../../models/productSubCategory") ;
 const Product = require("../../models/product") ; 
 const Cart = require("../../models/cartSchema") ;
+
+
+
 
 //send email otp function
 const sendOTPEmail = async (email, otp) => {
@@ -27,6 +31,8 @@ const sendOTPEmail = async (email, otp) => {
  
    await transporter.sendMail(mailOptions);
  }
+
+
 
  //send password reset email
  const sendPasswordResetEmail = async(email , token , host) =>{
@@ -42,6 +48,7 @@ const sendOTPEmail = async (email, otp) => {
 
     await transporter.sendMail(mailOptions);
  }
+
 
 
 
@@ -84,6 +91,7 @@ const frontPage = async (req, res) => {
      res.status(500).send('Error loading main page') ;
    }
  };
+
 
 
 //get login page 
@@ -129,10 +137,14 @@ const userLoginPost = async ( req , res ) => {
 }
 
 
+
+
 //get signup page
 const userSignup = (req,res) =>{
    res.render( "../views/user-signup.ejs" , {message : ""}); 
 }
+
+
 
 
 // user logout
@@ -145,6 +157,8 @@ const userLogout = (req,res) =>{
   }); 
      
 }
+
+
 
 
 //post user signup
@@ -173,14 +187,6 @@ const userSignupPost = async (req,res) =>{
    const otp = Crypto.randomBytes(3).toString('hex');
    const otpExpiry = Date.now() + 30000; // OTP valid for 30 sec 
 
-  //   await User.create({
-  //     firstName,
-  //     lastName,
-  //     email,
-  //     password,
-  //     otp,
-  //     otpExpiry
-  //  })
 
   const user = new User({
     firstName,
@@ -205,11 +211,14 @@ const userSignupPost = async (req,res) =>{
     });
   }
  
+
    sendOTPEmail(email , otp);
+
 
    res.render("../views/user-otp-verify" , {email : email ,  message : `An OTP is sent to your registered email : ${email} . Plese enter Otp for verify.`});
 
 }
+
 
 
 
@@ -225,13 +234,12 @@ const resendEmailOtp =async (req ,res) =>{
    user.otpExpiry = otpExpiry;
    user.save(); 
 
- 
-
    sendOTPEmail( email , otp ) ; 
    
    res.render("../views/user-otp-verify" , {email : email ,  message : `A new OTP is sent to your registered email : ${email} . Plese enter new Otp for verify.`});  
    
 }
+
 
 
 
@@ -265,6 +273,8 @@ const checkOtp = async (req,res) =>{
       return;
    } 
 }
+
+
 
 
 
@@ -339,7 +349,7 @@ const resetPasswordPost =async (req , res) =>{
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined; 
         await user.save();
-       // res.render('common/reset-password', { message: 'Password has been reset successfully.' ,token:""});
+
        res.render("user-login.ejs",{message : "Password creat Success! Please Login"});
       } else {
         res.render('user-reset-password', { message: 'Passwords do not match.',token :"" });

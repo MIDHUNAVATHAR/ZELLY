@@ -2,8 +2,10 @@
 const fs = require("fs");
 const path = require('path');
 const multer = require("multer") ;  
+const moment = require('moment');
 
- const uploadLogo = multer({
+
+const uploadLogo = multer({
     storage :  multer.diskStorage ({ 
         destination : "uploads/logo",   
         filename    : (req , file , cb ) =>{ 
@@ -12,14 +14,17 @@ const multer = require("multer") ;
      })
  }).single("logo");  
 
- const uploadBanner = multer({
+
+
+const uploadBanner = multer({
     storage :  multer.diskStorage ({ 
         destination : "uploads/banner",    
         filename    : (req , file , cb ) =>{ 
             cb(null , Date.now() + file.originalname ) ;   
         }
      })
- }).single("banner");
+ }).single("banner") ; 
+
 
 
 //import schemas
@@ -36,223 +41,361 @@ const  Order = require("../../models/orderSchema") ;
 
 
 
-
-
-// Route to render the admin dashboard
-const dashboard = async (req, res) => { 
-    if (req.session.adminId) {
-
-
-        try {
-            const dataPerPage = 10;  // Number of products per page
-            const currentPage = parseInt(req.query.page) || 1 ;  // Current page from query parameter, default to 1
-            const skip = (currentPage - 1) * dataPerPage ;
-            
-            // Fetching order details for the frontend order table 
-            const orderDetails = await Order.find()
-                .populate('items.product')
-                .skip(skip)  
-                .limit(dataPerPage)
-                .sort({ createdAt: -1 }) ; 
-          
-    
-            // Fetching order details for calculations
-            const orderDetailsProfit = await Order.find({  orderStatus: { $nin: 'pending' } })
-                .populate('items.product')
-                .sort({ createdAt: -1 });
-
-    
-            // Total number of orders
-            const totalCollections = await Order.countDocuments(); 
-          
-    
-            // Calculate total number of pages for pagination
-            const pageNumber = Math.ceil(totalCollections / dataPerPage) ; 
-    
-            // Current date
-            const currentDate = new Date();
-            // Start of today, week, and month
-            const startOfToday = new Date(currentDate.setHours(0, 0, 0, 0));
-            const startOfWeek = new Date(currentDate);
-            startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
-            const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    
-           
-            // Arrays for daily sales and daily array
-            const dailySalesArray = [];
-            const dailyArray = [];
-    
-            // Iterate over days starting from today to start of the month
-            let dayIterator = new Date(currentDate);
-            while (dayIterator >= startOfMonth) {
-                const dayStart = new Date(dayIterator);
-                dayStart.setHours(0, 0, 0, 0);
-                const dayEnd = new Date(dayIterator);
-                dayEnd.setHours(23, 59, 59, 999);
-    
-                const dayTotal = orderDetailsProfit.reduce((acc, ele) => {
-                    const eleDate = new Date(ele.createdAt);
-                    if (eleDate >= dayStart && eleDate <= dayEnd) {
-                        return acc + ele.totalPrice;
-                    }
-                    return acc;
-                }, 0);
-    
-                dailySalesArray.push(dayTotal);
-                dailyArray.push(dayStart.getDate());
-    
-                dayIterator.setDate(dayIterator.getDate() - 1); // Move to the previous day
-            }
-    
-            // Monthly sales array
-            const monthlySalesArray = new Array(12).fill(0); // Initialize array with 12 zeros
-            orderDetailsProfit.forEach(order => {
-                const month = new Date(order.createdAt).getMonth();
-                monthlySalesArray[month] += order.totalPrice;
-            });
-           
-
-    
-            // Calculate daily, weekly, and monthly reports
-            const dailyReport = calculateReport(orderDetailsProfit , startOfToday);
-            const weeklyReport = calculateReport(orderDetailsProfit , startOfWeek);
-            const monthlyReport = calculateReport(orderDetailsProfit , startOfMonth);
-           
-            // Overall sales amount and count
-            const overallSalesAmount = orderDetailsProfit.reduce((acc, ele) => acc + ele.totalPrice, 0);
-            const overallSalesCount = orderDetailsProfit.length ; 
-            
-            
-            // Overall discount calculation
-            // let overallDiscount = orderDetailsProfit.reduce((acc, ele) => acc + ele.couponDiscount, 0);
-            // overallDiscount += orderDetailsProfit.reduce((acc, ele) => {
-            //     return acc + ele.products.reduce((prodAcc, product) => {
-            //         return prodAcc + (((product.price / 100) * product.discount) * product.quantity);
-            //     }, 0);
-            // }, 0);
-            
-            const overallDiscount = 100 ; 
-
-            console.log(overallDiscount)
-
-            
-
-            // find the number of payment methods
-            let payByCash=0
-            let payByRazorPay=0
-            let payByWallet=0
-    
-            orderDetailsProfit.forEach((order)=>{
-                if(order.paymentMethod==='Cash on delivery'){
-                    payByCash++;
-                }
-                if(order.paymentMethod==='Razor pay'){
-                    payByRazorPay++;
-                }
-                if(order.paymentMethod==='Wallet'){
-                    payByWallet++;
-                }
-            })
-    
-            const paymentMethodChart=[payByCash,payByRazorPay,payByWallet]
-           
-    
-            res.render('admin-dashboard.ejs', {
-                title: "Admin Dashboard",
-                partial: "partials/dashboard",
-                admin :"",
-               
-                dailyReport,
-                weeklyReport,
-                monthlyReport,
-                orderDetails, 
-                overallSalesAmount,
-                overallSalesCount,
-                overallDiscount,
-                dailySalesArray,
-                dailyArray,
-                monthlySalesArray,
-                pageNumber,
-                currentPage,
-                paymentMethodChart 
-            });
-    
-       
-    
-
-   
-
-        
-}catch (err) {
-    console.log(`Error during admin dashboard render ${err}`);
-    // Handle error response
-    res.status(500).json('Internal Server Error'); 
-}
-
-    } else {
-        res.redirect("/admin"); 
+// Helper function to ensure the directory exists
+const ensureDirectoryExistence = (dirPath) => {
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true }); // Create the directory if it doesn't exist
     }
-
-}
-
-
-// Helper function to calculate report based on start date
-function calculateReport(orderDetailsProfit, startDate) {
-    return orderDetailsProfit.reduce((acc, ele) => {
-        if (new Date(ele.createdAt) >= startDate) {
-            return acc + ele.totalPrice;
-        }
-        return acc; 
-    }, 0);
-}
+};
 
 
 
-
-
-// generate custom sales report using fetch
-const generateCustomSales = async (req, res) => {
-    try {
-        const { startDate, endDate } = req.body;
-
-        // Validate start and end dates
-        if (!startDate || !endDate) {
-            return res.status(400).json({ error: "Start date and end date are required" });
-        }
-
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999); // Set end time to the end of the day
-
-        // Fetch orders within the specified date range
-        const orders = await orderSchema.find({ createdAt: { $gte: start, $lte: end },isCancelled:false });
-
-        // Calculate total sales
-        const sale = orders.reduce((acc, order) => acc + order.totalPrice, 0);
-        return res.status(200).json({ message: "Report Generated", sale });
-    } catch (err) {
-        console.error(`Error on generating custom sales report: ${err}`);
-        return res.status(500).json({ error: "Internal server error" });
+// Helper function to get date range
+const getDateRange = (filter) => {
+    const end = moment().endOf('day');
+    let start;
+    
+    switch(filter) {
+        case 'day':
+            start = moment().startOf('day');
+            break;
+        case 'week':
+            start = moment().subtract(7, 'days').startOf('day');
+            break;
+        case 'month':
+            start = moment().subtract(30, 'days').startOf('day');
+            break;
+        case 'year':
+            start = moment().subtract(365, 'days').startOf('day');
+            break;
+        default:
+            start = moment().subtract(30, 'days').startOf('day');
     }
+    
+    return { start, end };
 };
 
 
 
 
 
+// render the admin dashboard
+const dashboard = async ( req , res ) => { 
+ 
+    try {
+        const filter = req.query.filter || 'month';
+        const { start, end } = getDateRange(filter);
+
+        // Get orders within date range
+        const orders = await Order.find({
+            createdAt: { $gte: start.toDate(), $lte: end.toDate() },
+            paymentStatus: 'completed'
+        }).sort('createdAt');
+
+        // Calculate daily sales data
+        const salesData = [];
+        let currentDate = moment(start);
+        
+        while (currentDate <= end) {
+            const dayStart = moment(currentDate).startOf('day');
+            const dayEnd = moment(currentDate).endOf('day');
+            
+            const dayOrders = orders.filter(order => 
+                moment(order.createdAt).isBetween(dayStart, dayEnd)
+            );
+            
+            const totalSales = dayOrders.reduce((sum, order) => sum + order.totalPrice, 0);
+            
+            salesData.push({
+                x: currentDate.format('YYYY-MM-DD'),
+                y: totalSales
+            });
+            
+            currentDate.add(1, 'days');
+        }
+
+        // Calculate summary statistics
+        const totalOrders = await Order.countDocuments({
+            createdAt: { $gte: start.toDate(), $lte: end.toDate() }
+        });
+        
+        const totalRevenue = await Order.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: start.toDate(), $lte: end.toDate() },
+                    paymentStatus: 'completed'
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: '$totalPrice' }
+                }
+            }
+        ]);
+
+        const orderStatusCount = await Order.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: start.toDate(), $lte: end.toDate() } 
+                }
+            },
+            {
+                $group: {
+                    _id: '$orderStatus',
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
 
 
+         // Fetch top 10 selling products
+         const topProducts = await Order.aggregate([
+            {
+                $match: {
+                    orderStatus: { $ne: 'cancelled' },
+                    paymentStatus: 'completed'
+                }
+            },
+            { $unwind: '$items' },
+            {
+                $group: {
+                    _id: '$items.product',
+                    totalQuantity: { $sum: '$items.quantity' },
+                    totalRevenue: { $sum: '$items.totalPrice' },
+                    orders: { $addToSet: '$_id' }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'productDetails'
+                }
+            },
+            { $unwind: '$productDetails' },
+            {
+                $project: {
+                    name: '$productDetails.title',
+                    totalQuantity: 1,
+                    totalRevenue: 1,
+                    orderCount: { $size: '$orders' }
+                }
+            },
+            { $sort: { totalQuantity: -1 } },
+            { $limit: 10 }
+        ]);
+
+        
+
+
+        // Fetch top 10 product categories with their gender category
+        const topCategories = await Order.aggregate([
+            
+            {
+                $match: {
+                    orderStatus: { $ne: 'cancelled' },  // Only include non-cancelled orders
+                    paymentStatus: 'completed'  // Only include completed payment orders
+                }
+            },
+            { $unwind: '$items' },  // Unwind the items array to treat each item individually
+            {
+                $lookup: {
+                    from: 'products',  // Lookup from the 'products' collection
+                    localField: 'items.product',  // Match product ID from the order items
+                    foreignField: '_id',  // Match the _id field in the 'products' collection
+                    as: 'product'  // Alias the matched product details as 'product'
+                }
+            },
+            { $unwind: '$product' },  // Unwind the product array to access individual product details
+            {
+                $group: {
+                    _id: '$product.productCategory',  // Group by product category ID
+                    totalQuantity: { $sum: '$items.quantity' },  // Sum the quantities for each category
+                    totalRevenue: { $sum: '$items.totalPrice' },  // Sum the total price for each category
+                    orders: { $addToSet: '$_id' },  // Collect unique order IDs
+                    genderCategoryId: { $first: '$product.genderCategory' }  // Get the gender category ID from the product
+                }
+            },
+            {
+                $lookup: {
+                    from: 'productcategories',  // Lookup from the 'categories' collection
+                    localField: '_id',  // Match the product category ID
+                    foreignField: '_id',  // Match with the _id field in the 'categories' collection
+                    as: 'categoryDetails'  // Alias the matched category details as 'categoryDetails'
+                }
+            },
+            { $unwind: '$categoryDetails' },  // Unwind to get the category name
+            {
+                $lookup: {
+                    from: 'gendercategories',  // Lookup from the 'gendercategories' collection
+                    localField: 'genderCategoryId',  // Match the gender category ID
+                    foreignField: '_id',  // Match the _id field in the 'gendercategories' collection
+                    as: 'genderCategoryDetails'  // Alias the matched gender category details as 'genderCategoryDetails'
+                }
+            },
+            { $unwind: '$genderCategoryDetails' },  // Unwind to get the gender category details
+            {
+                $project: {
+                    category: '$categoryDetails.name',  // Replace _id with the category name
+                    genderCategory: '$genderCategoryDetails.name',  // Include the gender category name
+                    totalQuantity: 1,  // Include total quantity in the result
+                    totalRevenue: 1,  // Include total revenue in the result
+                    orderCount: { $size: '$orders' }  // Calculate the number of unique orders
+                }
+            },
+            { $sort: { totalQuantity: -1 } },  // Sort by total quantity in descending order
+            { $limit: 10 }  // Limit the results to the top 10 categories
+        ]);
+
+
+ 
+        const topSubcategories = await Order.aggregate([
+            {
+                $match: {
+                    orderStatus: { $ne: 'cancelled' },  // Only non-cancelled orders
+                    paymentStatus: 'completed'          // Only completed payments
+                }
+            },
+            { $unwind: '$items' },  // Unwind items array in orders
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'items.product',   // Match product in items with product _id
+                    foreignField: '_id',
+                    as: 'product'
+                }
+            },
+            { $unwind: '$product' },  // Unwind the product array
+            {
+                $lookup: {
+                    from: 'productsubcategories',  // Lookup from subcategories collection
+                    localField: 'product.productSubCategory',  // Match subcategory ID from product (correct field name)
+                    foreignField: '_id',
+                    as: 'subcategoryDetails'
+                }
+            },
+            { $unwind: '$subcategoryDetails' },  // Unwind subcategory details
+            {
+                $lookup: {
+                    from: 'productcategories',  // Lookup to get parent category from productcategories collection
+                    localField: 'subcategoryDetails.productCategory',  // Assuming category field is named `productCategory`
+                    foreignField: '_id',
+                    as: 'categoryDetails'
+                }
+            },
+            { $unwind: '$categoryDetails' },  // Unwind category details
+            {
+                $group: {
+                    _id: '$product.productSubCategory',  // Group by subcategory
+                    subcategoryName: { $first: '$subcategoryDetails.name' },  // Get subcategory name
+                    categoryName: { $first: '$categoryDetails.name' },  // Get parent category name
+                    totalQuantity: { $sum: '$items.quantity' },  // Sum total quantities sold
+                    totalRevenue: { $sum: '$items.totalPrice' },  // Sum total revenue
+                    orders: { $addToSet: '$_id' }  // Collect order IDs
+                }
+            },
+            {
+                $project: {
+                    subcategory: '$subcategoryName',  // Project subcategory name
+                    parentCategory: '$categoryName',  // Project parent category name
+                    totalQuantity: 1,
+                    totalRevenue: 1,
+                    orderCount: { $size: '$orders' }  // Count of unique orders
+                }
+            },
+            { $sort: { totalQuantity: -1 } },  // Sort by total quantity in descending order
+            { $limit: 10 }  // Limit to top 10
+        ]);
+        
+      
+        
+
+        res.render('admin-dashboard', {
+            admin : "" ,
+            partial : "partials/dashboard" ,
+            salesData: JSON.stringify(salesData),
+            totalOrders,
+            totalRevenue: totalRevenue[0]?.total || 0 ,  
+            orderStatusCount,
+            currentFilter: filter,
+            topProducts,
+            topCategories,
+            topSubcategories
+        });
+    } catch (error) {
+        console.error('Dashboard Error : ' , error ) ; 
+        res.status(500).send('Error loading dashboard') ; 
+    } 
+} 
+
+
+
+
+const generateLedger = async (req, res) => {
+    try {
+        const startDate = moment().startOf('year').toDate();
+        const endDate = moment().endOf('year').toDate();
+
+        // Fetch orders from the start of the year to the current date
+        const orders = await Order.find({
+            createdAt: { $gte: startDate, $lte: endDate },
+            paymentStatus: 'completed'
+        }).populate('items.product'); // Populate product details
+
+        // Create the ledger
+        let ledgerData = "Product Name , Quantity Sold , Total Revenue , Order Date\n";
+
+        orders.forEach(order => {
+            order.items.forEach(item => { 
+                const orderDate = `"${moment(order.createdAt).format('YYYY-MM-DD')}"` ; 
+
+                ledgerData += `${item.product.title},${item.quantity},${item.totalPrice},${orderDate}\n`;
+            });
+        });
+     
+
+        // Directory to store the ledger file
+        const ledgerDir = path.join(__dirname, '../../public/ledger');
+        
+        // Ensure the directory exists
+        ensureDirectoryExistence(ledgerDir);
+ 
+        // Generate file path for the ledger file
+        const filePath = path.join(ledgerDir, `ledger_${moment().format('YYYYMMDD_HHmmss')}.csv`);
+
+        // Save the ledger data to the file
+        fs.writeFileSync(filePath, ledgerData);
+
+        // Provide a download link to the generated ledger
+        res.download(filePath, (err) => {
+            if (err) {
+                console.error('Error downloading file:', err);
+                res.status(500).send('Error generating ledger');
+            }
+
+            // Optionally, delete the ledger file after sending it to the user
+            fs.unlinkSync(filePath);
+        });
+
+    } catch (error) {
+        console.error('Ledger generation error:', error);
+        res.status(500).send('Error generating ledger');
+    }
+};
 
 
 
 
  //get front page logo banner 
  const frontPage = async (req,res) =>{ 
-    const logo = await Logo.find();
+    const logo = await Logo.find(); 
     const banner = await Banner.find();
-    console.log(banner);
     res.render("admin-dashboard" ,{admin: req.session.adminEmail , partial :"partials/front-page-img-add" ,logo , banner} ); 
  }
+
+
 
  //post front page logo
  const frontPageLogo = (req , res) =>{ 
@@ -272,6 +415,8 @@ const generateCustomSales = async (req, res) => {
     })
  }
 
+
+
  //post front page banner images
  const frontPageBanner = ( req , res ) =>{   
     uploadBanner(req , res ,(err)=>{   
@@ -289,6 +434,8 @@ const generateCustomSales = async (req, res) => {
         }
     })  
  } 
+
+
 
  //delete logo and banner images
  const deleteImages = async(req,res)=>{
@@ -325,6 +472,7 @@ const generateCustomSales = async (req, res) => {
  }
 
 
+
  //updat logo date ,
  const updatelogoDate =async  ( req, res ) =>{
      
@@ -343,6 +491,9 @@ const generateCustomSales = async (req, res) => {
     }
     
  }
+
+
+
 
  //updat Banner date ,
  const updateBannerDate = async  ( req, res ) =>{
@@ -363,6 +514,9 @@ const generateCustomSales = async (req, res) => {
     }
     
  }
+
+
+
   
  //get customers
  const customers = async (req, res) =>{
@@ -392,6 +546,9 @@ const generateCustomSales = async (req, res) => {
 
  }
 
+
+
+
  //get delete customers
  const userDel = async ( req ,res ) =>{ 
     try{
@@ -403,6 +560,8 @@ const generateCustomSales = async (req, res) => {
     }
 }
 
+
+
 //get edit user
 const userEdit = async (req,res) =>{ 
     try{
@@ -413,6 +572,9 @@ const userEdit = async (req,res) =>{
         console.log(err.message);
     }
 }
+
+
+
 
 //post user edit
 const updateUsers = async (req,res) =>{
@@ -434,6 +596,9 @@ const updateUsers = async (req,res) =>{
     }
 }
 
+
+
+
 //post user status
 const updateStatus = async (req,res) =>{
      const userId = req.params.id;
@@ -442,6 +607,8 @@ const updateStatus = async (req,res) =>{
      res.redirect('/admin/customers');
 }  
 
+
+
 //get addcategory
 const addCategory = async (req , res) =>{  
     const genderCategories = await GenderCategory.find();
@@ -449,6 +616,8 @@ const addCategory = async (req , res) =>{
     const productSubCategories = await ProductSubCategory.find().populate('genderCategory').populate('productCategory');
     res.render("admin-dashboard.ejs" ,{ partial : "partials/add-category", admin : req.session.adminEmail , genderCategories , productCategories , productSubCategories}) ; 
 }
+
+
 
 //post addGenderCategory
 const addGenderCategory = async (req,res) =>{ 
@@ -459,6 +628,8 @@ const addGenderCategory = async (req,res) =>{
     res.redirect("/admin/addCategory") ;
 } 
 
+
+
 //post addproduct category
 const addProductCategory = async (req,res) =>{
     let {name , genderCategory} = req.body ;  
@@ -467,6 +638,8 @@ const addProductCategory = async (req,res) =>{
     res.redirect("/admin/addCategory");  
 }
 
+
+
 //post addproductsub category  
 const addProductSubCategory = async (req,res) =>{
     let {name , genderCategory , productCategory } = req.body ; 
@@ -474,6 +647,8 @@ const addProductSubCategory = async (req,res) =>{
     await ProductSubCategory.create({name ,genderCategory , productCategory});
     res.redirect("/admin/addCategory");
 } 
+
+
 
 //post gendercategory soft delete true
 const softDeleteGenderCat =  async(req,res) =>{
@@ -488,6 +663,8 @@ const softDeleteGenderCat =  async(req,res) =>{
    }
 }
 
+
+
 //post gendercategory soft delete false
 const softDeleteGenderCate =  async(req,res) =>{
     try{
@@ -501,6 +678,8 @@ const softDeleteGenderCate =  async(req,res) =>{
     }
  }
 
+
+
  //post product category soft delete true
   const deleteProductCategory = async ( req , res ) =>{
     try{
@@ -512,6 +691,8 @@ const softDeleteGenderCate =  async(req,res) =>{
      res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
   }
+
+
 
 //post product category soft delete false
 const softDeleteProductCate =  async(req,res) =>{
@@ -525,6 +706,8 @@ const softDeleteProductCate =  async(req,res) =>{
     }
  } 
 
+
+
  //post product subcategory soft delete true  
  const deleteProductSubCategory = async (req , res) =>{
     try{
@@ -536,6 +719,8 @@ const softDeleteProductCate =  async(req,res) =>{
         res.status(500).json({ success: false, message: 'Internal Server Error' });
        }
  } 
+
+
 
  //post product subcategory soft delete false 
  const softDeleteProductSubCate = async ( req,res ) =>{
@@ -554,7 +739,6 @@ const softDeleteProductCate =  async(req,res) =>{
 
 
 
-
-module.exports = { softDeleteProductSubCate , deleteProductSubCategory , softDeleteProductCate ,deleteProductCategory ,softDeleteGenderCat, 
+module.exports = {generateLedger , softDeleteProductSubCate , deleteProductSubCategory , softDeleteProductCate ,deleteProductCategory ,softDeleteGenderCat, 
     softDeleteGenderCate , updateBannerDate , updatelogoDate , deleteImages , dashboard , frontPageLogo, frontPageBanner, customers ,userDel ,
     userEdit ,updateUsers ,updateStatus, addCategory ,addGenderCategory ,addProductCategory ,addProductSubCategory ,frontPage } ;  

@@ -9,7 +9,7 @@ const path = require("path");
 const dotenv = require("dotenv") ; 
 
 
-//loads env variables from .env file  
+//loads env variables from .env file 
 dotenv.config();  
  
   
@@ -24,6 +24,7 @@ const connectDB = async () =>{
 connectDB();
 
 app.use(nocache());
+
 //serve uploads folder as static  
 app.use('/uploads', express.static('uploads')); 
  

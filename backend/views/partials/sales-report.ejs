@@ -156,7 +156,7 @@
        toDate   = currentUrl.searchParams.get('toDate');
     }
 
-    query+= `&fromDate=${fromDate}&toDate=${toDate}`
+    query+= `&fromDate=${fromDate}&toDate=${toDate}` 
       
       // Update the download buttons' URLs
       document.getElementById('download-pdf').setAttribute('onclick', `window.location.href='/admin/download-pdf${query}'`);

@@ -7,6 +7,7 @@ const Product = require("../../models/product" ) ;
 const Review = require("../../models/reviewShema") ;
 
 
+
 const walletAddCart = async (req,res) =>{
     try{
     const userId =  req.session.userId || req.user.id ;
@@ -29,8 +30,9 @@ const walletAddCart = async (req,res) =>{
  }catch(err){
     console.log(err);
  }
-   
 } 
+
+
 
 
 //wallet remove 
@@ -41,7 +43,6 @@ const walletRemoveCart = async (req,res) =>{
         const cart = await Cart.findOne( {user : userId} );
        
         let walletApplied = cart.walletBalance ;
-        //let cartTotal = cart.items.reduce((total, item) => total + item.quantity * item.discountedPrice, 0);
 
         // Restore the wallet balance and reset the applied wallet amount in cart
         user.walletBalance += walletApplied ;
@@ -52,9 +53,10 @@ const walletRemoveCart = async (req,res) =>{
         res.redirect("/cart");
      }catch(err){
         console.log(err);
-     }
-       
+     }    
 }
+
+
 
 
 //add coupon
@@ -110,6 +112,8 @@ const couponAddCart = async (req,res) => {
 }
 
 
+
+
 //remove coupon
 const removeCoupon = async ( req,res ) =>{
    const couponId = req.body.coupon ;
@@ -128,6 +132,7 @@ const removeCoupon = async ( req,res ) =>{
 
    res.redirect("/cart") ; 
 }
+
 
 
 
@@ -181,6 +186,8 @@ const addToWishlist = async ( req,res ) =>{
 }
 
 
+
+
 //REMOVE WISHLIST ITEM
 const removeWishlistitem = async ( req,res) =>{
   try{
@@ -203,6 +210,7 @@ const removeWishlistitem = async ( req,res) =>{
   }
  
 }
+
 
 
 

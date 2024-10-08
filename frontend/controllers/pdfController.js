@@ -1,6 +1,8 @@
 const PDFDocument = require('pdfkit');
 const Order = require("../../models/orderSchema");
 
+
+
 const generateOrderPDF = async (req, res) => {
     try {
         const orderId = req.params.orderId;
@@ -118,5 +120,8 @@ const generateOrderPDF = async (req, res) => {
         });
     }
 };
+
+
+
 
 module.exports = { generateOrderPDF };

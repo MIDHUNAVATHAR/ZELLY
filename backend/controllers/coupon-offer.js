@@ -13,6 +13,7 @@ const Order = require("../../models/orderSchema");
 
 
 
+
 //get coupon page
 const getCoupon = async (req,res) =>{
     try{
@@ -29,11 +30,13 @@ const getCoupon = async (req,res) =>{
 }
 
 
+
+
 //add coupon
 const addCoupon = async (req,res) =>{
 
     try{
-      const { code, discountValue, expiryDate, usageLimit } = req.body;
+      const { code, discountValue, expiryDate, usageLimit } = req.body ;
       if(!code){
         return res.redirect("/admin/coupon")
       }
@@ -67,6 +70,7 @@ const addCoupon = async (req,res) =>{
 
 
 
+
 //delete coupon
 const deleteCoupon = async ( req,res ) =>{
     const couponId = req.params.id ;
@@ -81,6 +85,7 @@ const deleteCoupon = async ( req,res ) =>{
 
 
 
+
 //get offers
 const Offers = async ( req,res ) =>{
     try{
@@ -91,6 +96,8 @@ const Offers = async ( req,res ) =>{
         console.log(err) ;
     }
 }
+
+
 
 
 //post save category offer
@@ -110,6 +117,8 @@ const saveCategoryOffer = async (req,res) =>{
 }
 
 
+
+
 //post save product offer
 const saveProductOffer = async (req,res)=>{ 
     const productId = req.body.id;
@@ -125,6 +134,7 @@ const saveProductOffer = async (req,res)=>{
     res.status(500).json({ message: 'An error occurred while updating the offer' });
    }
 }
+
 
 
 
@@ -194,6 +204,7 @@ const salesReport = async ( req , res ) =>{
 
 
 
+
 const generatePDF = async (req,res ) =>{
     try {
         const { dateRange, fromDate, toDate } = req.query;
@@ -259,6 +270,8 @@ const generatePDF = async (req,res ) =>{
         res.status(500).send('Server error while generating PDF');
       }
 }
+
+
 
 
 

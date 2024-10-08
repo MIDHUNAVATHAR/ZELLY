@@ -3,28 +3,34 @@ const fs = require('fs');
 const path = require('path');
 const multer = require("multer") ;  
 
- const uploadProduct = multer({
+
+
+const uploadProduct = multer({
     storage :  multer.diskStorage ({  
         destination : "uploads/product",   
         filename    : (req , file , cb ) =>{ 
             cb(null , Date.now() + file.originalname)   
         }
      })
- }).array( 'productImages' , 10 ) ;     
+}).array( 'productImages' , 10 ) ;     
+
+
 
 
 //import schemas
-const User = require("../../models/userSchema");
+//const User = require("../../models/userSchema");
 const GenderCategory = require("../../models/genderCategory");
 const ProductCategory = require("../../models/productCategory"); 
-const ProductSubCategory = require("../../models/productSubCategory") ; 
-const Logo = require("../../models/logoSchema");  
-const Banner = require("../../models/bannerSchema");
+//const ProductSubCategory = require("../../models/productSubCategory") ; 
+//const Logo = require("../../models/logoSchema");  
+//const Banner = require("../../models/bannerSchema");
 const Product = require("../../models/product"); 
-const genderCategory = require("../../models/genderCategory");
+//const genderCategory = require("../../models/genderCategory");
 const productSubCategory = require("../../models/productSubCategory");
 const Orders = require("../../models/orderSchema");
-const { search } = require('../../routes/user-routes');
+//const { search } = require('../../routes/user-routes');
+
+
 
 
 //get add product
@@ -36,6 +42,8 @@ const addProduct = async (req,res) =>{
 
     res.render("admin-dashboard.ejs" ,{ message : '', admin : req.session.adminEmail , partial : "partials/add-product" , genderCategories , productCategories , productSubCategories }) ;  
 }
+
+
 
 
 //post add product
@@ -96,6 +104,9 @@ const addProductPost = async (req, res) => {
     });
 };
 
+
+
+
 //get product list page
 const listProducts  = async ( req , res ) =>{ 
     if(!req.session.adminId){
@@ -136,6 +147,7 @@ const editProduct = async (req,res) =>{
      
     res.render("admin-dashboard.ejs" ,{message : '',admin : req.session.adminEmail , partial : "partials/edit-product" , genderCategories , productCategories , productSubCategories , product}) ; 
 }
+
 
 
 //post edit product
@@ -203,6 +215,8 @@ const editProductPost = async ( req , res ) => {
 
 
 
+
+
 // delete size
 const deleteSize =async (req,res)=>{
     try {
@@ -212,7 +226,9 @@ const deleteSize =async (req,res)=>{
     } catch (error) {
       res.status(500).json({ message: 'Error deleting size', error }) ;
     }
-  }
+}
+
+
  
 
 //delete image
@@ -225,7 +241,7 @@ const deleteProductImage = async(req,res) =>{
         fs.unlink(filePath, async (err) => {
             if (err) {
                 console.error('Error deleting file:', err);
-                return res.status(500).json({ success: false, message: 'Failed to delete the image file' });
+                return res.status(500).json( { success : false , message : 'Failed to delete the image file' } ) ; 
             }
 
             // After file deletion, remove the image path from the MongoDB product document
@@ -233,7 +249,7 @@ const deleteProductImage = async(req,res) =>{
                 const updatedProduct = await Product.findByIdAndUpdate(
                     productId,
                     { $pull: { images: imgSrc } },  // Remove the image path from the `images` array
-                    { new: true }  // Return the updated product document
+                    { new: true }  // Return the updated product document 
                 );
 
                 if (!updatedProduct) {
@@ -258,11 +274,12 @@ const deleteProductImage = async(req,res) =>{
 }
 
 
+
+
 //block product
 const blockProduct = async (req,res) =>{
     const { productId } = req.body ; 
     const product = await Product.findById(productId) ;
-   //  console.log(req.body)
 
         // Toggle the `softDelete` field
     product.softDelete = !product.softDelete ; 
@@ -270,6 +287,7 @@ const blockProduct = async (req,res) =>{
     await product.save();
     res.status(404).json({ status : true });    
 }
+
 
 
 //delete product 
@@ -286,7 +304,7 @@ const deleteproduct = async ( req , res ) => {
         // Delete product images from server
         product.images.forEach((imagePath) => {
           const fullPath = path.join(__dirname, '../..', imagePath);
-          console.log(fullPath)
+    
           fs.unlink(fullPath, (err) => {
             if (err) {
               console.error(`Error deleting image: ${fullPath}`, err);
@@ -308,6 +326,7 @@ const deleteproduct = async ( req , res ) => {
 
 
 
+
  //get orders 
  const orders = async (req,res) =>{ 
     try{
@@ -316,7 +335,6 @@ const deleteproduct = async ( req , res ) => {
         }
         
         const orders = await Orders.find({}).populate("userId") ; 
-        console.log(orders)
 
         res.render("admin-dashboard.ejs" ,{message : '',admin : req.session.adminEmail , partial : "partials/orders" , orders } ) ; 
 
@@ -327,6 +345,8 @@ const deleteproduct = async ( req , res ) => {
  }
 
  
+ 
+
  //get view order
  const viewOrder = async ( req , res ) =>{
     try{
@@ -346,6 +366,7 @@ const deleteproduct = async ( req , res ) => {
 
 
 
+
  //post update order status
  const updateOrderStatus = async (req,res) =>{
     const { orderStatus , orderId } = req.body;
@@ -362,8 +383,10 @@ const deleteproduct = async ( req , res ) => {
  }
 
  
- //post update payment status
- const updatePaymentStatus = async (req,res) =>{
+
+
+//post update payment status
+const updatePaymentStatus = async (req,res) =>{
     const { paymentStatus , orderId } = req.body ; 
     try{
         const status = await Orders.findByIdAndUpdate( orderId , { paymentStatus  });
@@ -375,7 +398,8 @@ const deleteproduct = async ( req , res ) => {
     }catch(err){
             res.status(500).json({ message: "Internal server error" });
     }
- }
+}
+
 
 
 

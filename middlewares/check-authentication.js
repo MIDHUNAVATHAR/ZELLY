@@ -2,6 +2,9 @@
 const User = require("../models/userSchema");
 
 
+
+
+
 const checkAuthentication = async (req, res ,next) =>{
     if (req.session.userId  ||   req.isAuthenticated() ) {                                     
         // User is authenticated, proceed to check if they are blocked     
@@ -20,6 +23,10 @@ const checkAuthentication = async (req, res ,next) =>{
        return  res.render("user-login" ,{ message : '' });
     }
 }
+
+
+
+
 
 
 module.exports = checkAuthentication ; 

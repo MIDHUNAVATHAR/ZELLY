@@ -134,6 +134,7 @@ const adminSignupPost = async (req,res) =>{
     }
  }
 
+
 //post resend otp
 const resendEmailOtp =async (req ,res) =>{ 
     let {email } = req.body; 
@@ -151,6 +152,8 @@ const resendEmailOtp =async (req ,res) =>{
     res.render("user-otp-verify" , {email : email ,  message : `A new OTP is sent to your registered email : ${email} . Plese enter new Otp for verify.`});  
     
  }
+
+
 
  //post otp verify
  const adminCheckOtp = async (req,res) =>{
@@ -183,11 +186,15 @@ const resendEmailOtp =async (req ,res) =>{
     } 
  }
 
+
+
  //get forgot password
  const forgotPassword = (req ,res) =>{
    res.render("admin-forgot-password", {message : 'Enter your email for Password Reset Link '} );
  }
  
+
+
  //post forgot password
  const forgotPasswordPost =async (req,res) =>{
    let email = req.body.email ;
@@ -215,6 +222,9 @@ const resendEmailOtp =async (req ,res) =>{
 
  }
 
+
+
+
  const resetPassword = async (req, res) =>{
    try {
       const admin = await Admin.findOne({
@@ -228,6 +238,10 @@ const resendEmailOtp =async (req ,res) =>{
       res.render('admin-reset-password', { message: 'Error loading reset form. Please try again later.' });
     }
  }
+
+
+
+
 
  //post reset opassword
  const resetPasswordPost = async (req,res) =>{  
@@ -245,7 +259,7 @@ const resendEmailOtp =async (req ,res) =>{
         admin.resetPasswordToken = undefined;
         admin.resetPasswordExpires = undefined; 
         await admin.save();
-       // res.render('common/reset-password', { message: 'Password has been reset successfully.' ,token:""}) ;  
+         
        res.render("admin-login.ejs",{message : "Password creat Success! Please Login"});
       } else {
         res.render('admin-reset-password', { message: 'Passwords do not match.',token :"" });
@@ -259,4 +273,5 @@ const resendEmailOtp =async (req ,res) =>{
 
 
 
-module.exports = { adminLogin , adminSignup ,loginPost , adminLogout ,adminSignupPost , adminCheckOtp , resendEmailOtp , forgotPassword ,forgotPasswordPost , resetPassword , resetPasswordPost};  
+module.exports = { adminLogin , adminSignup ,loginPost , adminLogout ,adminSignupPost , adminCheckOtp , resendEmailOtp ,
+   forgotPassword ,forgotPasswordPost , resetPassword , resetPasswordPost };  

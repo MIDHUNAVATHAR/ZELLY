@@ -13,10 +13,14 @@ const WishList  = require("../../models/wishList") ;
 const Reviews = require("../../models/reviewShema") ;
 
 
+
+
 //get blocked page
 const blocked = (req,res) =>{
   res.render("../views/blocked-page.ejs");
 }
+
+
  
 //get wishlist
 const wishlist = async ( req , res ) =>{
@@ -35,15 +39,9 @@ const wishlist = async ( req , res ) =>{
    } 
     
 
-   if(wishlist && wishlist.items.length > 0){
-   const wishlistItem = wishlist.items[0]; // Assuming you're interested in the first item
-   const product = wishlistItem.product;
-  //  const specificSize = product.sizes.find(size => size._id.toString() === wishlistItem.sizeId.toString()); 
-   }   
-
-
    res.render("../views/wish-list.ejs" ,{logo, genderCategory , user , wishlist , cartTotal });  
 }
+
 
 
 
@@ -134,6 +132,7 @@ const cart = async ( req,res ) =>{
 
 
 
+
 //get catageorysection  
 const categorySection = async ( req , res ) =>{
 
@@ -147,12 +146,14 @@ const categorySection = async ( req , res ) =>{
           return { productCategory , subCategories } ; 
       } )) 
 
-      res.render("partials/productCategory", { producatAndSubCat  });
+      res.render("partials/productCategory", { producatAndSubCat  }) ; 
   } catch (error) {
       console.error("Error fetching products:", error);
       res.status(500).send("Server error");
   }
 }
+
+
 
  
 //get product page
@@ -273,7 +274,7 @@ const editProfilePost = async ( req , res ) => {
 
 
 
-//get user address management
+//get user address management  
   const userAdressMng = async ( req,res ) =>{
   const logo = await Logo.findOne().sort({ updatedAt: -1 }); 
   const genderCategory = await GenderCategory.find({ softDelete : false }) ; 
@@ -292,6 +293,8 @@ const editProfilePost = async ( req , res ) => {
   const addresses = await Address.find({userId : user , softDelete : false }) ;
   res.render("userAdressManage.ejs" , { logo , genderCategory ,user, addresses , cartTotal } ) ;
 }
+
+
 
 
 //post user address management
@@ -321,7 +324,7 @@ const saveAddress = async ( req,res ) =>{
   })
 
   await addresses.save();
-  console.log(checkout)
+  
   if(checkout==1){
     return res.redirect( "/userAdressMang" ) ; 
   }else{
@@ -334,6 +337,8 @@ const saveAddress = async ( req,res ) =>{
  }
 
 }
+
+
 
 
 //get delete addresses  
@@ -351,7 +356,7 @@ const deleteAddress = async ( req,res ) =>{
 //post edit addresses
 const editAddress = async ( req,res ) =>{
   try{
-  //const addresse = await Address.findById(req.params.id);
+
 
   let { userId,name,phone,alternatephone,address,landmark,city,state,pincode,addresstype } = req.body ; 
   name = name.trim();
@@ -388,6 +393,7 @@ const editAddress = async ( req,res ) =>{
   }
   
 }
+
 
 
 //get products page  -->by subcategory wise 
